@@ -21,31 +21,31 @@ import {
 } from 'lucide-react';
 
 export const Sidebar: React.FC = () => {
-  const { activeModule, setActiveModule, currentRole, admissions, examPapers } = useSchool();
+  const { activeModule, setActiveModule, currentRole, admissions, examPapers, t } = useSchool();
 
   const pendingAdm = admissions.filter((a) => a.status === 'INTERVIEW_SCHEDULED' || a.status === 'SUBMITTED').length;
   const pendingExams = examPapers.filter((e) => e.status === 'AI_DRAFT' || e.status === 'TEACHER_REVIEW').length;
 
   const navItems = [
-    { id: 'principal_dashboard', label: 'Principal Dashboard', icon: LayoutDashboard, roles: ['PRINCIPAL', 'ADMIN', 'SUPER_ADMIN'], badge: null },
-    { id: 'principal_ai_assistant', label: 'AI Principal Assistant', icon: Bot, roles: ['PRINCIPAL', 'ADMIN', 'SUPER_ADMIN'], isAI: true },
-    { id: 'school_setup', label: 'School Setup & Branding', icon: Building2, roles: ['PRINCIPAL', 'ADMIN', 'SUPER_ADMIN'], badge: null },
-    { id: 'student_management', label: 'Student Management', icon: Users, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'ACCOUNTANT', 'STAFF', 'SUPER_ADMIN'], badge: null },
-    { id: 'admission_workflow', label: 'Online Admissions', icon: UserPlus, roles: ['PRINCIPAL', 'ADMIN', 'ACCOUNTANT', 'STAFF', 'SUPER_ADMIN'], badge: pendingAdm },
-    { id: 'fee_management', label: 'Fee & Payments', icon: CreditCard, roles: ['PRINCIPAL', 'ADMIN', 'ACCOUNTANT', 'STAFF', 'PARENT', 'SUPER_ADMIN'], badge: null },
-    { id: 'digital_books_ai', label: 'Digital Books & AI Bank', icon: BookOpen, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STUDENT', 'SUPER_ADMIN'], badge: null },
-    { id: 'homework_learning', label: 'Homework & Learning', icon: BookOpen, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT', 'SUPER_ADMIN'], badge: null },
-    { id: 'examination_ai', label: 'Exams & AI Test Paper', icon: FileQuestion, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT', 'SUPER_ADMIN'], badge: pendingExams },
-    { id: 'examination_result_engine', label: 'Exams & Result Engine', icon: Award, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT', 'SUPER_ADMIN'], badge: null },
-    { id: 'report_card_certs', label: 'Report Cards & Certificates', icon: Award, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STAFF', 'PARENT', 'STUDENT', 'SUPER_ADMIN'], badge: null },
-    { id: 'attendance_timetable', label: 'Attendance & Leaves', icon: CalendarCheck, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STAFF', 'TRANSPORT', 'STUDENT', 'PARENT', 'SUPER_ADMIN'], badge: null },
-    { id: 'timetable_engine', label: 'Timetable & Scheduling', icon: CalendarCheck, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT', 'SUPER_ADMIN'], badge: null },
-    { id: 'payroll_expenses', label: 'Staff Payroll & Expenses', icon: BadgePercent, roles: ['PRINCIPAL', 'ADMIN', 'ACCOUNTANT', 'SUPER_ADMIN'], badge: null },
-    { id: 'library_transport', label: 'Transport & Fleet', icon: Bus, roles: ['PRINCIPAL', 'ADMIN', 'ACCOUNTANT', 'STAFF', 'TRANSPORT', 'TEACHER', 'STUDENT', 'SUPER_ADMIN'], badge: null },
-    { id: 'school_marketplace', label: 'School Store & Marketplace', icon: ShoppingBag, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT', 'SUPER_ADMIN'], badge: null },
-    { id: 'subscription_billing', label: 'Subscription & 30-Day Trial', icon: CreditCard, roles: ['PRINCIPAL', 'ADMIN', 'ACCOUNTANT', 'SUPER_ADMIN'], badge: null },
-    { id: 'website_builder', label: 'School Website CMS', icon: Globe, roles: ['PRINCIPAL', 'ADMIN', 'SUPER_ADMIN'], badge: null },
-    { id: 'audit_trail', label: 'Audit Trail & Safety', icon: ShieldAlert, roles: ['PRINCIPAL', 'ADMIN', 'SUPER_ADMIN'], badge: null }
+    { id: 'principal_dashboard', label: t('principal_dashboard'), icon: LayoutDashboard, roles: ['PRINCIPAL', 'ADMIN', 'SUPER_ADMIN'], badge: null },
+    { id: 'principal_ai_assistant', label: t('principal_ai_assistant'), icon: Bot, roles: ['PRINCIPAL', 'ADMIN', 'SUPER_ADMIN'], isAI: true },
+    { id: 'school_setup', label: t('school_setup'), icon: Building2, roles: ['PRINCIPAL', 'ADMIN', 'SUPER_ADMIN'], badge: null },
+    { id: 'student_management', label: t('student_management'), icon: Users, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'ACCOUNTANT', 'STAFF', 'SUPER_ADMIN'], badge: null },
+    { id: 'admission_workflow', label: t('admission_workflow'), icon: UserPlus, roles: ['PRINCIPAL', 'ADMIN', 'ACCOUNTANT', 'STAFF', 'SUPER_ADMIN'], badge: pendingAdm },
+    { id: 'fee_management', label: t('fee_management'), icon: CreditCard, roles: ['PRINCIPAL', 'ADMIN', 'ACCOUNTANT', 'STAFF', 'PARENT', 'SUPER_ADMIN'], badge: null },
+    { id: 'digital_books_ai', label: t('digital_books_ai'), icon: BookOpen, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STUDENT', 'SUPER_ADMIN'], badge: null },
+    { id: 'homework_learning', label: t('homework_learning'), icon: BookOpen, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT', 'SUPER_ADMIN'], badge: null },
+    { id: 'examination_ai', label: t('examination_ai'), icon: FileQuestion, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT', 'SUPER_ADMIN'], badge: pendingExams },
+    { id: 'examination_result_engine', label: t('examination_result_engine'), icon: Award, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT', 'SUPER_ADMIN'], badge: null },
+    { id: 'report_card_certs', label: t('report_card_certs'), icon: Award, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STAFF', 'PARENT', 'STUDENT', 'SUPER_ADMIN'], badge: null },
+    { id: 'attendance_timetable', label: t('attendance_timetable'), icon: CalendarCheck, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STAFF', 'TRANSPORT', 'STUDENT', 'PARENT', 'SUPER_ADMIN'], badge: null },
+    { id: 'timetable_engine', label: t('timetable_engine'), icon: CalendarCheck, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT', 'SUPER_ADMIN'], badge: null },
+    { id: 'payroll_expenses', label: t('payroll_expenses'), icon: BadgePercent, roles: ['PRINCIPAL', 'ADMIN', 'ACCOUNTANT', 'SUPER_ADMIN'], badge: null },
+    { id: 'library_transport', label: t('library_transport'), icon: Bus, roles: ['PRINCIPAL', 'ADMIN', 'ACCOUNTANT', 'STAFF', 'TRANSPORT', 'TEACHER', 'STUDENT', 'SUPER_ADMIN'], badge: null },
+    { id: 'school_marketplace', label: t('school_marketplace'), icon: ShoppingBag, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'ACCOUNTANT', 'STAFF', 'TRANSPORT', 'STUDENT', 'PARENT', 'SUPER_ADMIN'], badge: null },
+    { id: 'subscription_billing', label: t('subscription_billing'), icon: CreditCard, roles: ['PRINCIPAL', 'ADMIN', 'ACCOUNTANT', 'SUPER_ADMIN'], badge: null },
+    { id: 'website_builder', label: t('website_builder'), icon: Globe, roles: ['PRINCIPAL', 'ADMIN', 'SUPER_ADMIN'], badge: null },
+    { id: 'audit_trail', label: t('audit_trail'), icon: ShieldAlert, roles: ['PRINCIPAL', 'ADMIN', 'SUPER_ADMIN'], badge: null }
   ];
 
   // Filter items according to current active role

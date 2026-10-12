@@ -27,7 +27,9 @@ import {
   Bus,
   Globe,
   ShieldAlert,
-  Bot
+  Bot,
+  ShoppingBag,
+  Languages
 } from 'lucide-react';
 
 export const Header: React.FC = () => {
@@ -42,7 +44,10 @@ export const Header: React.FC = () => {
     activeModule,
     setActiveModule,
     admissions,
-    examPapers
+    examPapers,
+    language,
+    setLanguage,
+    t
   } = useSchool();
 
   const [showNotifications, setShowNotifications] = useState(false);
@@ -57,34 +62,35 @@ export const Header: React.FC = () => {
   const isSubscriptionExpired = activeTenant?.subscriptionStatus === 'EXPIRED' || activeTenant?.subscriptionStatus === 'SUSPENDED';
 
   const roles: { role: UserRole; label: string; bg: string }[] = [
-    { role: 'PRINCIPAL', label: 'School Principal', bg: 'bg-indigo-600' },
-    { role: 'ADMIN', label: 'School Management', bg: 'bg-blue-600' },
-    { role: 'TEACHER', label: 'Teacher Portal', bg: 'bg-amber-600' },
-    { role: 'ACCOUNTANT', label: 'Accountant', bg: 'bg-emerald-600' },
-    { role: 'STAFF', label: 'Office Staff / Clerk', bg: 'bg-teal-600' },
-    { role: 'TRANSPORT', label: 'Transport / Driver', bg: 'bg-orange-600' },
-    { role: 'PARENT', label: 'Parent Portal', bg: 'bg-cyan-600' },
-    { role: 'STUDENT', label: 'Student Portal', bg: 'bg-purple-600' },
-    { role: 'SUPER_ADMIN', label: 'i2A SaaS Master', bg: 'bg-slate-800' }
+    { role: 'PRINCIPAL', label: t('PRINCIPAL'), bg: 'bg-indigo-600' },
+    { role: 'ADMIN', label: t('ADMIN'), bg: 'bg-blue-600' },
+    { role: 'TEACHER', label: t('TEACHER'), bg: 'bg-amber-600' },
+    { role: 'ACCOUNTANT', label: t('ACCOUNTANT'), bg: 'bg-emerald-600' },
+    { role: 'STAFF', label: t('STAFF'), bg: 'bg-teal-600' },
+    { role: 'TRANSPORT', label: t('TRANSPORT'), bg: 'bg-orange-600' },
+    { role: 'PARENT', label: t('PARENT'), bg: 'bg-cyan-600' },
+    { role: 'STUDENT', label: t('STUDENT'), bg: 'bg-purple-600' },
+    { role: 'SUPER_ADMIN', label: t('SUPER_ADMIN'), bg: 'bg-slate-800' }
   ];
 
   const navItems = [
-    { id: 'principal_dashboard', label: 'Dashboard Overview', icon: LayoutDashboard, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'ACCOUNTANT', 'STAFF', 'TRANSPORT', 'PARENT', 'STUDENT', 'SUPER_ADMIN'] },
-    { id: 'school_setup', label: 'School Setup', icon: Building2, roles: ['PRINCIPAL', 'ADMIN', 'SUPER_ADMIN'] },
-    { id: 'student_management', label: 'Students', icon: Users, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'ACCOUNTANT', 'STAFF', 'SUPER_ADMIN'] },
-    { id: 'admission_workflow', label: 'Admissions', icon: UserPlus, roles: ['PRINCIPAL', 'ADMIN', 'ACCOUNTANT', 'STAFF', 'SUPER_ADMIN'] },
-    { id: 'fee_management', label: 'Fee & Payments', icon: CreditCard, roles: ['PRINCIPAL', 'ADMIN', 'ACCOUNTANT', 'STAFF', 'PARENT', 'SUPER_ADMIN'] },
-    { id: 'digital_books_ai', label: 'Digital Books & Question Bank', icon: BookOpen, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STUDENT', 'SUPER_ADMIN'] },
-    { id: 'homework_learning', label: 'Homework & Learning', icon: BookOpen, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT', 'SUPER_ADMIN'] },
-    { id: 'examination_ai', label: 'Exams & Test Papers', icon: FileQuestion, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT', 'SUPER_ADMIN'] },
-    { id: 'examination_result_engine', label: 'Results & CGPA', icon: Award, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT', 'SUPER_ADMIN'] },
-    { id: 'report_card_certs', label: 'Report Cards & Certs', icon: Award, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STAFF', 'PARENT', 'STUDENT', 'SUPER_ADMIN'] },
-    { id: 'attendance_timetable', label: 'Attendance & Leaves', icon: CalendarCheck, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STAFF', 'TRANSPORT', 'STUDENT', 'PARENT', 'SUPER_ADMIN'] },
-    { id: 'timetable_engine', label: 'Timetable & Scheduling', icon: CalendarCheck, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT', 'SUPER_ADMIN'] },
-    { id: 'payroll_expenses', label: 'Payroll & Expenses', icon: BadgePercent, roles: ['PRINCIPAL', 'ADMIN', 'ACCOUNTANT', 'SUPER_ADMIN'] },
-    { id: 'library_transport', label: 'Transport & Fleet', icon: Bus, roles: ['PRINCIPAL', 'ADMIN', 'ACCOUNTANT', 'STAFF', 'TRANSPORT', 'TEACHER', 'STUDENT', 'SUPER_ADMIN'] },
-    { id: 'website_builder', label: 'Website CMS & Portal', icon: Globe, roles: ['PRINCIPAL', 'ADMIN', 'SUPER_ADMIN'] },
-    { id: 'audit_trail', label: 'Audit Trail', icon: ShieldAlert, roles: ['PRINCIPAL', 'ADMIN', 'SUPER_ADMIN'] }
+    { id: 'principal_dashboard', label: t('principal_dashboard'), icon: LayoutDashboard, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'ACCOUNTANT', 'STAFF', 'TRANSPORT', 'PARENT', 'STUDENT', 'SUPER_ADMIN'] },
+    { id: 'school_setup', label: t('school_setup'), icon: Building2, roles: ['PRINCIPAL', 'ADMIN', 'SUPER_ADMIN'] },
+    { id: 'student_management', label: t('student_management'), icon: Users, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'ACCOUNTANT', 'STAFF', 'SUPER_ADMIN'] },
+    { id: 'admission_workflow', label: t('admission_workflow'), icon: UserPlus, roles: ['PRINCIPAL', 'ADMIN', 'ACCOUNTANT', 'STAFF', 'SUPER_ADMIN'] },
+    { id: 'fee_management', label: t('fee_management'), icon: CreditCard, roles: ['PRINCIPAL', 'ADMIN', 'ACCOUNTANT', 'STAFF', 'PARENT', 'SUPER_ADMIN'] },
+    { id: 'digital_books_ai', label: t('digital_books_ai'), icon: BookOpen, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STUDENT', 'SUPER_ADMIN'] },
+    { id: 'homework_learning', label: t('homework_learning'), icon: BookOpen, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT', 'SUPER_ADMIN'] },
+    { id: 'examination_ai', label: t('examination_ai'), icon: FileQuestion, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT', 'SUPER_ADMIN'] },
+    { id: 'examination_result_engine', label: t('examination_result_engine'), icon: Award, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT', 'SUPER_ADMIN'] },
+    { id: 'report_card_certs', label: t('report_card_certs'), icon: Award, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STAFF', 'PARENT', 'STUDENT', 'SUPER_ADMIN'] },
+    { id: 'attendance_timetable', label: t('attendance_timetable'), icon: CalendarCheck, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STAFF', 'TRANSPORT', 'STUDENT', 'PARENT', 'SUPER_ADMIN'] },
+    { id: 'timetable_engine', label: t('timetable_engine'), icon: CalendarCheck, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT', 'SUPER_ADMIN'] },
+    { id: 'payroll_expenses', label: t('payroll_expenses'), icon: BadgePercent, roles: ['PRINCIPAL', 'ADMIN', 'ACCOUNTANT', 'SUPER_ADMIN'] },
+    { id: 'library_transport', label: t('library_transport'), icon: Bus, roles: ['PRINCIPAL', 'ADMIN', 'ACCOUNTANT', 'STAFF', 'TRANSPORT', 'TEACHER', 'STUDENT', 'SUPER_ADMIN'] },
+    { id: 'school_marketplace', label: t('school_marketplace'), icon: ShoppingBag, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'ACCOUNTANT', 'STAFF', 'TRANSPORT', 'PARENT', 'STUDENT', 'SUPER_ADMIN'] },
+    { id: 'website_builder', label: t('website_builder'), icon: Globe, roles: ['PRINCIPAL', 'ADMIN', 'SUPER_ADMIN'] },
+    { id: 'audit_trail', label: t('audit_trail'), icon: ShieldAlert, roles: ['PRINCIPAL', 'ADMIN', 'SUPER_ADMIN'] }
   ];
 
   const visibleNavItems = navItems.filter((n) => n.roles.includes(currentRole));
@@ -171,7 +177,7 @@ export const Header: React.FC = () => {
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
           <input
             type="text"
-            placeholder="Search student, fee receipt, or exam paper..."
+            placeholder={t('search_placeholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-9 pr-4 py-2 rounded-xl text-xs bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
@@ -179,20 +185,62 @@ export const Header: React.FC = () => {
         </div>
 
         {/* Right Controls */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          {/* Quick School Store Access Button */}
+          <button
+            onClick={() => setActiveModule('school_marketplace')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm ${
+              activeModule === 'school_marketplace'
+                ? 'bg-emerald-600 text-white shadow-emerald-500/25 ring-2 ring-emerald-400'
+                : 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/50'
+            }`}
+            title={language === 'hi' ? 'स्कूल स्टोर एवं यूनिफॉर्म' : 'School Store & Uniform Marketplace'}
+          >
+            <ShoppingBag className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span className="hidden sm:inline font-extrabold">{language === 'hi' ? 'स्कूल स्टोर' : 'School Store'}</span>
+          </button>
+
+          {/* Language Selector: English / हिन्दी */}
+          <div className="flex items-center bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+            <button
+              type="button"
+              onClick={() => setLanguage('en')}
+              className={`px-2 py-1 rounded-lg text-xs font-bold transition-all ${
+                language === 'en'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+              }`}
+              title="Switch to English"
+            >
+              EN
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanguage('hi')}
+              className={`px-2 py-1 rounded-lg text-xs font-bold transition-all ${
+                language === 'hi'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+              }`}
+              title="हिन्दी में बदलें"
+            >
+              हिन्दी
+            </button>
+          </div>
+
           {/* SaaS Central / Switch School button */}
           <button
             onClick={returnToPublicSaas}
             className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-colors"
             title="Return to i2A SchoolOS SaaS Homepage / Switch School"
           >
-            <Sparkles className="w-3.5 h-3.5 text-indigo-500" /> SaaS Central
+            <Sparkles className="w-3.5 h-3.5 text-indigo-500" /> {t('saas_central')}
           </button>
 
           {/* Role Switcher */}
           <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
             <UserCheck className="h-4 w-4 text-indigo-500 ml-1.5 hidden lg:block" />
-            <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 hidden lg:block">View As:</span>
+            <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 hidden lg:block">{t('view_as')}</span>
             <select
               value={currentRole}
               onChange={(e) => handleRoleChange(e.target.value as UserRole)}

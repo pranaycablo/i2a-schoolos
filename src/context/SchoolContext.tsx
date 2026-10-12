@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { translate, AppLanguage } from '../utils/translations';
 import type {
   UserRole,
   SchoolBranding,
@@ -70,11 +71,14 @@ interface SchoolContextType {
   toggleSchoolSuspension: (schoolId: string) => void;
   returnToPublicSaas: () => void;
 
-  // Theme & Role
+  // Theme & Role & Language
   currentRole: UserRole;
   setCurrentRole: (role: UserRole) => void;
   darkMode: boolean;
   setDarkMode: (val: boolean) => void;
+  language: AppLanguage;
+  setLanguage: (lang: AppLanguage) => void;
+  t: (key: string) => string;
   activeModule: string;
   setActiveModule: (mod: string) => void;
 
@@ -704,6 +708,16 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [currentRole, setCurrentRole] = useState<UserRole>('PRINCIPAL');
   const [darkMode, setDarkMode] = useState<boolean>(() => localStorage.getItem('i2a_dark') === 'true');
   const [activeModule, setActiveModule] = useState<string>('principal_dashboard');
+  const [language, setLanguageState] = useState<AppLanguage>(() => {
+    return (localStorage.getItem('i2a_lang') as AppLanguage) || 'en';
+  });
+
+  const setLanguage = (lang: AppLanguage) => {
+    setLanguageState(lang);
+    localStorage.setItem('i2a_lang', lang);
+  };
+
+  const t = (key: string) => translate(key, language);
 
   const [branding, setBranding] = useState<SchoolBranding>(() => {
     const saved = localStorage.getItem('i2a_branding');
@@ -1363,6 +1377,9 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setCurrentRole,
         darkMode,
         setDarkMode,
+        language,
+        setLanguage,
+        t,
         activeModule,
         setActiveModule,
         branding,
