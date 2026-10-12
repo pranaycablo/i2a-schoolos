@@ -18,10 +18,24 @@ export const ReportCardCertificateModule: React.FC = () => {
   const { branding, students, examSubmissions } = useSchool();
 
   const [activeTab, setActiveTab] = useState<'REPORT_CARD' | 'ID_CARDS' | 'CERTIFICATES'>('REPORT_CARD');
-  const [selectedStudent, setSelectedStudent] = useState<Student>(students[0]);
+  const [selectedStudentId, setSelectedStudentId] = useState<string>(students[0]?.id || '');
   const [certificateType, setCertificateType] = useState<'BONAFIDE' | 'CHARACTER' | 'TC'>('BONAFIDE');
 
-  const studentSubmission = examSubmissions.find((s) => s.studentId === selectedStudent.id) || examSubmissions[0];
+  const activeStudent = students.find((s) => s.id === selectedStudentId) || students[0] || {
+    id: 'std-default',
+    name: 'Sample Student',
+    admissionNo: '1001',
+    rollNo: '01',
+    className: 'Class VIII',
+    section: 'A',
+    attendanceRate: 100,
+    photoUrl: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150&auto=format&fit=crop&q=80',
+    fatherName: 'Parent Guardian',
+    address: 'Campus Address',
+    parentMobile: '9876543210'
+  };
+
+  const studentSubmission = examSubmissions.find((s) => s.studentId === activeStudent.id) || examSubmissions[0];
 
   return (
     <div className="space-y-6 animate-fade-in pb-12">
@@ -72,8 +86,8 @@ export const ReportCardCertificateModule: React.FC = () => {
         <div className="flex items-center gap-3">
           <span className="font-semibold text-slate-500">Select Target Student:</span>
           <select
-            value={selectedStudent.id}
-            onChange={(e) => setSelectedStudent(students.find((s) => s.id === e.target.value) || students[0])}
+            value={activeStudent.id}
+            onChange={(e) => setSelectedStudentId(e.target.value)}
             className="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold text-slate-900 dark:text-white"
           >
             {students.map((s) => (
@@ -110,19 +124,19 @@ export const ReportCardCertificateModule: React.FC = () => {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-4 rounded-2xl text-xs">
             <div>
               <p className="text-slate-400 text-[10px]">Student Name:</p>
-              <p className="font-extrabold text-slate-900">{selectedStudent.name}</p>
+              <p className="font-extrabold text-slate-900">{activeStudent.name}</p>
             </div>
             <div>
               <p className="text-slate-400 text-[10px]">Adm No / Roll:</p>
-              <p className="font-bold">{selectedStudent.admissionNo} / {selectedStudent.rollNo}</p>
+              <p className="font-bold">{activeStudent.admissionNo} / {activeStudent.rollNo}</p>
             </div>
             <div>
               <p className="text-slate-400 text-[10px]">Class & Section:</p>
-              <p className="font-bold">{selectedStudent.className} - {selectedStudent.section}</p>
+              <p className="font-bold">{activeStudent.className} - {activeStudent.section}</p>
             </div>
             <div>
               <p className="text-slate-400 text-[10px]">Attendance Rate:</p>
-              <p className="font-bold text-emerald-600">{selectedStudent.attendanceRate}%</p>
+              <p className="font-bold text-emerald-600">{activeStudent.attendanceRate}%</p>
             </div>
           </div>
 
@@ -141,8 +155,8 @@ export const ReportCardCertificateModule: React.FC = () => {
                 <tr>
                   <td className="p-3 font-semibold">Science (Theory & Lab)</td>
                   <td className="p-3 text-center">100</td>
-                  <td className="p-3 text-center font-bold">{studentSubmission.score * 3}</td>
-                  <td className="p-3 text-center font-extrabold text-indigo-600">{studentSubmission.grade}</td>
+                  <td className="p-3 text-center font-bold">{(studentSubmission?.score || 28) * 3}</td>
+                  <td className="p-3 text-center font-extrabold text-indigo-600">{studentSubmission?.grade || 'A+'}</td>
                 </tr>
                 <tr>
                   <td className="p-3 font-semibold">Mathematics</td>
@@ -170,7 +184,7 @@ export const ReportCardCertificateModule: React.FC = () => {
           <div className="bg-indigo-50 p-4 rounded-2xl border border-indigo-100 text-xs space-y-1">
             <p className="font-bold text-indigo-900">Principal Remarks:</p>
             <p className="text-slate-700 italic">
-              "{selectedStudent.name} has shown outstanding analytical skills and regular attendance. Promoted to next academic session!"
+              "{activeStudent.name} has shown outstanding analytical skills and regular attendance. Promoted to next academic session!"
             </p>
           </div>
 
@@ -202,15 +216,15 @@ export const ReportCardCertificateModule: React.FC = () => {
             </div>
 
             <div className="p-6 text-center space-y-3">
-              <img src={selectedStudent.photoUrl} alt="Photo" className="h-24 w-24 rounded-2xl mx-auto object-cover ring-4 ring-indigo-500/20" />
+              <img src={activeStudent.photoUrl} alt="Photo" className="h-24 w-24 rounded-2xl mx-auto object-cover ring-4 ring-indigo-500/20" />
               <div>
-                <h3 className="font-extrabold text-base text-slate-900">{selectedStudent.name}</h3>
-                <p className="text-xs font-bold text-indigo-600">Class: {selectedStudent.className}-{selectedStudent.section}</p>
+                <h3 className="font-extrabold text-base text-slate-900">{activeStudent.name}</h3>
+                <p className="text-xs font-bold text-indigo-600">Class: {activeStudent.className}-{activeStudent.section}</p>
               </div>
 
               <div className="text-[11px] text-slate-600 text-left bg-slate-50 p-3 rounded-xl space-y-1">
-                <p><b>Adm No:</b> {selectedStudent.admissionNo}</p>
-                <p><b>Parent Mobile:</b> {selectedStudent.parentMobile}</p>
+                <p><b>Adm No:</b> {activeStudent.admissionNo}</p>
+                <p><b>Parent Mobile:</b> {activeStudent.parentMobile}</p>
                 <p><b>Blood Group:</b> O+ (Verified)</p>
                 <p><b>Emergency:</b> {branding.phone}</p>
               </div>
@@ -226,7 +240,7 @@ export const ReportCardCertificateModule: React.FC = () => {
             BONAFIDE CERTIFICATE
           </h2>
           <p className="text-xs text-slate-600 leading-relaxed px-6">
-            This is to certify that <b>{selectedStudent.name}</b>, Son/Daughter of <b>{selectedStudent.fatherName}</b>, residing at <b>{selectedStudent.address}</b>, is a bona fide student of <b>{branding.name}</b> studying in <b>{selectedStudent.className}</b> under Admission No. <b>{selectedStudent.admissionNo}</b> during the academic session {branding.academicSession}.
+            This is to certify that <b>{activeStudent.name}</b>, Son/Daughter of <b>{activeStudent.fatherName}</b>, residing at <b>{activeStudent.address}</b>, is a bona fide student of <b>{branding.name}</b> studying in <b>{activeStudent.className}</b> under Admission No. <b>{activeStudent.admissionNo}</b> during the academic session {branding.academicSession}.
           </p>
 
           <div className="pt-8 flex justify-between text-xs px-6">

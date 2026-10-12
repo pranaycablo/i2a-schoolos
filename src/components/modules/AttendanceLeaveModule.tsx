@@ -47,7 +47,7 @@ export const AttendanceLeaveModule: React.FC = () => {
   // Filters & State
   const [selectedClass, setSelectedClass] = useState('Class VIII');
   const [selectedSection, setSelectedSection] = useState('Section A');
-  const [selectedDate, setSelectedDate] = useState('2026-10-08');
+  const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0]);
 
   // Roster state for student marking
   const [attendanceMap, setAttendanceMap] = useState<{ [stdId: string]: { status: AttendanceStatusCode; remarks: string } }>({});

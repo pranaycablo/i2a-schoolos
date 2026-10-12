@@ -92,7 +92,7 @@ export const StudentManagementModule: React.FC = () => {
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
           <span className="text-xs font-semibold text-slate-500 shrink-0">Class Filter:</span>
-          {['ALL', 'Class VIII', 'Class X'].map((cls) => (
+          {['ALL', ...Array.from(new Set(students.map((s) => s.className).filter(Boolean)))].map((cls) => (
             <button
               key={cls}
               onClick={() => setSelectedClass(cls)}

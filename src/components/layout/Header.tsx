@@ -89,8 +89,28 @@ export const Header: React.FC = () => {
 
   const visibleNavItems = navItems.filter((n) => n.roles.includes(currentRole));
 
+  const handleRoleChange = (newRole: UserRole) => {
+    setCurrentRole(newRole);
+    if (newRole === 'STUDENT') {
+      setActiveModule('digital_books_ai');
+    } else if (newRole === 'PARENT') {
+      setActiveModule('fee_management');
+    } else if (newRole === 'TRANSPORT') {
+      setActiveModule('library_transport');
+    } else if (newRole === 'ACCOUNTANT') {
+      setActiveModule('fee_management');
+    } else if (newRole === 'TEACHER') {
+      setActiveModule('attendance_timetable');
+    } else if (newRole === 'STAFF') {
+      setActiveModule('student_management');
+    } else {
+      setActiveModule('principal_dashboard');
+    }
+  };
+
   return (
     <header className="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
+
       {/* Expired / Suspended Subscription Alert Banner */}
       {isSubscriptionExpired && (
         <div className="bg-rose-600 text-white px-4 py-2 text-center text-xs font-bold flex items-center justify-center gap-2">
@@ -175,7 +195,7 @@ export const Header: React.FC = () => {
             <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 hidden lg:block">View As:</span>
             <select
               value={currentRole}
-              onChange={(e) => setCurrentRole(e.target.value as UserRole)}
+              onChange={(e) => handleRoleChange(e.target.value as UserRole)}
               className="bg-transparent text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none cursor-pointer pr-1"
             >
               {roles.map((r) => (

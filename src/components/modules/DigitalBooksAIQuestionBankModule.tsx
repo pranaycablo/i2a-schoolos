@@ -53,7 +53,8 @@ export const DigitalBooksAIQuestionBankModule: React.FC = () => {
     marks: 1
   });
 
-  const activeChapter = selectedBook?.chapters.find((c) => c.id === selectedChapterId) || selectedBook?.chapters[0];
+  const currentBook = selectedBook || digitalBooks[0];
+  const activeChapter = currentBook?.chapters?.find((c) => c.id === selectedChapterId) || currentBook?.chapters?.[0];
 
   const handleGeneratePaper = (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,13 +148,13 @@ export const DigitalBooksAIQuestionBankModule: React.FC = () => {
                 <span className="text-[10px] font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950 px-2.5 py-0.5 rounded-full uppercase">
                   AI OCR & Concept Reader Engine
                 </span>
-                <h3 className="text-base font-extrabold text-slate-900 dark:text-white mt-1">{selectedBook?.title}</h3>
+                <h3 className="text-base font-extrabold text-slate-900 dark:text-white mt-1">{currentBook?.title}</h3>
               </div>
             </div>
 
             {/* Chapters Pills */}
             <div className="flex gap-2 overflow-x-auto pb-1">
-              {selectedBook?.chapters.map((ch) => (
+              {currentBook?.chapters?.map((ch) => (
                 <button
                   key={ch.id}
                   onClick={() => setSelectedChapterId(ch.id)}

@@ -22,9 +22,12 @@ export const ExaminationModule: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'CALENDAR' | 'ONLINE_EXAM_TEST' | 'TEACHER_GRADING'>('CALENDAR');
 
   // Interactive Exam State for Student Mode
-  const [activePaper, setActivePaper] = useState<ExamPaper>(examPapers[0]);
+  const [activePaper, setActivePaper] = useState<ExamPaper | null>(examPapers[0] || null);
   const [studentAnswers, setStudentAnswers] = useState<{ [qId: string]: string }>({});
   const [examSubmitted, setExamSubmitted] = useState(false);
+
+  const currentPaper = activePaper || examPapers[0] || null;
+  const currentStudent = students[0] || { id: 'std-101', name: 'Student', className: 'Class VIII', section: 'A' };
 
   // Teacher Grading Workspace State
   const [selectedSubmission, setSelectedSubmission] = useState<OnlineExamSubmission | null>(examSubmissions[0] || null);
@@ -38,20 +41,21 @@ export const ExaminationModule: React.FC = () => {
   ];
 
   const handleStudentSubmitExam = () => {
-    const formattedAns = activePaper.questions.map((q) => ({
+    if (!currentPaper) return;
+    const formattedAns = (currentPaper.questions || []).map((q) => ({
       questionId: q.id,
       studentAnswer: studentAnswers[q.id] || '',
       marksObtained: 0
     }));
 
     submitStudentExam({
-      examPaperId: activePaper.id,
-      examTitle: activePaper.paperTitle,
-      studentId: students[0].id,
-      studentName: students[0].name,
-      className: students[0].className,
-      section: students[0].section,
-      totalMarks: activePaper.totalMarks,
+      examPaperId: currentPaper.id,
+      examTitle: currentPaper.paperTitle,
+      studentId: currentStudent.id,
+      studentName: currentStudent.name,
+      className: currentStudent.className,
+      section: currentStudent.section,
+      totalMarks: currentPaper.totalMarks,
       answers: formattedAns
     });
 
@@ -155,13 +159,19 @@ export const ExaminationModule: React.FC = () => {
               </button>
             </div>
           ) : (
+            !currentPaper ? (
+              <div className="py-12 text-center text-slate-500">
+                <p className="font-bold">No exam papers found for online simulator.</p>
+                <p className="text-xs mt-1">Please approve or create an exam paper in the Digital Books & AI Question Bank module.</p>
+              </div>
+            ) : (
             <div className="space-y-6">
               {/* Exam Header */}
               <div className="flex items-center justify-between bg-indigo-900 text-white p-5 rounded-2xl">
                 <div>
-                  <h3 className="font-extrabold text-base">{activePaper.paperTitle}</h3>
+                  <h3 className="font-extrabold text-base">{currentPaper.paperTitle}</h3>
                   <p className="text-xs text-indigo-200">
-                    Student: <b>{students[0]?.name}</b> • Class: <b>{activePaper.className}</b>
+                    Student: <b>{currentStudent.name}</b> • Class: <b>{currentPaper.className}</b>
                   </p>
                 </div>
                 <div className="bg-white/10 px-4 py-2 rounded-xl backdrop-blur-sm flex items-center gap-2 text-amber-300 font-mono text-sm font-bold">
@@ -171,7 +181,7 @@ export const ExaminationModule: React.FC = () => {
 
               {/* Question Paper Interactive Form */}
               <div className="space-y-6 text-xs">
-                {activePaper.questions.map((q, idx) => (
+                {(currentPaper.questions || []).map((q, idx) => (
                   <div key={q.id} className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3">
                     <div className="flex justify-between items-start font-bold text-sm text-slate-900 dark:text-white">
                       <span>Q{idx + 1}. {q.questionText}</span>
@@ -220,6 +230,7 @@ export const ExaminationModule: React.FC = () => {
                 <CheckCircle2 className="w-4 h-4" /> Submit Exam & Auto-Evaluate
               </button>
             </div>
+            )
           )}
         </div>
       )}
