@@ -16,7 +16,9 @@ import type {
   Staff,
   PayrollRecord,
   SchoolExpense,
-  AuditLog
+  AuditLog,
+  SystemNotification,
+  DispatchedEmailPayload
 } from '../types';
 
 export interface SubscriptionPlan {
@@ -147,6 +149,23 @@ interface SchoolContextType {
 
   // Helper actions
   resetSeedData: () => void;
+
+  // Automated Credentials & Notification Engine
+  notifications: SystemNotification[];
+  markNotificationAsRead: (id: string) => void;
+  clearAllNotifications: () => void;
+  dispatchCredentialsNotification: (params: {
+    recipientType: 'SCHOOL' | 'STAFF' | 'STUDENT' | 'PARENT';
+    recipientName: string;
+    recipientEmail: string;
+    recipientPhone?: string;
+    schoolName?: string;
+    schoolId?: string;
+    role: string;
+    loginId: string;
+    username: string;
+    password?: string;
+  }) => SystemNotification;
 }
 
 // Initial Realistic Seed Data
@@ -691,6 +710,59 @@ const initialTransportRoutes: TransportRouteItem[] = [
   }
 ];
 
+const initialSystemNotifications: SystemNotification[] = [
+  {
+    id: 'notif-1',
+    type: 'SCHOOL_CREDENTIALS',
+    title: 'School Credentials Dispatched: ABC Public School',
+    message: 'Login credentials and Mobile WebApp access link dispatched to info@abcpublicschool.edu.in for Principal Dr. Ramesh Chandra Sharma.',
+    recipientEmail: 'info@abcpublicschool.edu.in',
+    recipientName: 'Dr. Ramesh Chandra Sharma',
+    recipientRole: 'PRINCIPAL',
+    timestamp: 'Just now',
+    read: false,
+    emailPayload: {
+      to: 'info@abcpublicschool.edu.in',
+      recipientName: 'Dr. Ramesh Chandra Sharma',
+      subject: 'Welcome to i2A SchoolOS — Your Campus Credentials & WebApp Access',
+      schoolName: 'ABC Public School',
+      schoolId: 'I2A-SCH-000001',
+      role: 'PRINCIPAL',
+      loginId: 'I2A-SCH-000001',
+      username: 'info@abcpublicschool.edu.in',
+      password: 'Admin@2026#Secure',
+      loginUrl: 'https://pranaycablo.github.io/i2a-schoolos/',
+      webAppDownloadUrl: 'https://pranaycablo.github.io/i2a-schoolos/',
+      dispatchedAt: '2026-10-12 18:30 IST'
+    }
+  },
+  {
+    id: 'notif-2',
+    type: 'STUDENT_CREDENTIALS',
+    title: 'Student & Parent Credentials Dispatched: Rahul Kumar',
+    message: 'Portal access ID & default password sent to sanjay.kumar@gmail.com for Class VIII-A with PWA download link.',
+    recipientEmail: 'sanjay.kumar@gmail.com',
+    recipientName: 'Rahul Kumar (Ward of Sanjay Kumar)',
+    recipientRole: 'STUDENT',
+    timestamp: '10 mins ago',
+    read: false,
+    emailPayload: {
+      to: 'sanjay.kumar@gmail.com',
+      recipientName: 'Rahul Kumar (Parent: Sanjay Kumar)',
+      subject: 'i2A SchoolOS Student & Parent Portal Credentials & WebApp Download',
+      schoolName: 'ABC Public School',
+      schoolId: 'I2A-SCH-000001',
+      role: 'STUDENT & PARENT',
+      loginId: 'std-1024 / Adm #1024',
+      username: '9876543210',
+      password: 'Student@2026',
+      loginUrl: 'https://pranaycablo.github.io/i2a-schoolos/',
+      webAppDownloadUrl: 'https://pranaycablo.github.io/i2a-schoolos/',
+      dispatchedAt: '2026-10-12 18:20 IST'
+    }
+  }
+];
+
 const SchoolContext = createContext<SchoolContextType | undefined>(undefined);
 
 export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -760,6 +832,75 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const saved = localStorage.getItem('i2a_transport_routes');
     return saved ? JSON.parse(saved) : initialTransportRoutes;
   });
+
+  const [notifications, setNotifications] = useState<SystemNotification[]>(() => {
+    const saved = localStorage.getItem('i2a_notifications');
+    return saved ? JSON.parse(saved) : initialSystemNotifications;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('i2a_notifications', JSON.stringify(notifications));
+  }, [notifications]);
+
+  const markNotificationAsRead = (id: string) => {
+    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
+  };
+
+  const clearAllNotifications = () => {
+    setNotifications([]);
+  };
+
+  const dispatchCredentialsNotification = (params: {
+    recipientType: 'SCHOOL' | 'STAFF' | 'STUDENT' | 'PARENT';
+    recipientName: string;
+    recipientEmail: string;
+    recipientPhone?: string;
+    schoolName?: string;
+    schoolId?: string;
+    role: string;
+    loginId: string;
+    username: string;
+    password?: string;
+  }): SystemNotification => {
+    const pwd = params.password || 'Welcome@2026';
+    const schoolTitle = params.schoolName || branding.name;
+    const schId = params.schoolId || activeTenant?.id || 'I2A-SCH-000001';
+
+    const emailPayload: DispatchedEmailPayload = {
+      to: params.recipientEmail,
+      recipientName: params.recipientName,
+      subject: `Official Login Credentials & WebApp Access — ${schoolTitle} (i2A SchoolOS)`,
+      schoolName: schoolTitle,
+      schoolId: schId,
+      role: params.role,
+      loginId: params.loginId,
+      username: params.username,
+      password: pwd,
+      loginUrl: 'https://pranaycablo.github.io/i2a-schoolos/',
+      webAppDownloadUrl: 'https://pranaycablo.github.io/i2a-schoolos/',
+      dispatchedAt: new Date().toLocaleString('en-IN')
+    };
+
+    const newNotif: SystemNotification = {
+      id: `notif-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      type: params.recipientType === 'SCHOOL' ? 'SCHOOL_CREDENTIALS' : params.recipientType === 'STAFF' ? 'STAFF_CREDENTIALS' : 'STUDENT_CREDENTIALS',
+      title: params.recipientType === 'SCHOOL'
+        ? `School Credentials Dispatched: ${schoolTitle}`
+        : params.recipientType === 'STAFF'
+        ? `Staff Credentials Dispatched: ${params.recipientName}`
+        : `Student & Parent Credentials Dispatched: ${params.recipientName}`,
+      message: `Login ID (${params.loginId}), password, and WebApp access link dispatched to ${params.recipientEmail}.`,
+      recipientEmail: params.recipientEmail,
+      recipientName: params.recipientName,
+      recipientRole: params.role,
+      timestamp: 'Just now',
+      read: false,
+      emailPayload
+    };
+
+    setNotifications((prev) => [newNotif, ...prev]);
+    return newNotif;
+  };
 
   // Sync dark mode
   useEffect(() => {
@@ -832,6 +973,22 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     };
     setStudents((prev) => [...prev, newStudent]);
     logAction('ADD_STUDENT', 'STUDENT_MANAGEMENT', `Created digital profile for ${newStudent.name}`);
+
+    // Auto-dispatch credentials & mobile webapp link to student & parent email
+    if (newStudent.parentEmail) {
+      dispatchCredentialsNotification({
+        recipientType: 'STUDENT',
+        recipientName: `${newStudent.name} (Parent: ${newStudent.fatherName || 'Parent'})`,
+        recipientEmail: newStudent.parentEmail,
+        recipientPhone: newStudent.parentMobile,
+        schoolName: branding.name,
+        schoolId: branding.id,
+        role: 'STUDENT & PARENT',
+        loginId: newStudent.admissionNo,
+        username: newStudent.parentMobile || newStudent.admissionNo,
+        password: 'Student@2026'
+      });
+    }
   };
 
   const updateStudent = (id: string, updated: Partial<Student>) => {
@@ -892,6 +1049,22 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     setStudents((prev) => [...prev, newStudent]);
     setAdmissions((prev) => prev.map((a) => (a.id === id ? { ...a, status: 'ENROLLED', approvedBy: branding.principalName } : a)));
+
+    // Auto-dispatch credentials & mobile webapp link to admitted student & parent email
+    if (app.email) {
+      dispatchCredentialsNotification({
+        recipientType: 'STUDENT',
+        recipientName: `${app.studentName} (Parent: ${app.parentName})`,
+        recipientEmail: app.email,
+        recipientPhone: app.phone,
+        schoolName: branding.name,
+        schoolId: branding.id,
+        role: 'STUDENT & PARENT',
+        loginId: newAdmissionNo,
+        username: app.phone || newAdmissionNo,
+        password: 'Student@2026'
+      });
+    }
 
     logAction(
       'ZERO_MANUAL_ADMISSION_AUTOMATION',
@@ -1136,6 +1309,21 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setBranding(newBranding);
 
     logAction('REGISTER_SCHOOL', 'PLATFORM', `New school registered: ${params.name} (School ID: ${newSchoolId})`);
+
+    // Auto-dispatch School Credentials & Mobile WebApp access link to School Principal/Admin email
+    dispatchCredentialsNotification({
+      recipientType: 'SCHOOL',
+      recipientName: params.adminName,
+      recipientEmail: params.adminEmail,
+      recipientPhone: params.adminPhone,
+      schoolName: params.name,
+      schoolId: newSchoolId,
+      role: 'PRINCIPAL',
+      loginId: newSchoolId,
+      username: params.adminEmail,
+      password: 'Admin@2026#Launch'
+    });
+
     return newTenant;
   };
 
@@ -1419,7 +1607,11 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         addTransportRoute,
         updateTransportStatus,
         submitSchoolAdmission,
-        resetSeedData
+        resetSeedData,
+        notifications,
+        markNotificationAsRead,
+        clearAllNotifications,
+        dispatchCredentialsNotification
       }}
     >
       {children}

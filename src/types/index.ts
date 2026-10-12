@@ -1056,3 +1056,31 @@ export interface SubscriptionTrialNotification {
   deliveryChannel: 'IN_APP' | 'EMAIL_NOT_CONFIGURED' | 'SMS_NOT_CONFIGURED';
   createdAt: string;
 }
+
+export interface DispatchedEmailPayload {
+  to: string;
+  recipientName: string;
+  subject: string;
+  schoolName: string;
+  schoolId: string;
+  role: string;
+  loginId: string;
+  username: string;
+  password: string;
+  loginUrl: string;
+  webAppDownloadUrl: string;
+  dispatchedAt: string;
+}
+
+export interface SystemNotification {
+  id: string;
+  type: 'SCHOOL_CREDENTIALS' | 'STAFF_CREDENTIALS' | 'STUDENT_CREDENTIALS' | 'ADMISSION_APPROVAL' | 'EXAM_PAPER_REVIEW';
+  title: string;
+  message: string;
+  recipientEmail: string;
+  recipientName: string;
+  recipientRole: string;
+  timestamp: string;
+  read: boolean;
+  emailPayload?: DispatchedEmailPayload;
+}

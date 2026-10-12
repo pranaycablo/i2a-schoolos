@@ -32,8 +32,14 @@ import {
   Languages,
   ChevronDown,
   PlusCircle,
-  Check
+  Check,
+  Copy,
+  ExternalLink,
+  Download,
+  MailCheck,
+  CheckCheck
 } from 'lucide-react';
+import type { DispatchedEmailPayload } from '../../types';
 
 export const Header: React.FC = () => {
   const {
@@ -54,10 +60,15 @@ export const Header: React.FC = () => {
     examPapers,
     language,
     setLanguage,
-    t
+    t,
+    notifications,
+    markNotificationAsRead,
+    clearAllNotifications
   } = useSchool();
 
   const [showNotifications, setShowNotifications] = useState(false);
+  const [activeEmailModal, setActiveEmailModal] = useState<DispatchedEmailPayload | null>(null);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSchoolDropdown, setShowSchoolDropdown] = useState(false);
@@ -73,10 +84,17 @@ export const Header: React.FC = () => {
   });
   const [schoolCreationMsg, setSchoolCreationMsg] = useState('');
 
-  // Pending approval counts for Safety/Liability Control
+  const copyToClipboard = (text: string, field: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(field);
+    setTimeout(() => setCopiedField(null), 2500);
+  };
+
+  // Pending approval counts and unread credential dispatches
   const pendingAdmissions = admissions.filter((a) => a.status === 'INTERVIEW_SCHEDULED' || a.status === 'SUBMITTED').length;
   const pendingExamPapers = examPapers.filter((e) => e.status === 'AI_DRAFT' || e.status === 'TEACHER_REVIEW').length;
-  const totalPendingNotifications = pendingAdmissions + pendingExamPapers;
+  const unreadCredentialNotifications = notifications.filter((n) => !n.read).length;
+  const totalPendingNotifications = pendingAdmissions + pendingExamPapers + unreadCredentialNotifications;
 
   const isSubscriptionExpired = activeTenant?.subscriptionStatus === 'EXPIRED' || activeTenant?.subscriptionStatus === 'SUSPENDED';
 
@@ -358,18 +376,92 @@ export const Header: React.FC = () => {
 
             {/* Notification Dropdown */}
             {showNotifications && (
-              <div className="absolute right-0 mt-2 w-80 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-4 z-50 animate-fade-in">
+              <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-4 z-50 animate-fade-in space-y-3">
                 <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                   <div className="flex items-center gap-2">
                     <ShieldCheck className="h-4 w-4 text-emerald-500" />
-                    <h3 className="font-bold text-xs text-slate-900 dark:text-white">Controlled Approval Center</h3>
+                    <h3 className="font-extrabold text-xs text-slate-900 dark:text-white">
+                      {language === 'hi' ? 'सूचना एवं प्रेषण केंद्र (Dispatch Center)' : 'Controlled Dispatch & Alert Center'}
+                    </h3>
                   </div>
-                  <span className="text-[10px] font-semibold text-amber-600 bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 rounded-full">
-                    {totalPendingNotifications} Pending
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-semibold text-amber-600 bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 rounded-full">
+                      {totalPendingNotifications} {language === 'hi' ? 'लंबित' : 'Pending'}
+                    </span>
+                    {notifications.length > 0 && (
+                      <button
+                        onClick={clearAllNotifications}
+                        className="text-[10px] font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                        title="Clear all dispatches"
+                      >
+                        {language === 'hi' ? 'साफ़ करें' : 'Clear'}
+                      </button>
+                    )}
+                  </div>
                 </div>
 
-                <div className="py-2 space-y-2.5 max-h-64 overflow-y-auto">
+                <div className="py-1 space-y-2.5 max-h-80 overflow-y-auto">
+                  {/* Automated Credential Dispatch Notifications */}
+                  {notifications.map((notif) => (
+                    <div
+                      key={notif.id}
+                      className={`p-3 rounded-2xl border text-xs transition-all ${
+                        notif.read
+                          ? 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700'
+                          : 'bg-indigo-50/70 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-800 ring-1 ring-indigo-400/20'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="space-y-1 flex-1">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span
+                              className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${
+                                notif.type === 'SCHOOL_CREDENTIALS'
+                                  ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
+                                  : notif.type === 'STAFF_CREDENTIALS'
+                                  ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                                  : 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300'
+                              }`}
+                            >
+                              {notif.type === 'SCHOOL_CREDENTIALS'
+                                ? '🏫 स्कूल ID/PW'
+                                : notif.type === 'STAFF_CREDENTIALS'
+                                ? '👩‍🏫 स्टाफ ID/PW'
+                                : '🎓 छात्र/अभिभावक ID/PW'}
+                            </span>
+                            <span className="text-[10px] text-slate-400 font-semibold">{notif.timestamp}</span>
+                          </div>
+                          <p className="font-extrabold text-slate-900 dark:text-white text-xs leading-snug">
+                            {notif.title}
+                          </p>
+                          <p className="text-[11px] text-slate-500 leading-tight">
+                            {notif.message}
+                          </p>
+                        </div>
+                      </div>
+
+                      {notif.emailPayload && (
+                        <div className="mt-2.5 pt-2 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between">
+                          <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                            <MailCheck className="w-3 h-3" />
+                            {language === 'hi' ? 'ईमेल प्रेषित' : 'Email Dispatched'}
+                          </span>
+                          <button
+                            onClick={() => {
+                              setActiveEmailModal(notif.emailPayload!);
+                              markNotificationAsRead(notif.id);
+                            }}
+                            className="px-2.5 py-1 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[10px] shadow-sm flex items-center gap-1"
+                          >
+                            <ExternalLink className="w-3 h-3" />
+                            {language === 'hi' ? 'ईमेल व पासवर्ड देखें' : 'View Credentials'}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  {/* Pending Admissions */}
                   {pendingAdmissions > 0 && (
                     <div className="p-2.5 rounded-xl bg-amber-50/60 dark:bg-amber-950/30 border border-amber-200/50 dark:border-amber-800/40">
                       <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300 font-medium text-xs">
@@ -381,6 +473,7 @@ export const Header: React.FC = () => {
                     </div>
                   )}
 
+                  {/* Pending Exam Papers */}
                   {pendingExamPapers > 0 && (
                     <div className="p-2.5 rounded-xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-200/50 dark:border-indigo-800/40">
                       <div className="flex items-center gap-2 text-indigo-800 dark:text-indigo-300 font-medium text-xs">
@@ -628,6 +721,245 @@ export const Header: React.FC = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Official Credentials Dispatch & WebApp Access Email Modal */}
+      {activeEmailModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/75 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-0 overflow-hidden max-h-[92vh] flex flex-col">
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-indigo-700 via-indigo-800 to-purple-800 text-white p-5 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-emerald-300">
+                  <MailCheck className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                      ✓ SMTP DISPATCHED
+                    </span>
+                    <span className="text-[10px] font-bold text-indigo-200">
+                      {activeEmailModal.dispatchedAt}
+                    </span>
+                  </div>
+                  <h3 className="font-extrabold text-base sm:text-lg text-white mt-0.5">
+                    {language === 'hi' ? 'आधिकारिक प्रेषण: आईडी, पासवर्ड व वेबऐप लिंक' : 'Official Credentials & WebApp Access Email'}
+                  </h3>
+                </div>
+              </div>
+              <button
+                onClick={() => setActiveEmailModal(null)}
+                className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white/80 hover:text-white transition-all"
+                title="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Email Body & Credentials */}
+            <div className="p-6 space-y-5 overflow-y-auto text-xs flex-1">
+              {/* Email Envelope Meta Details */}
+              <div className="bg-slate-50 dark:bg-slate-800/60 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 space-y-2">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-2 border-slate-200/60 dark:border-slate-700/60">
+                  <div className="flex items-center gap-2">
+                    <span className="text-slate-400 font-bold uppercase text-[10px]">From:</span>
+                    <span className="font-mono text-slate-800 dark:text-slate-200 font-bold">
+                      noreply@schoolos.in (i2A SchoolOS Automated Gateway)
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300">
+                    {activeEmailModal.role} Access
+                  </span>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-slate-400 font-bold uppercase text-[10px]">To:</span>
+                  <span className="font-bold text-slate-900 dark:text-white">
+                    {activeEmailModal.recipientName}
+                  </span>
+                  <span className="font-mono text-indigo-600 dark:text-indigo-400">
+                    &lt;{activeEmailModal.to}&gt;
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-slate-400 font-bold uppercase text-[10px]">Subject:</span>
+                  <span className="font-extrabold text-slate-900 dark:text-white">
+                    {activeEmailModal.subject}
+                  </span>
+                </div>
+              </div>
+
+              {/* Salutation & School Note */}
+              <div className="p-4 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/40 text-slate-700 dark:text-slate-300 space-y-1.5 leading-relaxed">
+                <p className="font-bold text-slate-900 dark:text-white">
+                  {language === 'hi'
+                    ? `नमस्ते ${activeEmailModal.recipientName},`
+                    : `Dear ${activeEmailModal.recipientName},`}
+                </p>
+                <p>
+                  {language === 'hi'
+                    ? `आपको ${activeEmailModal.schoolName} (ID: ${activeEmailModal.schoolId}) के i2A SchoolOS पोर्टल और मोबाइल वेबऐप का आधिकारिक लॉगिन व सुरक्षा पासवर्ड प्रेषित किया गया है।`
+                    : `You have been registered for ${activeEmailModal.schoolName} (ID: ${activeEmailModal.schoolId}). Below are your official login credentials and direct WebApp download instructions.`}
+                </p>
+              </div>
+
+              {/* Credentials Card (with 1-click copy) */}
+              <div className="bg-slate-900 dark:bg-black rounded-2xl p-5 border border-slate-800 text-white shadow-xl space-y-3">
+                <div className="flex items-center justify-between border-b pb-2.5 border-slate-800">
+                  <span className="text-[11px] font-extrabold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4" />
+                    {language === 'hi' ? 'गोपनीय लॉगिन विवरण (Login Credentials)' : 'Confidential Login Credentials'}
+                  </span>
+                  <span className="text-[10px] text-slate-400">
+                    Role: <strong className="text-white">{activeEmailModal.role}</strong>
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  {/* School ID */}
+                  <div className="bg-slate-800/80 rounded-xl p-3 border border-slate-700 flex items-center justify-between">
+                    <div>
+                      <div className="text-[10px] text-slate-400 uppercase font-bold">School ID / कोड</div>
+                      <div className="font-mono text-sm font-bold text-white mt-0.5">{activeEmailModal.schoolId}</div>
+                    </div>
+                    <button
+                      onClick={() => copyToClipboard(activeEmailModal.schoolId, 'schoolId')}
+                      className="p-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200"
+                      title="Copy School ID"
+                    >
+                      {copiedField === 'schoolId' ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                    </button>
+                  </div>
+
+                  {/* Login ID */}
+                  <div className="bg-slate-800/80 rounded-xl p-3 border border-slate-700 flex items-center justify-between">
+                    <div>
+                      <div className="text-[10px] text-slate-400 uppercase font-bold">Login ID / रोल कोड</div>
+                      <div className="font-mono text-sm font-bold text-white mt-0.5">{activeEmailModal.loginId}</div>
+                    </div>
+                    <button
+                      onClick={() => copyToClipboard(activeEmailModal.loginId, 'loginId')}
+                      className="p-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200"
+                      title="Copy Login ID"
+                    >
+                      {copiedField === 'loginId' ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                    </button>
+                  </div>
+
+                  {/* Username / Email */}
+                  <div className="bg-slate-800/80 rounded-xl p-3 border border-slate-700 flex items-center justify-between">
+                    <div>
+                      <div className="text-[10px] text-slate-400 uppercase font-bold">Username / रजिस्टर्ड ईमेल</div>
+                      <div className="font-mono text-xs font-bold text-indigo-300 mt-0.5 truncate max-w-[170px]">{activeEmailModal.username}</div>
+                    </div>
+                    <button
+                      onClick={() => copyToClipboard(activeEmailModal.username, 'username')}
+                      className="p-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200"
+                      title="Copy Username"
+                    >
+                      {copiedField === 'username' ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                    </button>
+                  </div>
+
+                  {/* Password */}
+                  <div className="bg-slate-800/80 rounded-xl p-3 border border-amber-500/30 flex items-center justify-between">
+                    <div>
+                      <div className="text-[10px] text-amber-400 uppercase font-bold">Password / पासवर्ड</div>
+                      <div className="font-mono text-sm font-extrabold text-amber-300 mt-0.5 tracking-wide">{activeEmailModal.password}</div>
+                    </div>
+                    <button
+                      onClick={() => copyToClipboard(activeEmailModal.password, 'password')}
+                      className="p-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300"
+                      title="Copy Password"
+                    >
+                      {copiedField === 'password' ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="text-[11px] text-slate-400 pt-1 flex items-center justify-between">
+                  <span>🔒 {language === 'hi' ? 'सुरक्षा हेतु पहले लॉगिन के बाद पासवर्ड बदल लें।' : 'For security, please change your password after initial login.'}</span>
+                  <button
+                    onClick={() => {
+                      const allText = `School: ${activeEmailModal.schoolName}\nSchool ID: ${activeEmailModal.schoolId}\nLogin ID: ${activeEmailModal.loginId}\nUsername: ${activeEmailModal.username}\nPassword: ${activeEmailModal.password}\nWebApp URL: ${activeEmailModal.webAppDownloadUrl}`;
+                      copyToClipboard(allText, 'all');
+                    }}
+                    className="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+                  >
+                    {copiedField === 'all' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    {language === 'hi' ? 'सब कॉपी करें' : 'Copy All'}
+                  </button>
+                </div>
+              </div>
+
+              {/* WebApp Download & Installation Instructions */}
+              <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/40 rounded-2xl p-4 space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 rounded-xl bg-emerald-600 text-white">
+                    <Download className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="font-extrabold text-slate-900 dark:text-white text-xs sm:text-sm">
+                      {language === 'hi' ? '📱 i2A SchoolOS WebApp डाउनलोड व इंस्टाल गाइड' : '📱 i2A SchoolOS Mobile WebApp Install Guide'}
+                    </h4>
+                    <p className="text-[10px] text-slate-500">
+                      {language === 'hi' ? 'मोबाइल, टैबलेट या लैपटॉप पर बिना ऐप स्टोर जाए 1-क्लिक में चलाएं' : 'No App Store needed — 100% native PWA for Android, iOS & Desktop'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 text-[11px]">
+                  <div className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-emerald-100 dark:border-emerald-900/50">
+                    <div className="font-bold text-emerald-700 dark:text-emerald-400">चरण 1: लिंक खोलें</div>
+                    <p className="text-slate-600 dark:text-slate-400 mt-1">अपने मोबाइल या कंप्यूटर के ब्राउज़र में WebApp लिंक पर क्लिक करें।</p>
+                  </div>
+                  <div className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-emerald-100 dark:border-emerald-900/50">
+                    <div className="font-bold text-emerald-700 dark:text-emerald-400">चरण 2: Add to Home</div>
+                    <p className="text-slate-600 dark:text-slate-400 mt-1">Chrome में <strong>Install App</strong> या Safari में Share ➔ <strong>Add to Home Screen</strong> दबाएं।</p>
+                  </div>
+                  <div className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-emerald-100 dark:border-emerald-900/50">
+                    <div className="font-bold text-emerald-700 dark:text-emerald-400">चरण 3: लॉगिन करें</div>
+                    <p className="text-slate-600 dark:text-slate-400 mt-1">ऊपर दिए गए आधिकारिक Login ID और Password से तुरंत प्रवेश करें।</p>
+                  </div>
+                </div>
+
+                <div className="pt-2 flex flex-wrap items-center gap-2">
+                  <a
+                    href={activeEmailModal.webAppDownloadUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-md shadow-emerald-600/20 flex items-center gap-1.5 transition-all"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    {language === 'hi' ? '🚀 वेबऐप अभी खोलें (Launch WebApp)' : '🚀 Open Live WebApp'}
+                  </a>
+                  <button
+                    onClick={() => {
+                      copyToClipboard(activeEmailModal.webAppDownloadUrl, 'webappurl');
+                    }}
+                    className="px-3 py-2 rounded-xl bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 font-bold text-xs border border-slate-200 dark:border-slate-700 hover:bg-slate-50 flex items-center gap-1.5"
+                  >
+                    {copiedField === 'webappurl' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                    {language === 'hi' ? 'वेबऐप लिंक कॉपी करें' : 'Copy WebApp URL'}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <span className="text-[11px] text-slate-500 flex items-center gap-1">
+                <CheckCheck className="w-4 h-4 text-emerald-500" />
+                {language === 'hi' ? 'ईमेल सफल प्रेषित स्थिति दर्ज है' : 'Dispatched via i2A Notification Hub'}
+              </span>
+              <button
+                onClick={() => setActiveEmailModal(null)}
+                className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20"
+              >
+                {language === 'hi' ? 'स्वीकृत / बन्द करें' : 'Acknowledge & Close'}
+              </button>
+            </div>
           </div>
         </div>
       )}

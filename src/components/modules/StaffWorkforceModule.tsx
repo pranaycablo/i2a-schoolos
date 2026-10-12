@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 
 export const StaffWorkforceModule: React.FC = () => {
-  const { branding, currentRole, language } = useSchool();
+  const { branding, currentRole, language, dispatchCredentialsNotification } = useSchool();
 
   const [activeTab, setActiveTab] = useState<'STAFF_DIRECTORY' | 'DEPARTMENTS' | 'LEAVE_APPROVALS'>('STAFF_DIRECTORY');
   const [empPattern, setEmpPattern] = useState('EMP-{YEAR}-{SEQ}');
@@ -71,6 +71,21 @@ export const StaffWorkforceModule: React.FC = () => {
       linkedUserId: `usr-${Date.now()}`
     };
     setEmployees([newEmp, ...employees]);
+
+    // Automated dispatch of credentials & mobile webapp link to staff email
+    dispatchCredentialsNotification({
+      recipientType: 'STAFF',
+      recipientName: newStaffForm.fullName,
+      recipientEmail: newEmp.email,
+      recipientPhone: newEmp.phone,
+      schoolName: branding.name,
+      schoolId: branding.id,
+      role: 'STAFF',
+      loginId: newEmp.employeeId,
+      username: newEmp.email,
+      password: 'Staff@2026'
+    });
+
     setShowAddStaffModal(false);
     setNewStaffForm({
       fullName: '',
