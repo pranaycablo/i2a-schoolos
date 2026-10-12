@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "node ./node_modules/vite/bin/vite.js",
+    "server": "node server/index.js",
+    "seed:mongo": "node scripts/seed-mongodb.js",
     "build": "node ./node_modules/typescript/bin/tsc -b && node ./node_modules/vite/bin/vite.js build",
     "lint": "node ./node_modules/oxlint/bin/oxlint",
     "test": "node ./node_modules/vitest/vitest.mjs run",
