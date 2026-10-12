@@ -14,14 +14,17 @@ import {
   X,
   Sparkles,
   CreditCard,
-  Building2
+  Building2,
+  Printer,
+  QrCode
 } from 'lucide-react';
 
 export const StudentManagementModule: React.FC = () => {
-  const { students, addStudent, feeReceipts } = useSchool();
+  const { students, addStudent, feeReceipts, branding, language } = useSchool();
   const [selectedClass, setSelectedClass] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeStudentModal, setActiveStudentModal] = useState<Student | null>(null);
+  const [activeIdCardStudent, setActiveIdCardStudent] = useState<Student | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
 
   // New Student Form state
@@ -156,12 +159,22 @@ export const StudentManagementModule: React.FC = () => {
               </div>
             </div>
 
-            <button
-              onClick={() => setActiveStudentModal(std)}
-              className="w-full py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-indigo-600 hover:text-white text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors"
-            >
-              View 360° Profile & Ledgers
-            </button>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => setActiveStudentModal(std)}
+                className="py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-indigo-600 hover:text-white text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors"
+              >
+                360° Profile
+              </button>
+              <button
+                onClick={() => setActiveIdCardStudent(std)}
+                className="py-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-600 hover:text-white text-indigo-700 dark:text-indigo-300 font-bold text-xs border border-indigo-200 dark:border-indigo-800 transition-colors flex items-center justify-center gap-1.5"
+                title="Print Official Student Identity Card"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                {language === 'hi' ? 'पहचान पत्र (I-Card)' : 'I-Card'}
+              </button>
+            </div>
           </div>
         ))}
       </div>
@@ -183,9 +196,18 @@ export const StudentManagementModule: React.FC = () => {
                   </span>
                 </div>
               </div>
-              <button onClick={() => setActiveStudentModal(null)} className="p-2 rounded-xl text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
-                <X className="w-5 h-5" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setActiveIdCardStudent(activeStudentModal)}
+                  className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center gap-1.5 shadow"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  {language === 'hi' ? 'पहचान पत्र प्रिंट करें' : 'Print I-Card'}
+                </button>
+                <button onClick={() => setActiveStudentModal(null)} className="p-2 rounded-xl text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
@@ -225,6 +247,98 @@ export const StudentManagementModule: React.FC = () => {
                     <span className="font-extrabold text-emerald-700 dark:text-emerald-400">₹{rcp.paidAmount}</span>
                   </div>
                 ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Official Printable Student Identity Card (I-Card) Modal */}
+      {activeIdCardStudent && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between border-b pb-3 border-slate-100 dark:border-slate-800">
+              <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
+                <Printer className="w-4 h-4 text-amber-500" />
+                {language === 'hi' ? 'छात्र पहचान पत्र (Official Student I-Card)' : 'Official Student Identity Card'}
+              </span>
+              <button onClick={() => setActiveIdCardStudent(null)} className="p-1 rounded-xl text-slate-400 hover:bg-slate-100">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Printable ID Card Design */}
+            <div className="bg-gradient-to-b from-indigo-900 via-indigo-950 to-slate-950 text-white rounded-2xl p-5 border-2 border-amber-400 shadow-xl relative overflow-hidden text-center space-y-3 font-sans">
+              {/* Lanyard Slot Notch */}
+              <div className="w-12 h-2 rounded-full bg-slate-300/40 mx-auto -mt-2 mb-2" />
+
+              {/* School Header */}
+              <div className="space-y-0.5">
+                <h3 className="font-black text-sm tracking-tight text-white uppercase">{branding.name}</h3>
+                <p className="text-[9px] text-amber-300 font-bold tracking-wider uppercase">
+                  Affiliated to {branding.board} • Reg: {branding.regNumber}
+                </p>
+                <div className="inline-block px-3 py-0.5 rounded-full bg-amber-400 text-slate-950 text-[9px] font-black tracking-widest mt-1">
+                  STUDENT ID CARD • {branding.academicSession}
+                </div>
+              </div>
+
+              {/* Student Photo */}
+              <div className="relative mx-auto w-20 h-20 rounded-2xl p-1 bg-gradient-to-tr from-amber-400 to-indigo-400 shadow-lg">
+                <img
+                  src={activeIdCardStudent.photoUrl}
+                  alt={activeIdCardStudent.name}
+                  className="w-full h-full object-cover rounded-xl"
+                />
+              </div>
+
+              {/* Student Identity Information */}
+              <div>
+                <h4 className="text-base font-extrabold text-white tracking-wide">{activeIdCardStudent.name}</h4>
+                <p className="text-xs font-bold text-amber-300">
+                  {activeIdCardStudent.className} — Sec {activeIdCardStudent.section} • Roll No: {activeIdCardStudent.rollNo}
+                </p>
+              </div>
+
+              <div className="bg-white/10 rounded-xl p-2.5 text-left grid grid-cols-2 gap-1.5 text-[10px] text-slate-200">
+                <p><span className="text-slate-400">Adm No:</span> <b className="font-mono text-white">{activeIdCardStudent.admissionNo}</b></p>
+                <p><span className="text-slate-400">Blood Group:</span> <b className="text-rose-300">B+ (Positive)</b></p>
+                <p className="col-span-2 truncate"><span className="text-slate-400">Father:</span> <b className="text-white">{activeIdCardStudent.fatherName}</b></p>
+                <p className="col-span-2"><span className="text-slate-400">Emergency Phone:</span> <b className="text-amber-300 font-mono">{activeIdCardStudent.parentMobile}</b></p>
+              </div>
+
+              {/* Barcode & Signature */}
+              <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[8px] text-slate-400">
+                <div className="flex items-center gap-1">
+                  <QrCode className="w-7 h-7 text-white" />
+                  <span className="font-mono text-[9px] text-slate-300 font-bold">CARD-{activeIdCardStudent.admissionNo}</span>
+                </div>
+                <div className="text-right">
+                  <p className="font-serif italic font-bold text-white text-[10px]">{branding.principalName}</p>
+                  <p className="text-[8px] text-amber-300 font-semibold">Principal Signature</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex justify-between items-center pt-2">
+              <span className="text-[10px] text-slate-400">Ready for turnstile gate scanner</span>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setActiveIdCardStudent(null)}
+                  className="px-3 py-1.5 rounded-xl text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-bold"
+                >
+                  {language === 'hi' ? 'बंद करें' : 'Close'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs shadow-md shadow-indigo-500/25 flex items-center gap-1.5"
+                >
+                  <Printer className="w-4 h-4" />
+                  {language === 'hi' ? 'प्रिंट पहचान पत्र' : 'Print I-Card'}
+                </button>
               </div>
             </div>
           </div>

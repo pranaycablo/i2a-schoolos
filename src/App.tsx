@@ -24,6 +24,7 @@ import { PrincipalAIDashboardModule } from './components/modules/PrincipalAIDash
 import { AuditTrailModule } from './components/modules/AuditTrailModule';
 import { SchoolMarketplaceModule } from './components/modules/SchoolMarketplaceModule';
 import { SubscriptionBillingModule } from './components/modules/SubscriptionBillingModule';
+import { StaffWorkforceModule } from './components/modules/StaffWorkforceModule';
 
 const MainContent: React.FC = () => {
   const { activeModule } = useSchool();
@@ -57,6 +58,8 @@ const MainContent: React.FC = () => {
         return <TimetableModule />;
       case 'payroll_expenses':
         return <PayrollExpenseModule />;
+      case 'staff_workforce':
+        return <StaffWorkforceModule />;
       case 'library_transport':
         return <LibraryTransportInventoryModule />;
       case 'school_marketplace':

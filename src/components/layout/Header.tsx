@@ -29,13 +29,20 @@ import {
   ShieldAlert,
   Bot,
   ShoppingBag,
-  Languages
+  Languages,
+  ChevronDown,
+  PlusCircle,
+  Check
 } from 'lucide-react';
 
 export const Header: React.FC = () => {
   const {
     branding,
     activeTenant,
+    tenants,
+    loginToSchool,
+    registerSchool,
+    students,
     returnToPublicSaas,
     currentRole,
     setCurrentRole,
@@ -53,6 +60,18 @@ export const Header: React.FC = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showSchoolDropdown, setShowSchoolDropdown] = useState(false);
+  const [showNewSchoolModal, setShowNewSchoolModal] = useState(false);
+  const [newSchoolForm, setNewSchoolForm] = useState({
+    name: '',
+    board: 'CBSE' as 'CBSE' | 'ICSE' | 'STATE_BOARD' | 'IB',
+    city: 'Patna',
+    adminName: '',
+    adminPhone: '',
+    adminEmail: '',
+    planId: 'PROFESSIONAL' as 'STARTER' | 'PROFESSIONAL' | 'ENTERPRISE'
+  });
+  const [schoolCreationMsg, setSchoolCreationMsg] = useState('');
 
   // Pending approval counts for Safety/Liability Control
   const pendingAdmissions = admissions.filter((a) => a.status === 'INTERVIEW_SCHEDULED' || a.status === 'SUBMITTED').length;
@@ -87,7 +106,8 @@ export const Header: React.FC = () => {
     { id: 'attendance_timetable', label: t('attendance_timetable'), icon: CalendarCheck, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STAFF', 'TRANSPORT', 'STUDENT', 'PARENT', 'SUPER_ADMIN'] },
     { id: 'timetable_engine', label: t('timetable_engine'), icon: CalendarCheck, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT', 'SUPER_ADMIN'] },
     { id: 'payroll_expenses', label: t('payroll_expenses'), icon: BadgePercent, roles: ['PRINCIPAL', 'ADMIN', 'ACCOUNTANT', 'SUPER_ADMIN'] },
-    { id: 'library_transport', label: t('library_transport'), icon: Bus, roles: ['PRINCIPAL', 'ADMIN', 'ACCOUNTANT', 'STAFF', 'TRANSPORT', 'TEACHER', 'STUDENT', 'SUPER_ADMIN'] },
+    { id: 'staff_workforce', label: t('staff_workforce'), icon: Users, roles: ['PRINCIPAL', 'ADMIN', 'SUPER_ADMIN'] },
+    { id: 'library_transport', label: t('library_transport'), icon: Bus, roles: ['PRINCIPAL', 'ADMIN', 'ACCOUNTANT', 'STAFF', 'TRANSPORT', 'TEACHER', 'STUDENT', 'PARENT', 'SUPER_ADMIN'] },
     { id: 'school_marketplace', label: t('school_marketplace'), icon: ShoppingBag, roles: ['PRINCIPAL', 'ADMIN', 'TEACHER', 'ACCOUNTANT', 'STAFF', 'TRANSPORT', 'PARENT', 'STUDENT', 'SUPER_ADMIN'] },
     { id: 'website_builder', label: t('website_builder'), icon: Globe, roles: ['PRINCIPAL', 'ADMIN', 'SUPER_ADMIN'] },
     { id: 'audit_trail', label: t('audit_trail'), icon: ShieldAlert, roles: ['PRINCIPAL', 'ADMIN', 'SUPER_ADMIN'] }
@@ -148,27 +168,94 @@ export const Header: React.FC = () => {
               <School className="h-6 w-6" />
             )}
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="font-bold text-slate-900 dark:text-white text-sm sm:text-base leading-tight tracking-tight">
-                {branding.name}
-              </h1>
-              <span className="font-mono text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 border border-slate-200 dark:border-slate-700 hidden sm:inline-block">
-                {activeTenant?.id || 'I2A-SCH-000001'}
-              </span>
-              <span
-                className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full hidden sm:inline-block ${
-                  activeTenant?.subscriptionStatus === 'ACTIVE'
-                    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300'
-                    : 'bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300'
-                }`}
-              >
-                {activeTenant?.subscriptionStatus || 'ACTIVE'}
-              </span>
-            </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 hidden lg:block">
-              {branding.tagline} • Session {branding.academicSession}
-            </p>
+          <div className="relative">
+            <button
+              onClick={() => setShowSchoolDropdown(!showSchoolDropdown)}
+              className="flex items-center gap-2 text-left group p-1.5 -ml-1.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer"
+              title="Click to switch school campus or create a new school"
+            >
+              <div>
+                <div className="flex items-center gap-2">
+                  <h1 className="font-bold text-slate-900 dark:text-white text-sm sm:text-base leading-tight tracking-tight group-hover:text-indigo-600 transition-colors">
+                    {branding.name}
+                  </h1>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600 transition-transform" />
+                  <span className="font-mono text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 border border-slate-200 dark:border-slate-700 hidden sm:inline-block">
+                    {activeTenant?.id || 'I2A-SCH-000001'}
+                  </span>
+                  <span
+                    className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full hidden sm:inline-block ${
+                      activeTenant?.subscriptionStatus === 'ACTIVE'
+                        ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300'
+                        : 'bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300'
+                    }`}
+                  >
+                    {activeTenant?.board || 'CBSE'}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400 hidden lg:block">
+                  {branding.tagline} • Session {branding.academicSession}
+                </p>
+              </div>
+            </button>
+
+            {/* School Switcher Dropdown */}
+            {showSchoolDropdown && (
+              <div className="absolute left-0 top-full mt-2 w-72 sm:w-80 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-3 z-50 animate-fade-in space-y-2">
+                <div className="flex items-center justify-between px-2 pt-1 border-b pb-2 border-slate-100 dark:border-slate-800 text-xs">
+                  <span className="font-extrabold text-slate-400 uppercase tracking-wider text-[10px]">
+                    {language === 'hi' ? 'सक्रिय स्कूल चुनें (Switch Campus)' : 'Switch Active Campus'}
+                  </span>
+                  <button
+                    onClick={() => {
+                      setShowSchoolDropdown(false);
+                      setShowNewSchoolModal(true);
+                    }}
+                    className="flex items-center gap-1 font-bold text-indigo-600 dark:text-indigo-400 hover:underline text-[11px]"
+                  >
+                    <PlusCircle className="w-3.5 h-3.5" />
+                    {language === 'hi' ? '+ नया स्कूल' : '+ New School'}
+                  </button>
+                </div>
+
+                <div className="max-h-56 overflow-y-auto space-y-1">
+                  {tenants.map((tenant) => {
+                    const isCurrent = tenant.id === activeTenant?.id;
+                    return (
+                      <button
+                        key={tenant.id}
+                        onClick={() => {
+                          loginToSchool(tenant.id, currentRole);
+                          setShowSchoolDropdown(false);
+                        }}
+                        className={`w-full text-left p-2.5 rounded-2xl transition-all flex items-center justify-between text-xs ${
+                          isCurrent
+                            ? 'bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 font-bold'
+                            : 'hover:bg-slate-50 dark:hover:bg-slate-800/60'
+                        }`}
+                      >
+                        <div className="truncate pr-2">
+                          <p className="font-extrabold text-slate-900 dark:text-white truncate">{tenant.name}</p>
+                          <p className="text-[10px] text-slate-500">{tenant.city} • {tenant.board} • {tenant.id}</p>
+                        </div>
+                        {isCurrent && <Check className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  onClick={() => {
+                    setShowSchoolDropdown(false);
+                    setShowNewSchoolModal(true);
+                  }}
+                  className="w-full py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 to-indigo-600 hover:from-amber-600 hover:to-indigo-700 text-white font-extrabold text-xs shadow-md shadow-indigo-500/20 flex items-center justify-center gap-2 transition-all"
+                >
+                  <PlusCircle className="w-4 h-4" />
+                  {language === 'hi' ? 'नया स्कूल रजिस्टर करें' : 'Register Brand New School'}
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -326,6 +413,224 @@ export const Header: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Parent Ward Quick Access Ribbon */}
+      {currentRole === 'PARENT' && (
+        <div className="bg-gradient-to-r from-amber-500/10 via-indigo-500/10 to-emerald-500/10 border-t border-slate-200 dark:border-slate-800 px-4 py-2.5">
+          <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-2.5 w-2.5 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+              </span>
+              <span className="font-extrabold text-slate-900 dark:text-white">
+                {language === 'hi' ? 'विद्यार्थी (Ward):' : 'Student (Ward):'}
+              </span>
+              <span className="font-bold text-indigo-600 dark:text-indigo-400">
+                {students[0]?.name || 'Rahul Kumar'} ({students[0]?.className || 'Class VIII'}-{students[0]?.section || 'A'})
+              </span>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                {language === 'hi' ? 'उपस्थिति: 96% उपस्थित' : 'Attendance: 96% Present'}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                onClick={() => setActiveModule('fee_management')}
+                className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] shadow-sm flex items-center gap-1.5 transition-all"
+              >
+                <CreditCard className="w-3.5 h-3.5" />
+                {language === 'hi' ? 'फीस जमा करें (₹2,500)' : 'Pay Dues (₹2,500)'}
+              </button>
+              <button
+                onClick={() => setActiveModule('library_transport')}
+                className="px-3 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-bold text-[11px] shadow-sm flex items-center gap-1.5 transition-all"
+              >
+                <Bus className="w-3.5 h-3.5" />
+                {language === 'hi' ? 'बस लाइव ट्रैक' : 'Track Bus Route'}
+              </button>
+              <button
+                onClick={() => setActiveModule('school_marketplace')}
+                className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-sm flex items-center gap-1.5 transition-all"
+              >
+                <ShoppingBag className="w-3.5 h-3.5" />
+                {language === 'hi' ? 'स्कूल स्टोर (ड्रेस/बुक्स)' : 'School Store'}
+              </button>
+              <button
+                onClick={() => setActiveModule('report_card_certs')}
+                className="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-[11px] shadow-sm flex items-center gap-1.5 transition-all"
+              >
+                <Award className="w-3.5 h-3.5" />
+                {language === 'hi' ? 'प्रगति पत्र (Marksheet)' : 'Term Marksheet'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Notification Alert */}
+      {schoolCreationMsg && (
+        <div className="bg-emerald-600 text-white px-4 py-2 text-center text-xs font-bold flex items-center justify-center gap-2 animate-bounce">
+          <span>{schoolCreationMsg}</span>
+        </div>
+      )}
+
+      {/* New School Registration Modal */}
+      {showNewSchoolModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b pb-3 border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-xl bg-gradient-to-tr from-amber-500 to-indigo-600 text-white shadow">
+                  <Building2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
+                    {language === 'hi' ? 'नया स्कूल रजिस्टर करें' : 'Register Brand New School'}
+                  </h3>
+                  <p className="text-[11px] text-slate-500">
+                    {language === 'hi' ? 'i2A SchoolOS में तुरंत नया स्कूल कैंपस शुरू करें' : 'Instant Multi-Tenant Campus Onboarding'}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowNewSchoolModal(false)}
+                className="p-1.5 rounded-xl text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!newSchoolForm.name.trim() || !newSchoolForm.adminName.trim()) return;
+                const newTenant = registerSchool({
+                  name: newSchoolForm.name,
+                  adminName: newSchoolForm.adminName,
+                  adminEmail: newSchoolForm.adminEmail || 'admin@' + newSchoolForm.name.toLowerCase().replace(/\s+/g, '') + '.edu.in',
+                  adminPhone: newSchoolForm.adminPhone || '+91 9876543210',
+                  city: newSchoolForm.city || 'Patna',
+                  board: newSchoolForm.board,
+                  planId: newSchoolForm.planId,
+                  billingCycle: 'YEARLY'
+                });
+                loginToSchool(newTenant.id, 'PRINCIPAL');
+                setShowNewSchoolModal(false);
+                setSchoolCreationMsg(`🎉 नया स्कूल '${newTenant.name}' सफलतापूर्वक शुरू हुआ!`);
+                setTimeout(() => setSchoolCreationMsg(''), 5000);
+              }}
+              className="space-y-4 text-xs"
+            >
+              <div>
+                <label className="block text-slate-600 dark:text-slate-400 font-medium mb-1">
+                  {language === 'hi' ? 'स्कूल का आधिकारिक नाम *' : 'School Official Name *'}
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Delhi Public International Academy"
+                  value={newSchoolForm.name}
+                  onChange={(e) => setNewSchoolForm({ ...newSchoolForm, name: e.target.value })}
+                  className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-bold outline-none focus:ring-2 focus:ring-indigo-500/50"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-600 dark:text-slate-400 font-medium mb-1">
+                    {language === 'hi' ? 'बोर्ड संबद्धता *' : 'Board Affiliation *'}
+                  </label>
+                  <select
+                    value={newSchoolForm.board}
+                    onChange={(e) => setNewSchoolForm({ ...newSchoolForm, board: e.target.value as any })}
+                    className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-bold outline-none"
+                  >
+                    <option value="CBSE">CBSE (Central Board)</option>
+                    <option value="ICSE">ICSE / CISCE</option>
+                    <option value="STATE_BOARD">State Board</option>
+                    <option value="IB">International Baccalaureate (IB)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-slate-600 dark:text-slate-400 font-medium mb-1">
+                    {language === 'hi' ? 'शहर / राज्य *' : 'City / State *'}
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Patna, Bihar"
+                    value={newSchoolForm.city}
+                    onChange={(e) => setNewSchoolForm({ ...newSchoolForm, city: e.target.value })}
+                    className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-600 dark:text-slate-400 font-medium mb-1">
+                    {language === 'hi' ? 'प्रधानाचार्य / डायरेक्टर का नाम *' : 'Principal / Director Name *'}
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Dr. A.K. Sharma"
+                    value={newSchoolForm.adminName}
+                    onChange={(e) => setNewSchoolForm({ ...newSchoolForm, adminName: e.target.value })}
+                    className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-600 dark:text-slate-400 font-medium mb-1">
+                    {language === 'hi' ? 'मोबाइल नंबर (WhatsApp) *' : 'Phone / WhatsApp *'}
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="+91 9876543210"
+                    value={newSchoolForm.adminPhone}
+                    onChange={(e) => setNewSchoolForm({ ...newSchoolForm, adminPhone: e.target.value })}
+                    className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-slate-600 dark:text-slate-400 font-medium mb-1">
+                  {language === 'hi' ? 'आधिकारिक ईमेल' : 'Official Email'}
+                </label>
+                <input
+                  type="email"
+                  placeholder="contact@dpia.edu.in"
+                  value={newSchoolForm.adminEmail}
+                  onChange={(e) => setNewSchoolForm({ ...newSchoolForm, adminEmail: e.target.value })}
+                  className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none"
+                />
+              </div>
+
+              <div className="pt-2 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowNewSchoolModal(false)}
+                  className="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold"
+                >
+                  {language === 'hi' ? 'रद्द करें' : 'Cancel'}
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-indigo-600 hover:from-amber-600 hover:to-indigo-700 text-white font-extrabold shadow-lg shadow-indigo-500/25 flex items-center gap-2"
+                >
+                  <Check className="w-4 h-4" />
+                  {language === 'hi' ? 'नया स्कूल शुरू करें' : 'Launch New School'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Slide-over Mobile Navigation Drawer */}
       {showMobileMenu && (

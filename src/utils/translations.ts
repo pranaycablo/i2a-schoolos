@@ -16,6 +16,7 @@ export const translations: Record<string, { en: string; hi: string }> = {
   attendance_timetable: { en: 'Attendance & Leaves', hi: 'उपस्थिति एवं अवकाश' },
   timetable_engine: { en: 'Timetable & Scheduling', hi: 'समय सारणी (टाइमटेबल)' },
   payroll_expenses: { en: 'Staff Payroll & Expenses', hi: 'वेतन व स्कूल खर्चे' },
+  staff_workforce: { en: 'Staff & Faculty Management', hi: 'स्टाफ व फैकल्टी प्रबंधन' },
   library_transport: { en: 'Transport & Fleet', hi: 'परिवहन (बस) व लाइब्रेरी' },
   school_marketplace: { en: 'School Store & Marketplace', hi: 'स्कूल स्टोर एवं यूनिफॉर्म' },
   subscription_billing: { en: 'Subscription & Billing', hi: 'सब्सक्रिप्शन एवं बिलिंग' },
@@ -41,7 +42,11 @@ export const translations: Record<string, { en: string; hi: string }> = {
   notifications: { en: 'Controlled Approval Center', hi: 'अनुमोदन व सूचना केंद्र' },
   pending: { en: 'Pending', hi: 'लंबित' },
   quick_actions: { en: 'Quick Actions', hi: 'त्वरित कार्य' },
-  welcome: { en: 'Welcome to i2A SchoolOS', hi: 'i2A स्कूलओएस में आपका स्वागत है' }
+  welcome: { en: 'Welcome to i2A SchoolOS', hi: 'i2A स्कूलओएस में आपका स्वागत है' },
+  switch_school: { en: 'Switch School', hi: 'स्कूल बदलें' },
+  register_new_school: { en: '+ Register New School', hi: '+ नया स्कूल जोड़ें' },
+  student_id_card: { en: 'Official Student I-Card', hi: 'छात्र पहचान पत्र (I-Card)' },
+  parent_ward_portal: { en: 'Parent & Ward 360° Portal', hi: 'अभिभावक एवं विद्यार्थी 360° पोर्टल' }
 };
 
 export function translate(key: string, lang: AppLanguage): string {
