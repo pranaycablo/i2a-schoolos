@@ -19,7 +19,17 @@ import {
 } from 'lucide-react';
 
 export const DigitalBooksAIQuestionBankModule: React.FC = () => {
-  const { digitalBooks, questionBank, addQuestionToBank, generateAIExamPaper, updateExamPaperStatus, examPapers } = useSchool();
+  const {
+    digitalBooks,
+    questionBank,
+    addQuestionToBank,
+    generateAIExamPaper,
+    updateExamPaperStatus,
+    examPapers,
+    language
+  } = useSchool();
+
+  const isHindi = language === 'hi';
 
   const [activeTab, setActiveTab] = useState<'BOOKS' | 'QUESTION_BANK' | 'AI_PAPER_GENERATOR'>('BOOKS');
 
@@ -74,13 +84,15 @@ export const DigitalBooksAIQuestionBankModule: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div>
           <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 text-xs font-bold uppercase tracking-wider">
-            <BrainCircuit className="w-4 h-4" /> AI Academic Engine & Book OCR
+            <BrainCircuit className="w-4 h-4" /> {isHindi ? 'एआई शैक्षणिक इंजन व पाठ्यक्रम लाइब्रेरी' : 'AI Academic Engine & Curriculum OCR'}
           </div>
           <h2 className="text-xl font-extrabold text-slate-900 dark:text-white mt-1">
-            Digital Books, AI Question Bank & Paper Generator
+            {isHindi ? 'डिजिटल बुक्स, एआई प्रश्न बैंक व टेस्ट पेपर निर्माता' : 'Digital Books, AI Question Bank & Paper Generator'}
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Book Upload → Chapter Concept Extraction → Question Repository → One-Click AI Paper with Teacher Review & Principal Approval Lock.
+            {isHindi
+              ? 'एनसीईआरटी पुस्तकें → अध्यायवार अवधारणा निष्कर्षण → प्रश्न बैंक रिपॉजिटरी → 1-क्लिक एआई टेस्ट पेपर।'
+              : 'Book Upload → Chapter Concept Extraction → Question Repository → One-Click AI Paper with Teacher Review & Principal Approval Lock.'}
           </p>
         </div>
 
@@ -91,7 +103,7 @@ export const DigitalBooksAIQuestionBankModule: React.FC = () => {
               activeTab === 'BOOKS' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-400'
             }`}
           >
-            Digital Books & AI Reader
+            {isHindi ? 'डिजिटल बुक्स' : 'Digital Books & Reader'}
           </button>
           <button
             onClick={() => setActiveTab('QUESTION_BANK')}
@@ -99,7 +111,7 @@ export const DigitalBooksAIQuestionBankModule: React.FC = () => {
               activeTab === 'QUESTION_BANK' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-400'
             }`}
           >
-            AI Question Bank ({questionBank.length})
+            {isHindi ? `एआई प्रश्न बैंक (${questionBank.length})` : `AI Question Bank (${questionBank.length})`}
           </button>
           <button
             onClick={() => setActiveTab('AI_PAPER_GENERATOR')}
@@ -107,7 +119,7 @@ export const DigitalBooksAIQuestionBankModule: React.FC = () => {
               activeTab === 'AI_PAPER_GENERATOR' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-400'
             }`}
           >
-            1-Click AI Test Generator
+            {isHindi ? '1-क्लिक एआई टेस्ट जनरेटर' : '1-Click AI Test Generator'}
           </button>
         </div>
       </div>
@@ -262,23 +274,50 @@ export const DigitalBooksAIQuestionBankModule: React.FC = () => {
       )}
 
       {activeTab === 'AI_PAPER_GENERATOR' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Form */}
-          <form onSubmit={handleGeneratePaper} className="lg:col-span-5 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 text-xs">
-            <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2 border-b pb-3 border-slate-100 dark:border-slate-800">
-              <Zap className="w-4 h-4 text-amber-500" /> One-Click AI Question Paper Generator
-            </h3>
-
-            <div>
-              <label className="block text-slate-600 dark:text-slate-400 mb-1 font-medium">Paper Title</label>
-              <input
-                type="text"
-                required
-                value={aiPaperForm.title}
-                onChange={(e) => setAiPaperForm({ ...aiPaperForm, title: e.target.value })}
-                className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none"
-              />
+        <div className="space-y-6">
+          {/* Promotional Image Banner */}
+          <div className="relative rounded-3xl overflow-hidden border border-indigo-500/30 bg-gradient-to-r from-indigo-900 via-purple-950 to-slate-900 shadow-xl">
+            <div className="grid grid-cols-1 md:grid-cols-12 items-center">
+              <div className="md:col-span-8 p-6 space-y-2">
+                <span className="px-3 py-1 rounded-full text-[10px] font-extrabold bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
+                  {isHindi ? 'सीबीएसई व एनईपी 2020 क्षमता-आधारित मूल्यांकन' : 'CBSE Competency-Based Assessment Engine'}
+                </span>
+                <h3 className="text-xl font-black text-white">
+                  {isHindi ? 'एआई प्रश्न पत्र एवं ब्लूप्रिंट निर्माता' : 'AI Question Paper & Blueprint Generator'}
+                </h3>
+                <p className="text-xs text-indigo-200/90 leading-relaxed max-w-xl">
+                  {isHindi
+                    ? 'एनसीईआरटी डिजिटल पुस्तकों से बहुविकल्पीय प्रश्न, लघु उत्तरीय एवं हॉट्स (HOTS) आधारित प्रश्न पत्र तैयार करें। ब्लूम्स टैक्सोनॉमी द्वारा संतुलित अंक योजना।'
+                    : 'Generate Bloom\'s Taxonomy-aligned examination papers directly from NCERT curriculum books with automated marking schemes and question blueprints.'}
+                </p>
+              </div>
+              <div className="md:col-span-4 p-4 flex justify-end">
+                <img
+                  src="./images/ai-exam-banner.png"
+                  alt="AI Exam Generator"
+                  className="h-32 w-auto object-cover rounded-2xl shadow-lg border border-indigo-400/20"
+                />
+              </div>
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Form */}
+            <form onSubmit={handleGeneratePaper} className="lg:col-span-5 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 text-xs">
+              <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2 border-b pb-3 border-slate-100 dark:border-slate-800">
+                <Zap className="w-4 h-4 text-amber-500" /> {isHindi ? '1-क्लिक एआई प्रश्न पत्र विन्यास' : 'One-Click AI Paper Configuration'}
+              </h3>
+
+              <div>
+                <label className="block text-slate-600 dark:text-slate-400 mb-1 font-medium">{isHindi ? 'प्रश्न पत्र शीर्षक' : 'Paper Title'}</label>
+                <input
+                  type="text"
+                  required
+                  value={aiPaperForm.title}
+                  onChange={(e) => setAiPaperForm({ ...aiPaperForm, title: e.target.value })}
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none font-bold"
+                />
+              </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -396,6 +435,7 @@ export const DigitalBooksAIQuestionBankModule: React.FC = () => {
               </div>
             )}
           </div>
+        </div>
         </div>
       )}
 

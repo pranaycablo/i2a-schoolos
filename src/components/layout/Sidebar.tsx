@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 
 export const Sidebar: React.FC = () => {
-  const { activeModule, setActiveModule, currentRole, admissions, examPapers, t } = useSchool();
+  const { activeModule, setActiveModule, currentRole, admissions, examPapers, t, language } = useSchool();
 
   const pendingAdm = admissions.filter((a) => a.status === 'INTERVIEW_SCHEDULED' || a.status === 'SUBMITTED').length;
   const pendingExams = examPapers.filter((e) => e.status === 'AI_DRAFT' || e.status === 'TEACHER_REVIEW').length;
@@ -101,10 +101,13 @@ export const Sidebar: React.FC = () => {
       <div className="mt-4 p-3 rounded-2xl bg-gradient-to-br from-indigo-900 via-indigo-950 to-slate-950 text-white border border-indigo-800/50 relative overflow-hidden shadow-lg">
         <div className="absolute -right-4 -bottom-4 h-20 w-20 rounded-full bg-indigo-500/20 blur-xl"></div>
         <div className="flex items-center gap-2 text-indigo-300 font-semibold text-[11px] mb-1">
-          <Sparkles className="h-3.5 w-3.5 text-indigo-400" /> Auto-Pipeline Active
+          <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
+          {language === 'hi' ? 'स्वचालित पाइपलाइन सक्रिय' : 'Auto-Pipeline Active'}
         </div>
         <p className="text-[10px] text-slate-300 leading-relaxed">
-          Admission → Student Account → Fee Invoice → Exam Profile created with 0 manual entries.
+          {language === 'hi'
+            ? 'प्रवेश ➔ छात्र खाता ➔ फीस चालान ➔ परीक्षा प्रोफाइल शून्य मानवीय त्रुटि के साथ।'
+            : 'Admission → Student Account → Fee Invoice → Exam Profile created with 0 manual entries.'}
         </p>
       </div>
     </aside>

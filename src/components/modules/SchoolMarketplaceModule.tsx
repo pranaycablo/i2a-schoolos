@@ -497,6 +497,30 @@ export const SchoolMarketplaceModule: React.FC = () => {
       {/* ========================================================= */}
       {activeTab === 'CATALOG' && (
         <div className="space-y-6">
+          {/* Promotional Store Showcase Banner */}
+          <div className="relative rounded-3xl overflow-hidden border border-emerald-500/30 bg-gradient-to-r from-emerald-950 via-slate-900 to-indigo-950 shadow-xl">
+            <div className="grid grid-cols-1 md:grid-cols-12 items-center">
+              <div className="md:col-span-8 p-6 space-y-2">
+                <span className="px-3 py-1 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                  School Authorized Merchandise & Supplies
+                </span>
+                <h3 className="text-xl font-black text-white">
+                  Official School Uniforms, Books & Annual Kit Store
+                </h3>
+                <p className="text-xs text-emerald-100/80 leading-relaxed max-w-xl">
+                  Order tailored blazers, house t-shirts, CBSE NCERT book bundles, and laboratory kits directly online with zero delivery fees and direct classroom dispatch.
+                </p>
+              </div>
+              <div className="md:col-span-4 p-4 flex justify-end">
+                <img
+                  src="./images/school-store-banner.png"
+                  alt="School Store Showcase"
+                  className="h-32 w-auto object-cover rounded-2xl shadow-lg border border-emerald-400/20"
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Filter Bar */}
           <div className="bg-white dark:bg-slate-900 p-4 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
             {/* Category Pills */}

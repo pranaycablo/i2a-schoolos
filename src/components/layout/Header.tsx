@@ -158,12 +158,12 @@ export const Header: React.FC = () => {
       {/* Expired / Suspended Subscription Alert Banner */}
       {isSubscriptionExpired && (
         <div className="bg-rose-600 text-white px-4 py-2 text-center text-xs font-bold flex items-center justify-center gap-2">
-          <span>⚠️ आपका सब्सक्रिप्शन समाप्त हो गया है। नवीनीकरण करके सुविधाएँ फिर शुरू करें। (Subscription Expired - Please Renew)</span>
+          <span>⚠️ {language === 'hi' ? 'आपके स्कूल का सब्सक्रिप्शन समाप्त हो गया है। कृपया नवीनीकरण करें।' : 'Your school subscription has expired. Please renew to restore full access.'}</span>
           <button
             onClick={returnToPublicSaas}
             className="px-2.5 py-0.5 rounded-md bg-white text-rose-700 font-extrabold hover:bg-slate-100 transition-colors text-[10px]"
           >
-            Renew Now
+            {language === 'hi' ? 'नवीनीकरण करें' : 'Renew Now'}
           </button>
         </div>
       )}
@@ -222,7 +222,7 @@ export const Header: React.FC = () => {
               <div className="absolute left-0 top-full mt-2 w-72 sm:w-80 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-3 z-50 animate-fade-in space-y-2">
                 <div className="flex items-center justify-between px-2 pt-1 border-b pb-2 border-slate-100 dark:border-slate-800 text-xs">
                   <span className="font-extrabold text-slate-400 uppercase tracking-wider text-[10px]">
-                    {language === 'hi' ? 'सक्रिय स्कूल चुनें (Switch Campus)' : 'Switch Active Campus'}
+                    {language === 'hi' ? 'सक्रिय स्कूल कैंपस चुनें' : 'Switch Active Campus'}
                   </span>
                   <button
                     onClick={() => {
@@ -454,7 +454,7 @@ export const Header: React.FC = () => {
                             className="px-2.5 py-1 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[10px] shadow-sm flex items-center gap-1"
                           >
                             <ExternalLink className="w-3 h-3" />
-                            {language === 'hi' ? 'ईमेल व पासवर्ड देखें' : 'View Credentials'}
+                            {language === 'hi' ? 'क्रेडेंशियल्स देखें' : 'View Credentials'}
                           </button>
                         </div>
                       )}
@@ -517,7 +517,7 @@ export const Header: React.FC = () => {
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
               </span>
               <span className="font-extrabold text-slate-900 dark:text-white">
-                {language === 'hi' ? 'विद्यार्थी (Ward):' : 'Student (Ward):'}
+                {language === 'hi' ? 'विद्यार्थी:' : 'Student:'}
               </span>
               <span className="font-bold text-indigo-600 dark:text-indigo-400">
                 {students[0]?.name || 'Rahul Kumar'} ({students[0]?.className || 'Class VIII'}-{students[0]?.section || 'A'})
@@ -547,14 +547,14 @@ export const Header: React.FC = () => {
                 className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-sm flex items-center gap-1.5 transition-all"
               >
                 <ShoppingBag className="w-3.5 h-3.5" />
-                {language === 'hi' ? 'स्कूल स्टोर (ड्रेस/बुक्स)' : 'School Store'}
+                {language === 'hi' ? 'स्कूल स्टोर' : 'School Store'}
               </button>
               <button
                 onClick={() => setActiveModule('report_card_certs')}
                 className="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-[11px] shadow-sm flex items-center gap-1.5 transition-all"
               >
                 <Award className="w-3.5 h-3.5" />
-                {language === 'hi' ? 'प्रगति पत्र (Marksheet)' : 'Term Marksheet'}
+                {language === 'hi' ? 'प्रगति पत्रक' : 'Term Marksheet'}
               </button>
             </div>
           </div>
@@ -809,7 +809,7 @@ export const Header: React.FC = () => {
                 <div className="flex items-center justify-between border-b pb-2.5 border-slate-800">
                   <span className="text-[11px] font-extrabold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
                     <ShieldCheck className="w-4 h-4" />
-                    {language === 'hi' ? 'गोपनीय लॉगिन विवरण (Login Credentials)' : 'Confidential Login Credentials'}
+                    {language === 'hi' ? 'गोपनीय लॉगिन विवरण' : 'Confidential Login Credentials'}
                   </span>
                   <span className="text-[10px] text-slate-400">
                     Role: <strong className="text-white">{activeEmailModal.role}</strong>
@@ -820,7 +820,7 @@ export const Header: React.FC = () => {
                   {/* School ID */}
                   <div className="bg-slate-800/80 rounded-xl p-3 border border-slate-700 flex items-center justify-between">
                     <div>
-                      <div className="text-[10px] text-slate-400 uppercase font-bold">School ID / कोड</div>
+                      <div className="text-[10px] text-slate-400 uppercase font-bold">{language === 'hi' ? 'स्कूल कोड' : 'School ID'}</div>
                       <div className="font-mono text-sm font-bold text-white mt-0.5">{activeEmailModal.schoolId}</div>
                     </div>
                     <button
@@ -835,7 +835,7 @@ export const Header: React.FC = () => {
                   {/* Login ID */}
                   <div className="bg-slate-800/80 rounded-xl p-3 border border-slate-700 flex items-center justify-between">
                     <div>
-                      <div className="text-[10px] text-slate-400 uppercase font-bold">Login ID / रोल कोड</div>
+                      <div className="text-[10px] text-slate-400 uppercase font-bold">{language === 'hi' ? 'लॉगिन आईडी' : 'Login ID'}</div>
                       <div className="font-mono text-sm font-bold text-white mt-0.5">{activeEmailModal.loginId}</div>
                     </div>
                     <button
@@ -850,7 +850,7 @@ export const Header: React.FC = () => {
                   {/* Username / Email */}
                   <div className="bg-slate-800/80 rounded-xl p-3 border border-slate-700 flex items-center justify-between">
                     <div>
-                      <div className="text-[10px] text-slate-400 uppercase font-bold">Username / रजिस्टर्ड ईमेल</div>
+                      <div className="text-[10px] text-slate-400 uppercase font-bold">{language === 'hi' ? 'पंजीकृत ईमेल' : 'Registered Email'}</div>
                       <div className="font-mono text-xs font-bold text-indigo-300 mt-0.5 truncate max-w-[170px]">{activeEmailModal.username}</div>
                     </div>
                     <button
@@ -865,7 +865,7 @@ export const Header: React.FC = () => {
                   {/* Password */}
                   <div className="bg-slate-800/80 rounded-xl p-3 border border-amber-500/30 flex items-center justify-between">
                     <div>
-                      <div className="text-[10px] text-amber-400 uppercase font-bold">Password / पासवर्ड</div>
+                      <div className="text-[10px] text-amber-400 uppercase font-bold">{language === 'hi' ? 'सुरक्षा पासवर्ड' : 'Password'}</div>
                       <div className="font-mono text-sm font-extrabold text-amber-300 mt-0.5 tracking-wide">{activeEmailModal.password}</div>
                     </div>
                     <button
@@ -901,26 +901,26 @@ export const Header: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="font-extrabold text-slate-900 dark:text-white text-xs sm:text-sm">
-                      {language === 'hi' ? '📱 i2A SchoolOS WebApp डाउनलोड व इंस्टाल गाइड' : '📱 i2A SchoolOS Mobile WebApp Install Guide'}
+                      {language === 'hi' ? '📱 मोबाइल वेबऐप डाउनलोड व इंस्टाल गाइड' : '📱 Mobile WebApp Install Guide'}
                     </h4>
                     <p className="text-[10px] text-slate-500">
-                      {language === 'hi' ? 'मोबाइल, टैबलेट या लैपटॉप पर बिना ऐप स्टोर जाए 1-क्लिक में चलाएं' : 'No App Store needed — 100% native PWA for Android, iOS & Desktop'}
+                      {language === 'hi' ? 'एंड्रॉयड, आईफोन एवं कंप्यूटर पर बिना ऐप स्टोर जाए तुरंत चलाएं' : 'Native PWA for Android, iOS & Desktop — No App Store required'}
                     </p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 text-[11px]">
                   <div className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-emerald-100 dark:border-emerald-900/50">
-                    <div className="font-bold text-emerald-700 dark:text-emerald-400">चरण 1: लिंक खोलें</div>
-                    <p className="text-slate-600 dark:text-slate-400 mt-1">अपने मोबाइल या कंप्यूटर के ब्राउज़र में WebApp लिंक पर क्लिक करें।</p>
+                    <div className="font-bold text-emerald-700 dark:text-emerald-400">{language === 'hi' ? 'चरण 1: लिंक खोलें' : 'Step 1: Open Link'}</div>
+                    <p className="text-slate-600 dark:text-slate-400 mt-1">{language === 'hi' ? 'अपने मोबाइल या कंप्यूटर के ब्राउज़र में WebApp लिंक पर क्लिक करें।' : 'Click the WebApp link in your browser on mobile or laptop.'}</p>
                   </div>
                   <div className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-emerald-100 dark:border-emerald-900/50">
-                    <div className="font-bold text-emerald-700 dark:text-emerald-400">चरण 2: Add to Home</div>
-                    <p className="text-slate-600 dark:text-slate-400 mt-1">Chrome में <strong>Install App</strong> या Safari में Share ➔ <strong>Add to Home Screen</strong> दबाएं।</p>
+                    <div className="font-bold text-emerald-700 dark:text-emerald-400">{language === 'hi' ? 'चरण 2: होम स्क्रीन पर जोड़ें' : 'Step 2: Add to Home'}</div>
+                    <p className="text-slate-600 dark:text-slate-400 mt-1">{language === 'hi' ? 'Chrome में Install App या Safari में Add to Home Screen दबाएं।' : 'Tap Install App in Chrome or Add to Home Screen in Safari.'}</p>
                   </div>
                   <div className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-emerald-100 dark:border-emerald-900/50">
-                    <div className="font-bold text-emerald-700 dark:text-emerald-400">चरण 3: लॉगिन करें</div>
-                    <p className="text-slate-600 dark:text-slate-400 mt-1">ऊपर दिए गए आधिकारिक Login ID और Password से तुरंत प्रवेश करें।</p>
+                    <div className="font-bold text-emerald-700 dark:text-emerald-400">{language === 'hi' ? 'चरण 3: लॉगिन करें' : 'Step 3: Login to Portal'}</div>
+                    <p className="text-slate-600 dark:text-slate-400 mt-1">{language === 'hi' ? 'ऊपर दिए गए आधिकारिक Login ID और Password से तुरंत प्रवेश करें।' : 'Login instantly with your official Login ID and Password.'}</p>
                   </div>
                 </div>
 
@@ -932,7 +932,7 @@ export const Header: React.FC = () => {
                     className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-md shadow-emerald-600/20 flex items-center gap-1.5 transition-all"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
-                    {language === 'hi' ? '🚀 वेबऐप अभी खोलें (Launch WebApp)' : '🚀 Open Live WebApp'}
+                    {language === 'hi' ? '🚀 वेबऐप अभी खोलें' : '🚀 Open Live WebApp'}
                   </a>
                   <button
                     onClick={() => {

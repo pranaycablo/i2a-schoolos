@@ -283,6 +283,30 @@ export const LibraryTransportInventoryModule: React.FC = () => {
             </div>
           )}
 
+          {/* Promotional Parent Transport Mobile Showcase */}
+          <div className="relative rounded-3xl overflow-hidden border border-amber-500/30 bg-gradient-to-r from-amber-950 via-slate-900 to-indigo-950 shadow-xl">
+            <div className="grid grid-cols-1 md:grid-cols-12 items-center">
+              <div className="md:col-span-8 p-6 space-y-2">
+                <span className="px-3 py-1 rounded-full text-[10px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-400/30">
+                  Parent Live Transport & Route Telematics
+                </span>
+                <h3 className="text-xl font-black text-white">
+                  Live School Bus Fleet, Driver Contact & Stop Geofencing
+                </h3>
+                <p className="text-xs text-amber-100/80 leading-relaxed max-w-xl">
+                  Parents receive automated notifications when the vehicle crosses scheduled stop checkpoints. Real-time driver credentials, emergency contact, and capacity monitoring.
+                </p>
+              </div>
+              <div className="md:col-span-4 p-4 flex justify-end">
+                <img
+                  src="./images/parent-app-banner.png"
+                  alt="Live School Bus Mobile App"
+                  className="h-32 w-auto object-cover rounded-2xl shadow-lg border border-amber-400/20"
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Bus Routes List with Capacity Meter */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {routes.map((r) => {

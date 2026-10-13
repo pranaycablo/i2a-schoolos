@@ -172,7 +172,7 @@ export const StudentManagementModule: React.FC = () => {
                 title="Print Official Student Identity Card"
               >
                 <Printer className="w-3.5 h-3.5" />
-                {language === 'hi' ? 'पहचान पत्र (I-Card)' : 'I-Card'}
+                {language === 'hi' ? 'पहचान पत्र' : 'Identity Card'}
               </button>
             </div>
           </div>
@@ -260,7 +260,7 @@ export const StudentManagementModule: React.FC = () => {
             <div className="flex items-center justify-between border-b pb-3 border-slate-100 dark:border-slate-800">
               <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
                 <Printer className="w-4 h-4 text-amber-500" />
-                {language === 'hi' ? 'छात्र पहचान पत्र (Official Student I-Card)' : 'Official Student Identity Card'}
+                {language === 'hi' ? 'आधिकारिक छात्र पहचान पत्र' : 'Official Student Identity Card'}
               </span>
               <button onClick={() => setActiveIdCardStudent(null)} className="p-1 rounded-xl text-slate-400 hover:bg-slate-100">
                 <X className="w-5 h-5" />

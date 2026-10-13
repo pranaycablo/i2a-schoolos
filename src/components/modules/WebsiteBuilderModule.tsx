@@ -28,7 +28,8 @@ export const WebsiteBuilderModule: React.FC = () => {
     feeTypes,
     submitSchoolAdmission,
     setCurrentRole,
-    setActiveModule
+    setActiveModule,
+    language
   } = useSchool();
 
   // Active view inside the website preview
@@ -578,8 +579,12 @@ export const WebsiteBuilderModule: React.FC = () => {
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <div>
-                  <h4 className="text-base font-extrabold text-white">पारदर्शी फीस संरचना (Official Fee Structure)</h4>
-                  <p className="text-slate-400 text-xs mt-0.5">सत्र {branding.academicSession} के लिए अधिकृत शुल्क विवरण</p>
+                  <h4 className="text-base font-extrabold text-white">
+                    {language === 'hi' ? 'पारदर्शी फीस संरचना' : 'Official Fee Structure'}
+                  </h4>
+                  <p className="text-slate-400 text-xs mt-0.5">
+                    {language === 'hi' ? `सत्र ${branding.academicSession} के लिए अधिकृत शुल्क विवरण` : `Authorized fee schedule for session ${branding.academicSession}`}
+                  </p>
                 </div>
               </div>
 
@@ -617,7 +622,9 @@ export const WebsiteBuilderModule: React.FC = () => {
           {/* TAB 4: NOTICES */}
           {siteTab === 'NOTICES' && (
             <div className="space-y-4">
-              <h4 className="text-base font-extrabold text-white">स्कूल सूचना पट्ट (Official Notice Board)</h4>
+              <h4 className="text-base font-extrabold text-white">
+                {language === 'hi' ? 'स्कूल सूचना पट्ट' : 'Official Notice Board'}
+              </h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800 space-y-2">
                   <div className="flex justify-between items-center">
