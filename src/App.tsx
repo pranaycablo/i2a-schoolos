@@ -4,6 +4,7 @@ import { Header } from './components/layout/Header';
 import { Sidebar } from './components/layout/Sidebar';
 import { PublicSaasLandingPage } from './components/public/PublicSaasLandingPage';
 import { PlatformAdminModule } from './components/modules/PlatformAdminModule';
+import { GlobalNotificationToast } from './components/layout/NotificationToast';
 
 // Modules
 import { SchoolSetupModule } from './components/modules/SchoolSetupModule';
@@ -112,6 +113,7 @@ export function App() {
   return (
     <SchoolProvider>
       <AppRouter />
+      <GlobalNotificationToast />
     </SchoolProvider>
   );
 }

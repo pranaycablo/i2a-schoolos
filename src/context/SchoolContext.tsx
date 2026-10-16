@@ -1454,6 +1454,20 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       `Verified & Approved school ${app.schoolName} (${formattedId}). Live Website activated: ${websiteUrl} with SSL.`
     );
 
+    // Auto-dispatch credentials & mobile webapp link to school admin/principal email
+    dispatchCredentialsNotification({
+      recipientType: 'SCHOOL',
+      recipientName: app.adminName,
+      recipientEmail: app.adminEmail,
+      recipientPhone: app.adminPhone,
+      schoolName: app.schoolName,
+      schoolId: formattedId,
+      role: 'PRINCIPAL',
+      loginId: formattedId,
+      username: app.adminEmail,
+      password: `Admin@${new Date().getFullYear()}#Secure`
+    });
+
     return newTenant;
   };
 
