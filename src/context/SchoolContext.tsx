@@ -159,6 +159,8 @@ interface SchoolContextType {
   addAdmission: (app: Omit<OnlineAdmissionApplication, 'id' | 'applicationNo' | 'submittedDate'>) => void;
   updateAdmissionStatus: (id: string, status: OnlineAdmissionApplication['status'], score?: number, remarks?: string) => void;
   approveAdmissionAndCreateStudent: (id: string) => void;
+  updateLeadStage: (id: string, stage: NonNullable<OnlineAdmissionApplication['leadStage']>, counselorNotes?: string) => void;
+  triggerWhatsAppLeadMessage: (app: OnlineAdmissionApplication) => string;
 
   feeTypes: FeeType[];
   addFeeType: (fee: Omit<FeeType, 'id'>) => void;
@@ -212,6 +214,9 @@ interface SchoolContextType {
     phone: string;
     email: string;
     remarks?: string;
+    address?: string;
+    city?: string;
+    whatsappNumber?: string;
   }) => OnlineAdmissionApplication;
 
   // Helper actions
@@ -265,7 +270,19 @@ const initialBranding: SchoolBranding = {
   invoiceHeader: 'ABC PUBLIC SCHOOL — PATNA',
   invoiceFooter: 'This is a computer generated digital fee receipt authorized by i2A SchoolOS.',
   reportCardTheme: 'EMERALD_MODERN',
-  certificateTheme: 'OFFICIAL'
+  certificateTheme: 'OFFICIAL',
+  promotionalVideoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+  promotionalVideoTitle: 'ABC Public School Campus Tour, Smart Labs & Achievements',
+  promotionalVideoPoster: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&auto=format&fit=crop&q=80',
+  galleryImages: [
+    { url: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&auto=format&fit=crop&q=80', title: 'Main Campus & Sports Ground', category: 'CAMPUS' },
+    { url: 'https://images.unsplash.com/photo-1562774053-701939374585?w=600&auto=format&fit=crop&q=80', title: 'Smart Interactive Classrooms', category: 'ACADEMICS' },
+    { url: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=600&auto=format&fit=crop&q=80', title: 'Robotics & STEM Science Lab', category: 'LABS' },
+    { url: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=600&auto=format&fit=crop&q=80', title: 'Central Digital Library', category: 'LIBRARY' }
+  ],
+  admissionsOpenText: 'Admissions Open for Academic Session 2026-27 (Nursery to Class XII)',
+  brochurePdfUrl: '/docs/ABC_Public_School_Prospectus_2026.pdf',
+  whatsappAutoReplyTemplate: 'नमस्ते {{parentName}} जी, {{schoolName}} में प्रवेश संबंधी जानकारी प्राप्त करने के लिए धन्यवाद! 🎓 कक्षा: {{className}}। 📖 डिजिटल प्रॉस्पेक्टस व फॉर्म देखने के लिए क्लिक करें: {{prospectusUrl}} | 📲 आधिकारिक वेब-ऐप डाउनलोड करें: {{appUrl}}'
 };
 
 const initialStudents: Student[] = [
@@ -348,11 +365,38 @@ const initialAdmissions: OnlineAdmissionApplication[] = [
     applyingClass: 'Class VI',
     parentName: 'Mahesh Patel',
     phone: '9811223344',
+    whatsappNumber: '9811223344',
     email: 'mahesh.patel@gmail.com',
+    address: 'Flat 402, Shanti Vihar, Baily Road',
+    city: 'Patna',
+    leadStage: 'NEW_LEAD',
+    leadScore: 92,
+    autoMessageSent: true,
+    autoMessageTimestamp: '10:15 AM',
     status: 'SUBMITTED',
     submittedDate: '2026-10-06',
     documentsUploaded: true,
     remarks: 'Waiting for Document Verification'
+  },
+  {
+    id: 'adm-003',
+    applicationNo: 'APP-2026-091',
+    studentName: 'Devansh Verma',
+    applyingClass: 'Class X',
+    parentName: 'Rakesh Verma',
+    phone: '9876543211',
+    whatsappNumber: '9876543211',
+    email: 'rakesh.verma@parent.test',
+    address: 'Sector 5, Mansarovar',
+    city: 'Jaipur',
+    leadStage: 'CAMPUS_VISIT',
+    leadScore: 88,
+    autoMessageSent: true,
+    autoMessageTimestamp: 'Yesterday 04:30 PM',
+    status: 'DOCS_VERIFIED',
+    submittedDate: '2026-10-05',
+    documentsUploaded: true,
+    remarks: 'Campus tour scheduled for Saturday 11:00 AM'
   },
   {
     id: 'adm-002',
@@ -1439,7 +1483,11 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       id: `adm-${Date.now()}`,
       applicationNo: appNo,
       submittedDate: new Date().toISOString().split('T')[0],
-      status: 'SUBMITTED'
+      status: 'SUBMITTED',
+      leadStage: 'NEW_LEAD',
+      leadScore: 90,
+      autoMessageSent: true,
+      autoMessageTimestamp: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
     };
     setAdmissions((prev) => [newApp, ...prev]);
     logAction('ONLINE_ADMISSION_SUBMIT', 'ONLINE_ADMISSION', `Parent submitted application ${appNo} for ${newApp.studentName}`);
@@ -1454,6 +1502,38 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     );
     logAction('UPDATE_ADMISSION_STATUS', 'ONLINE_ADMISSION', `Application ${id} status updated to ${status}`);
     admissionsApi.updateStatus(id, { status, testScore: score, remarks }).catch((e) => console.warn('Admission status API error:', e));
+  };
+
+  const triggerWhatsAppLeadMessage = (app: OnlineAdmissionApplication): string => {
+    const parentName = app.parentName || 'Parent';
+    const studentName = app.studentName || 'Student';
+    const className = app.applyingClass || 'Class';
+    const schoolName = branding.name || 'ABC Public School';
+    const phone = app.whatsappNumber || app.phone || '';
+    const cleanPhone = phone.replace(/[^0-9]/g, '');
+    const prospectusUrl = 'https://' + (branding.website || 'abcpublicschool.i2aschool.com') + '/prospectus';
+    const appUrl = 'https://' + (branding.website || 'abcpublicschool.i2aschool.com') + '/#school';
+
+    const message = 'नमस्ते ' + parentName + ' जी,\n' + schoolName + ' में ' + studentName + ' के प्रवेश संबंधी जानकारी प्राप्त करने के लिए धन्यवाद!\n\n🎓 कक्षा: ' + className + ' (सत्र 2026-27)\n📖 डिजिटल प्रॉस्पेक्टस देखें: ' + prospectusUrl + '\n📲 आधिकारिक स्कूल वेब-ऐप डाउनलोड करें: ' + appUrl + '\n\nहमारे प्रवेश परामर्शदाता शीघ्र आपसे संपर्क करेंगे।\n— प्रवेश विभाग, ' + schoolName;
+
+    const encoded = encodeURIComponent(message);
+    return 'https://wa.me/91' + cleanPhone.slice(-10) + '?text=' + encoded;
+  };
+
+  const updateLeadStage = (id: string, stage: NonNullable<OnlineAdmissionApplication['leadStage']>, counselorNotes?: string) => {
+    setAdmissions((prev) =>
+      prev.map((app) =>
+        app.id === id
+          ? {
+              ...app,
+              leadStage: stage,
+              counselorNotes: counselorNotes !== undefined ? counselorNotes : app.counselorNotes,
+              status: stage === 'ENROLLED' ? 'ENROLLED' : stage === 'CAMPUS_VISIT' ? 'DOCS_VERIFIED' : stage === 'INTERVIEW' ? 'INTERVIEW_SCHEDULED' : stage === 'ADMISSION_OFFERED' ? 'APPROVED' : app.status
+            }
+          : app
+      )
+    );
+    logAction('UPDATE_LEAD_STAGE', 'ONLINE_ADMISSION', 'Lead ' + id + ' moved to stage ' + stage);
   };
 
   const approveAdmissionAndCreateStudent = (id: string) => {
@@ -2132,6 +2212,9 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     phone: string;
     email: string;
     remarks?: string;
+    address?: string;
+    city?: string;
+    whatsappNumber?: string;
   }): OnlineAdmissionApplication => {
     const appNo = `APP-2026-${Math.floor(100 + Math.random() * 900)}`;
     const newApp: OnlineAdmissionApplication = {
@@ -2140,6 +2223,10 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       applicationNo: appNo,
       submittedDate: new Date().toISOString().split('T')[0],
       status: 'SUBMITTED',
+      leadStage: 'NEW_LEAD',
+      leadScore: 92,
+      autoMessageSent: true,
+      autoMessageTimestamp: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
       documentsUploaded: true
     };
     setAdmissions((prev) => [newApp, ...prev]);
@@ -2209,6 +2296,8 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         addAdmission,
         updateAdmissionStatus,
         approveAdmissionAndCreateStudent,
+        updateLeadStage,
+        triggerWhatsAppLeadMessage,
         feeTypes,
         addFeeType,
         feeReceipts,

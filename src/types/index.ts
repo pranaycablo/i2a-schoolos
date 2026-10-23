@@ -36,6 +36,13 @@ export interface SchoolBranding {
   invoiceFooter: string;
   reportCardTheme: 'CLASSIC_BLUE' | 'EMERALD_MODERN' | 'ROYAL_GOLD' | 'SLATE_MINIMAL';
   certificateTheme: 'OFFICIAL' | 'ELEGANT' | 'MODERN';
+  promotionalVideoUrl?: string;
+  promotionalVideoTitle?: string;
+  promotionalVideoPoster?: string;
+  galleryImages?: { id?: string; url: string; title: string; category: string }[];
+  admissionsOpenText?: string;
+  brochurePdfUrl?: string;
+  whatsappAutoReplyTemplate?: string;
 }
 
 export type ApplicationStatus =
@@ -178,6 +185,16 @@ export interface OnlineAdmissionApplication {
   interviewScore?: number;
   remarks?: string;
   approvedBy?: string;
+  address?: string;
+  city?: string;
+  whatsappNumber?: string;
+  academicSession?: string;
+  leadStage?: 'NEW_LEAD' | 'WHATSAPP_SENT' | 'CONTACTED' | 'CAMPUS_VISIT' | 'INTERVIEW' | 'INTERVIEW_SCHEDULED' | 'ADMISSION_OFFERED' | 'ENROLLED' | 'DROPPED';
+  leadScore?: number;
+  autoMessageSent?: boolean;
+  autoMessageTimestamp?: string;
+  counselorNotes?: string;
+  source?: string;
 }
 
 export interface FeeType {
