@@ -28,7 +28,9 @@ export const ProfileSessionMenu: React.FC = () => {
     language,
     setLanguage,
     returnToPublicSaas,
-    loginToSchool
+    loginToSchool,
+    setActiveModule,
+    setViewMode
   } = useSchool();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -54,6 +56,24 @@ export const ProfileSessionMenu: React.FC = () => {
 
   const handleRoleSwitch = (role: UserRole) => {
     setCurrentRole(role);
+    if (role === 'SUPER_ADMIN') {
+      setViewMode('PLATFORM_ADMIN');
+    } else {
+      setViewMode('SCHOOL_PORTAL');
+      if (role === 'PARENT') {
+        setActiveModule('parent_portal');
+      } else if (role === 'STUDENT') {
+        setActiveModule('student_portal');
+      } else if (role === 'TRANSPORT') {
+        setActiveModule('library_transport');
+      } else if (role === 'ACCOUNTANT') {
+        setActiveModule('fee_management');
+      } else if (role === 'TEACHER') {
+        setActiveModule('attendance_timetable');
+      } else {
+        setActiveModule('principal_dashboard');
+      }
+    }
     loginToSchool(activeTenant?.id || 'I2A-SCH-000001', role);
     setIsOpen(false);
   };
