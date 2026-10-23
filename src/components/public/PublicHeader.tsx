@@ -21,6 +21,7 @@ interface PublicHeaderProps {
   currentRoute: PublicRoute;
   onNavigate: (route: PublicRoute, slug?: string) => void;
   onOpenLogin: () => void;
+  onOpenSchoolPortal?: () => void;
   language: 'en' | 'hi';
   onToggleLanguage: () => void;
 }
@@ -29,6 +30,7 @@ export const PublicHeader: React.FC<PublicHeaderProps> = ({
   currentRoute,
   onNavigate,
   onOpenLogin,
+  onOpenSchoolPortal,
   language,
   onToggleLanguage
 }) => {
@@ -181,6 +183,17 @@ export const PublicHeader: React.FC<PublicHeaderProps> = ({
             <span>{isHindi ? 'EN' : 'हिन्दी'}</span>
           </button>
 
+          {/* Direct School ERP Portal Button */}
+          <button
+            id="public-header-school-portal-btn"
+            onClick={onOpenSchoolPortal || onOpenLogin}
+            className="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-[11px] sm:text-xs font-bold shadow-md shadow-emerald-600/25 transition cursor-pointer"
+            title={isHindi ? 'स्कूल ERP पोर्टल खोलें' : 'Open School ERP Portal'}
+          >
+            <School className="w-3.5 h-3.5" />
+            <span>{isHindi ? 'स्कूल पोर्टल' : 'School Portal'}</span>
+          </button>
+
           {/* Login Button */}
           <button
             id="public-header-login-btn"
@@ -215,6 +228,17 @@ export const PublicHeader: React.FC<PublicHeaderProps> = ({
       {/* Mobile Menu Drawer */}
       {mobileMenuOpen && (
         <div className="lg:hidden mt-3 pt-3 border-t border-slate-800 space-y-2 text-xs font-semibold animate-fade-in">
+          <button
+            onClick={() => {
+              if (onOpenSchoolPortal) onOpenSchoolPortal();
+              else onOpenLogin();
+              setMobileMenuOpen(false);
+            }}
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow-md mb-2 cursor-pointer"
+          >
+            <School className="w-4 h-4" />
+            <span>{isHindi ? 'स्कूल ERP पोर्टल खोलें' : 'Open School ERP Portal'}</span>
+          </button>
           <button
             onClick={() => handleNav('home')}
             className={`w-full text-left px-3 py-2 rounded-xl ${currentRoute === 'home' ? 'text-indigo-400 bg-slate-900' : 'text-slate-300'}`}

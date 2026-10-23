@@ -944,6 +944,24 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         ) {
           return 'LOGIN';
         }
+        if (
+          search.includes('view=SCHOOL_PORTAL') ||
+          search.includes('view=school') ||
+          search.includes('portal=school') ||
+          search.includes('mode=school') ||
+          window.location.hash.includes('school') ||
+          window.location.hash.includes('portal')
+        ) {
+          return 'SCHOOL_PORTAL';
+        }
+        if (
+          search.includes('view=PLATFORM_ADMIN') ||
+          search.includes('view=superadmin') ||
+          window.location.hash.includes('platform') ||
+          window.location.hash.includes('superadmin')
+        ) {
+          return 'PLATFORM_ADMIN';
+        }
       }
       const token = sessionStorage.getItem('i2a_auth_token');
       const userStr = sessionStorage.getItem('i2a_user');

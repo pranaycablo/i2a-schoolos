@@ -90,6 +90,10 @@ export const PublicWebsiteShell: React.FC<PublicWebsiteShellProps> = ({
         handleOpenLogin();
         return;
       }
+      if (raw === 'school' || raw === 'portal') {
+        setViewMode('SCHOOL_PORTAL');
+        return;
+      }
       const parsed = parseHashRoute();
       if (parsed) {
         setCurrentRoute(parsed.route);
@@ -162,6 +166,7 @@ export const PublicWebsiteShell: React.FC<PublicWebsiteShellProps> = ({
         currentRoute={currentRoute}
         onNavigate={handleNavigate}
         onOpenLogin={handleOpenLogin}
+        onOpenSchoolPortal={() => setViewMode('SCHOOL_PORTAL')}
         language={language}
         onToggleLanguage={handleToggleLanguage}
       />
