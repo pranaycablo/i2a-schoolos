@@ -169,6 +169,12 @@ export interface Student {
   };
   assignedSubjects: string[];
   attendanceRate: number; // percentage
+  presentDays?: number;
+  absentDays?: number;
+  totalWorkingDays?: number;
+  feeDueAmount?: number;
+  feePaidAmount?: number;
+  academicGrade?: string;
 }
 
 export interface OnlineAdmissionApplication {
