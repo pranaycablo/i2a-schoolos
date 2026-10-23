@@ -60,8 +60,8 @@ export const ShellSidebar: React.FC<ShellSidebarProps> = ({
   const navItems: NavItem[] = [
     // 1. CORE
     { id: 'principal_dashboard', label: t('principal_dashboard') || 'Leadership Dashboard', icon: LayoutDashboard, roles: ['PRINCIPAL', 'ADMIN', 'SUPER_ADMIN'], category: 'CORE' },
-    { id: 'parent_portal', label: 'Parent Portal', icon: Users, roles: ['PARENT'], category: 'CORE' },
-    { id: 'student_portal', label: 'Student Portal', icon: Award, roles: ['STUDENT'], category: 'CORE' },
+    { id: 'parent_portal', label: 'Parent Portal', icon: Users, roles: ['PARENT', 'PRINCIPAL', 'ADMIN', 'SUPER_ADMIN'], category: 'CORE' },
+    { id: 'student_portal', label: 'Student Portal', icon: Award, roles: ['STUDENT', 'PRINCIPAL', 'ADMIN', 'SUPER_ADMIN'], category: 'CORE' },
     { id: 'institutional_hierarchy', label: 'Hierarchy & Branches', icon: Network, roles: ['PRINCIPAL', 'ADMIN', 'SUPER_ADMIN'], isNew: true, category: 'CORE' },
     { id: 'principal_ai_assistant', label: t('principal_ai_assistant') || 'AI Assistant', icon: Bot, roles: ['PRINCIPAL', 'ADMIN', 'SUPER_ADMIN'], isAI: true, category: 'CORE' },
     { id: 'school_setup', label: t('school_setup') || 'School Setup', icon: Building2, roles: ['PRINCIPAL', 'ADMIN', 'SUPER_ADMIN'], category: 'CORE' },

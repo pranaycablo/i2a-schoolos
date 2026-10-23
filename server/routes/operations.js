@@ -53,7 +53,7 @@ router.get('/payroll', authenticateToken, enforceTenant, requireRoles('SUPER_ADM
   }
 });
 
-router.post('/payroll/disburse', authenticateToken, enforceTenant, requireRoles('SUPER_ADMIN', 'PRINCIPAL', 'ACCOUNTANT'), async (req, res) => {
+router.post('/payroll/disburse', authenticateToken, enforceTenant, requireRoles('SUPER_ADMIN', 'PRINCIPAL', 'ADMIN', 'ACCOUNTANT'), async (req, res) => {
   try {
     const { recordId } = req.body;
     const database = await getDb();

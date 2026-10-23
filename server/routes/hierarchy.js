@@ -203,7 +203,7 @@ router.put(
 router.delete(
   '/branches/:id',
   authenticateToken,
-  requireRoles('SUPER_ADMIN', 'ORG_DIRECTOR', 'PRINCIPAL'),
+  requireRoles('SUPER_ADMIN', 'ORG_DIRECTOR', 'PRINCIPAL', 'ADMIN'),
   async (req, res) => {
     try {
       const database = await getDb();

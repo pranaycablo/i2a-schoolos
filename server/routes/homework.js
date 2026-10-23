@@ -38,7 +38,7 @@ router.get('/', authenticateToken, enforceTenant, async (req, res) => {
  * POST /api/homework
  * Teacher creates homework assignment
  */
-router.post('/', authenticateToken, enforceTenant, requireRoles('SUPER_ADMIN', 'PRINCIPAL', 'TEACHER'), async (req, res) => {
+router.post('/', authenticateToken, enforceTenant, requireRoles('SUPER_ADMIN', 'PRINCIPAL', 'ADMIN', 'TEACHER'), async (req, res) => {
   try {
     const {
       title,
@@ -193,7 +193,7 @@ router.get('/:id/submissions', authenticateToken, enforceTenant, async (req, res
  * POST /api/homework/submissions/:subId/grade
  * Teacher evaluation and marks grading
  */
-router.post('/submissions/:subId/grade', authenticateToken, enforceTenant, requireRoles('SUPER_ADMIN', 'PRINCIPAL', 'TEACHER'), async (req, res) => {
+router.post('/submissions/:subId/grade', authenticateToken, enforceTenant, requireRoles('SUPER_ADMIN', 'PRINCIPAL', 'ADMIN', 'TEACHER'), async (req, res) => {
   try {
     const { awardedMarks, teacherFeedback } = req.body;
     const database = await getDb();

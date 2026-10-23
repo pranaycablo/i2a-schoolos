@@ -37,7 +37,7 @@ router.get('/papers', authenticateToken, enforceTenant, async (req, res) => {
  * POST /api/exams/papers
  * Create / Save Exam Paper
  */
-router.post('/papers', authenticateToken, enforceTenant, requireRoles('SUPER_ADMIN', 'PRINCIPAL', 'TEACHER'), async (req, res) => {
+router.post('/papers', authenticateToken, enforceTenant, requireRoles('SUPER_ADMIN', 'PRINCIPAL', 'ADMIN', 'TEACHER'), async (req, res) => {
   try {
     const { paperTitle, className, subject, totalMarks, durationMinutes, questions, status } = req.body;
     const database = await getDb();
@@ -80,7 +80,7 @@ router.post('/papers', authenticateToken, enforceTenant, requireRoles('SUPER_ADM
  * PUT /api/exams/papers/:id/status
  * Principal / Teacher publish approval
  */
-router.put('/papers/:id/status', authenticateToken, enforceTenant, requireRoles('SUPER_ADMIN', 'PRINCIPAL', 'TEACHER'), async (req, res) => {
+router.put('/papers/:id/status', authenticateToken, enforceTenant, requireRoles('SUPER_ADMIN', 'PRINCIPAL', 'ADMIN', 'TEACHER'), async (req, res) => {
   try {
     const { status } = req.body;
     const database = await getDb();
