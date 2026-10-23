@@ -196,79 +196,117 @@ export const PrincipalAIDashboardModule: React.FC = () => {
   if (currentRole === 'TEACHER') {
     return (
       <div className="space-y-6 animate-fade-in pb-12 text-xs">
-        <div className="bg-gradient-to-r from-amber-600 to-orange-600 text-white p-6 rounded-3xl shadow-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <span className="px-2.5 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-bold uppercase tracking-wider">
-              {isHindi ? 'शिक्षक कार्यक्षेत्र पोर्टल' : 'Teacher Workspace Portal'}
-            </span>
-            <h2 className="text-2xl font-black mt-1">
-              {isHindi ? 'स्वागत है, सम्मानित संकाय सदस्य' : 'Welcome, Senior Faculty Member'}
-            </h2>
-            <p className="text-amber-100 text-xs mt-0.5">
-              {isHindi ? 'आवंटित कक्षाएं: कक्षा 8 वर्ग अ, कक्षा 9 वर्ग ब • विषय: गणित एवं विज्ञान' : 'Assigned Classes: Class VIII-A, Class IX-B • Subjects: Mathematics & Science'}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setActiveModule('attendance_timetable')}
-              className="px-4 py-2.5 rounded-2xl bg-white text-orange-700 font-extrabold shadow-md hover:bg-slate-100 transition-colors cursor-pointer"
-            >
-              {isHindi ? 'दैनिक उपस्थिति दर्ज करें' : 'Mark Daily Attendance'}
-            </button>
+        {/* Teacher Hero Header */}
+        <div className="relative bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 text-white p-7 rounded-3xl shadow-2xl overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.15)_0%,_transparent_60%)] pointer-events-none" />
+          <div className="relative flex flex-col sm:flex-row justify-between items-start sm:items-center gap-5">
+            <div className="space-y-1">
+              <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-white text-[10px] font-extrabold uppercase tracking-widest border border-white/30">
+                {isHindi ? '🍎 शिक्षक कार्यक्षेत्र पोर्टल' : '🍎 Teacher Workspace Portal'}
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black mt-2 tracking-tight">
+                {isHindi ? 'स्वागत है, सम्मानित संकाय सदस्य' : 'Welcome, Senior Faculty Member'}
+              </h2>
+              <p className="text-amber-100 text-xs font-medium">
+                {isHindi ? 'कक्षा 8A, 9B • गणित एवं विज्ञान • आज 6 कालांश' : 'Class VIII-A, IX-B • Math & Science • 6 Periods Today'}
+              </p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                onClick={() => setActiveModule('attendance_timetable')}
+                className="px-5 py-2.5 rounded-2xl bg-white text-orange-700 font-extrabold shadow-lg hover:bg-orange-50 transition-all cursor-pointer text-xs"
+              >
+                ✅ {isHindi ? 'उपस्थिति दर्ज करें' : 'Mark Attendance'}
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Teacher Quick Shortcuts */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <button
-            onClick={() => setActiveModule('attendance_timetable')}
-            className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-left space-y-2 hover:border-amber-500 transition-all shadow-sm cursor-pointer"
-          >
-            <CalendarCheck className="w-6 h-6 text-amber-500" />
-            <div className="font-bold text-slate-900 dark:text-white">
-              {isHindi ? 'उपस्थिति प्रविष्टि' : 'Attendance Entry'}
-            </div>
-            <div className="text-slate-400 text-[11px]">
-              {isHindi ? 'कक्षा उपस्थिति रोल कॉल' : 'Daily Roster Marking'}
-            </div>
-          </button>
-          <button
-            onClick={() => setActiveModule('homework_learning')}
-            className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-left space-y-2 hover:border-amber-500 transition-all shadow-sm cursor-pointer"
-          >
-            <BookOpen className="w-6 h-6 text-indigo-500" />
-            <div className="font-bold text-slate-900 dark:text-white">
-              {isHindi ? 'गृहकार्य जारी करें' : 'Post Homework'}
-            </div>
-            <div className="text-slate-400 text-[11px]">
-              {isHindi ? 'डिजिटल वर्कशीट' : 'Digital Worksheets'}
-            </div>
-          </button>
-          <button
-            onClick={() => setActiveModule('examination_ai')}
-            className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-left space-y-2 hover:border-amber-500 transition-all shadow-sm cursor-pointer"
-          >
-            <FileQuestion className="w-6 h-6 text-purple-500" />
-            <div className="font-bold text-slate-900 dark:text-white">
-              {isHindi ? 'एआई टेस्ट पेपर' : 'AI Test Paper'}
-            </div>
-            <div className="text-slate-400 text-[11px]">
-              {isHindi ? 'प्रश्न पत्र निर्माण' : 'NCERT Question Bank'}
-            </div>
-          </button>
-          <button
-            onClick={() => setActiveModule('examination_result_engine')}
-            className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-left space-y-2 hover:border-amber-500 transition-all shadow-sm cursor-pointer"
-          >
-            <Award className="w-6 h-6 text-emerald-500" />
-            <div className="font-bold text-slate-900 dark:text-white">
-              {isHindi ? 'अंक प्रविष्टि' : 'Enter Marks'}
-            </div>
-            <div className="text-slate-400 text-[11px]">
-              {isHindi ? 'सत्र परीक्षा परिणाम' : 'Term Assessment Marks'}
-            </div>
-          </button>
+        {/* Teacher 4-KPI Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { icon: CalendarCheck, label: isHindi ? "आज की कक्षाएं" : "Today's Classes", value: '6', sub: isHindi ? '2 शेष हैं' : '2 Remaining', color: 'amber', grad: 'from-amber-500 to-orange-500', module: 'attendance_timetable' },
+            { icon: BookOpen, label: isHindi ? "गृहकार्य लंबित" : "Homework Pending", value: '14', sub: isHindi ? 'जांच करें' : 'Awaiting Review', color: 'indigo', grad: 'from-indigo-500 to-blue-500', module: 'homework_learning' },
+            { icon: FileQuestion, label: isHindi ? "टेस्ट पेपर" : "Test Papers", value: `${examPapers.length}`, sub: isHindi ? 'तैयार हैं' : 'Drafted', color: 'violet', grad: 'from-violet-500 to-purple-600', module: 'examination_ai' },
+            { icon: Users, label: isHindi ? "उपस्थिति औसत" : "Attendance %", value: `${avgAttendance}%`, sub: isHindi ? 'कक्षा औसत' : 'Class Average', color: 'emerald', grad: 'from-emerald-500 to-teal-500', module: 'attendance_timetable' },
+          ].map((kpi) => (
+            <button
+              key={kpi.label}
+              onClick={() => setActiveModule(kpi.module)}
+              className={`group relative text-left p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-lg hover:border-${kpi.color}-300 dark:hover:border-${kpi.color}-700 transition-all space-y-3 overflow-hidden cursor-pointer`}
+            >
+              <div className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${kpi.grad} flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform`}>
+                <kpi.icon className="w-5 h-5" />
+              </div>
+              <div>
+                <div className={`text-3xl font-black text-${kpi.color}-600 dark:text-${kpi.color}-400`}>{kpi.value}</div>
+                <div className="font-extrabold text-xs text-slate-900 dark:text-white mt-0.5">{kpi.label}</div>
+                <div className="text-[10px] text-slate-400 mt-0.5">{kpi.sub}</div>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        {/* Teacher Quick Action Tiles - 8 Colorful */}
+        <div className="space-y-3">
+          <h3 className="font-extrabold text-sm text-slate-900 dark:text-white px-1 flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-amber-500" />
+            {isHindi ? 'त्वरित क्रिया पैनल' : 'Quick Actions Panel'}
+          </h3>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {[
+              { icon: CalendarCheck, label: isHindi ? 'उपस्थिति प्रविष्टि' : 'Mark Attendance', sub: isHindi ? 'रोल कॉल' : 'Daily Roster', color: 'amber', grad: 'from-amber-400 to-orange-500', module: 'attendance_timetable' },
+              { icon: BookOpen, label: isHindi ? 'गृहकार्य जारी करें' : 'Post Homework', sub: isHindi ? 'डिजिटल वर्कशीट' : 'Digital Tasks', color: 'indigo', grad: 'from-indigo-500 to-blue-600', module: 'homework_learning' },
+              { icon: FileQuestion, label: isHindi ? 'एआई टेस्ट पेपर' : 'AI Test Paper', sub: isHindi ? 'प्रश्न पत्र' : 'Question Bank', color: 'violet', grad: 'from-violet-500 to-purple-600', module: 'examination_ai' },
+              { icon: Award, label: isHindi ? 'अंक प्रविष्टि' : 'Enter Marks', sub: isHindi ? 'परीक्षा परिणाम' : 'Assessment Marks', color: 'emerald', grad: 'from-emerald-500 to-teal-600', module: 'examination_result_engine' },
+              { icon: Users, label: isHindi ? 'छात्र प्रोफाइल' : 'Student Records', sub: isHindi ? '360° प्रोफाइल' : '360° Profiles', color: 'cyan', grad: 'from-cyan-500 to-blue-500', module: 'student_management' },
+              { icon: Calendar, label: isHindi ? 'समय सारिणी' : 'My Timetable', sub: isHindi ? 'कालांश कार्यक्रम' : 'Period Schedule', color: 'rose', grad: 'from-rose-500 to-pink-500', module: 'attendance_timetable' },
+              { icon: MessageSquare, label: isHindi ? 'अभिभावक संदेश' : 'Parent Comms', sub: isHindi ? 'SMS / WhatsApp' : 'WhatsApp Alerts', color: 'green', grad: 'from-green-500 to-emerald-600', module: 'fee_management' },
+              { icon: BrainCircuit, label: isHindi ? 'एआई कोपायलट' : 'AI Copilot', sub: isHindi ? 'पाठ योजना' : 'Lesson Planner', color: 'purple', grad: 'from-purple-600 to-indigo-600', module: 'principal_ai_dashboard' },
+            ].map((tile) => (
+              <button
+                key={tile.label}
+                onClick={() => setActiveModule(tile.module)}
+                className={`group relative p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-lg hover:border-${tile.color}-300 dark:hover:border-${tile.color}-700 transition-all text-left space-y-3 cursor-pointer`}
+              >
+                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${tile.grad} flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform`}>
+                  <tile.icon className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="font-extrabold text-xs text-slate-900 dark:text-white leading-tight">{tile.label}</p>
+                  <p className="text-[10px] text-slate-500 mt-0.5">{tile.sub}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Today's Timetable Strip */}
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-3">
+          <h3 className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+            <Clock className="w-4 h-4 text-amber-500" />
+            {isHindi ? "आज का समय-सारणी" : "Today's Timetable"}
+          </h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {[
+              { period: '1st', time: '08:00–08:45', class: 'VIII-A', subject: isHindi ? 'गणित' : 'Mathematics', color: 'amber' },
+              { period: '2nd', time: '08:45–09:30', class: 'IX-B', subject: isHindi ? 'विज्ञान' : 'Science', color: 'emerald' },
+              { period: '3rd', time: '09:30–10:15', class: 'VIII-A', subject: isHindi ? 'गणित' : 'Mathematics', color: 'amber' },
+              { period: '4th', time: '10:30–11:15', class: 'IX-B', subject: isHindi ? 'विज्ञान' : 'Science', color: 'emerald' },
+              { period: '5th', time: '11:15–12:00', class: 'X-A', subject: isHindi ? 'गणित' : 'Mathematics', color: 'indigo' },
+              { period: '6th', time: '12:00–12:45', class: 'X-A', subject: isHindi ? 'विज्ञान' : 'Science', color: 'violet' },
+            ].map((p) => (
+              <div key={p.period} className={`flex items-center gap-3 p-3 rounded-2xl bg-${p.color}-50 dark:bg-${p.color}-950/40 border border-${p.color}-100 dark:border-${p.color}-900`}>
+                <div className={`w-8 h-8 rounded-xl bg-${p.color}-100 dark:bg-${p.color}-900 flex items-center justify-center text-${p.color}-600 dark:text-${p.color}-400 font-black text-[10px] shrink-0`}>
+                  {p.period}
+                </div>
+                <div>
+                  <div className="font-extrabold text-xs text-slate-900 dark:text-white">{p.subject} • {p.class}</div>
+                  <div className="text-[10px] text-slate-500">{p.time}</div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -276,67 +314,125 @@ export const PrincipalAIDashboardModule: React.FC = () => {
 
   // --- 2. ACCOUNTANT WORKSPACE DASHBOARD ---
   if (currentRole === 'ACCOUNTANT') {
+    const todayFee = feeReceipts.filter(r => {
+      const d = new Date(r.paymentDate || Date.now());
+      const today = new Date();
+      return d.getDate() === today.getDate() && d.getMonth() === today.getMonth();
+    }).reduce((a, r) => a + r.paidAmount, 0);
+    const pendingDues = 355000;
+    const receiptsToday = feeReceipts.filter(r => {
+      const d = new Date(r.paymentDate || Date.now());
+      const today = new Date();
+      return d.getDate() === today.getDate() && d.getMonth() === today.getMonth();
+    }).length;
     return (
       <div className="space-y-6 animate-fade-in pb-12 text-xs">
-        <div className="bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-6 rounded-3xl shadow-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <span className="px-2.5 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-bold uppercase">
-              {isHindi ? 'लेखाधिकारी कार्यक्षेत्र' : 'Accounts Finance Desk'}
-            </span>
-            <h2 className="text-2xl font-black mt-1">
-              {isHindi ? 'फीस संग्रह एवं वित्तीय खाता-बही' : 'Fee Collection & Financial Ledger'}
-            </h2>
-            <p className="text-emerald-100 text-xs">
-              {isHindi ? `चालू सत्र में कुल फीस संग्रह: ₹${totalFeeCollected.toLocaleString()}` : `Total Realized Fees: ₹${totalFeeCollected.toLocaleString()}`}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setActiveModule('fee_management')}
-              className="px-4 py-2.5 rounded-2xl bg-white text-emerald-800 font-extrabold shadow-md hover:bg-slate-100 transition-colors cursor-pointer"
-            >
-              {isHindi ? 'नई फीस रसीद काटें' : 'Generate Fee Receipt'}
-            </button>
+        {/* Accountant Hero Header */}
+        <div className="relative bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 text-white p-7 rounded-3xl shadow-2xl overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.12)_0%,_transparent_60%)] pointer-events-none" />
+          <div className="relative flex flex-col sm:flex-row justify-between items-start sm:items-center gap-5">
+            <div className="space-y-1">
+              <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-white text-[10px] font-extrabold uppercase tracking-widest border border-white/30">
+                {isHindi ? '💰 लेखाधिकारी वित्त डेस्क' : '💰 Accounts Finance Desk'}
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black mt-2 tracking-tight">
+                {isHindi ? 'फीस संग्रह एवं वित्तीय खाता-बही' : 'Fee Collection & Financial Ledger'}
+              </h2>
+              <p className="text-emerald-100 text-xs font-medium">
+                {isHindi ? `चालू सत्र कुल फीस: ₹${totalFeeCollected.toLocaleString()}` : `Total Realized Fees This Session: ₹${totalFeeCollected.toLocaleString()}`}
+              </p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                onClick={() => setActiveModule('fee_management')}
+                className="px-5 py-2.5 rounded-2xl bg-white text-emerald-800 font-extrabold shadow-lg hover:bg-emerald-50 transition-all cursor-pointer text-xs"
+              >
+                🧾 {isHindi ? 'नई रसीद काटें' : 'Generate Receipt'}
+              </button>
+            </div>
           </div>
         </div>
 
+        {/* Accountant 4-KPI Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { icon: CreditCard, label: isHindi ? "आज फीस संग्रह" : "Today's Fee Collected", value: todayFee > 0 ? `₹${(todayFee/1000).toFixed(1)}K` : '₹0', sub: isHindi ? 'आज का कुल' : 'Today Total', color: 'emerald', grad: 'from-emerald-500 to-teal-600', module: 'fee_management' },
+            { icon: TrendingUp, label: isHindi ? "मासिक कुल संग्रह" : "Monthly Total", value: `₹${(totalFeeCollected/100000).toFixed(2)}L`, sub: isHindi ? 'चालू माह' : 'Current Month', color: 'indigo', grad: 'from-indigo-500 to-blue-600', module: 'fee_management' },
+            { icon: AlertCircle, label: isHindi ? "लंबित बकाया" : "Pending Dues", value: `₹${(pendingDues/1000).toFixed(0)}K`, sub: isHindi ? 'वसूली बाकी' : 'Outstanding', color: 'rose', grad: 'from-rose-500 to-pink-500', module: 'fee_management' },
+            { icon: FileText, label: isHindi ? "रसीदें (आज)" : "Receipts Today", value: `${receiptsToday || feeReceipts.length}`, sub: isHindi ? 'डिजिटल रसीदें' : 'Digital Receipts', color: 'amber', grad: 'from-amber-500 to-orange-500', module: 'fee_management' },
+          ].map((kpi) => (
+            <button
+              key={kpi.label}
+              onClick={() => setActiveModule(kpi.module)}
+              className={`group relative text-left p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-lg hover:border-${kpi.color}-300 dark:hover:border-${kpi.color}-700 transition-all space-y-3 overflow-hidden cursor-pointer`}
+            >
+              <div className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${kpi.grad} flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform`}>
+                <kpi.icon className="w-5 h-5" />
+              </div>
+              <div>
+                <div className={`text-3xl font-black text-${kpi.color}-600 dark:text-${kpi.color}-400`}>{kpi.value}</div>
+                <div className="font-extrabold text-xs text-slate-900 dark:text-white mt-0.5">{kpi.label}</div>
+                <div className="text-[10px] text-slate-400 mt-0.5">{kpi.sub}</div>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        {/* Accountant Action Tiles */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-          <div
-            onClick={() => setActiveModule('fee_management')}
-            className="cursor-pointer bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2 hover:border-emerald-500 transition-all"
-          >
-            <CreditCard className="w-6 h-6 text-emerald-500" />
-            <h3 className="font-bold text-slate-900 dark:text-white">
-              {isHindi ? 'फीस रसीदें एवं बकाया' : 'Fee Invoices & Dues'}
+          {[
+            { icon: CreditCard, label: isHindi ? 'फीस रसीदें एवं बकाया' : 'Fee Invoices & Dues', sub: isHindi ? 'प्रिंट करें व ऑनलाइन संग्रह जांचें' : 'Print receipts & verify gateways', color: 'emerald', grad: 'from-emerald-500 to-teal-600', module: 'fee_management' },
+            { icon: TrendingUp, label: isHindi ? 'कर्मचारी वेतन एवं खर्च' : 'Staff Payroll & Expenses', sub: isHindi ? 'मासिक वेतन व खर्च वाउचर' : 'Monthly payroll & expense ledger', color: 'indigo', grad: 'from-indigo-500 to-violet-600', module: 'payroll_expenses' },
+            { icon: ShieldCheck, label: isHindi ? 'वित्तीय ऑडिट लॉग' : 'Financial Audit Logs', sub: isHindi ? 'टैम्पर-इविडेंट लॉग रिकॉर्ड' : 'Tamper-evident audit trail', color: 'purple', grad: 'from-purple-600 to-indigo-600', module: 'audit_trail' },
+          ].map((tile) => (
+            <button
+              key={tile.label}
+              onClick={() => setActiveModule(tile.module)}
+              className={`group cursor-pointer text-left p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-lg hover:border-${tile.color}-300 dark:hover:border-${tile.color}-700 transition-all space-y-4`}
+            >
+              <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${tile.grad} flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform`}>
+                <tile.icon className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="font-extrabold text-sm text-slate-900 dark:text-white">{tile.label}</h3>
+                <p className="text-slate-400 text-[11px] mt-1">{tile.sub}</p>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        {/* Recent Fee Collection Log */}
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+              <CreditCard className="w-4 h-4 text-emerald-500" />
+              {isHindi ? 'हाल की फीस रसीदें' : 'Recent Fee Receipts'}
             </h3>
-            <p className="text-slate-400 text-[11px]">
-              {isHindi ? 'प्रिंट करें और ऑनलाइन संग्रह की जांच करें' : 'Print receipts and verify payment gateways'}
-            </p>
+            <button onClick={() => setActiveModule('fee_management')} className="text-[10px] font-extrabold text-emerald-600 hover:text-emerald-700 flex items-center gap-1">
+              {isHindi ? 'सभी देखें' : 'View All'} <ArrowRight className="w-3 h-3" />
+            </button>
           </div>
-          <div
-            onClick={() => setActiveModule('payroll_expenses')}
-            className="cursor-pointer bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2 hover:border-emerald-500 transition-all"
-          >
-            <TrendingUp className="w-6 h-6 text-indigo-500" />
-            <h3 className="font-bold text-slate-900 dark:text-white">
-              {isHindi ? 'कर्मचारी वेतन एवं स्कूल खर्च' : 'Staff Payroll & Expenses'}
-            </h3>
-            <p className="text-slate-400 text-[11px]">
-              {isHindi ? 'मासिक वेतन वितरण व खर्चों का वाउचर' : 'Monthly salary disbursement and expense ledger'}
-            </p>
-          </div>
-          <div
-            onClick={() => setActiveModule('audit_trail')}
-            className="cursor-pointer bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2 hover:border-emerald-500 transition-all"
-          >
-            <ShieldCheck className="w-6 h-6 text-purple-500" />
-            <h3 className="font-bold text-slate-900 dark:text-white">
-              {isHindi ? 'वित्तीय सुरक्षा व ऑडिट' : 'Financial Audit Logs'}
-            </h3>
-            <p className="text-slate-400 text-[11px]">
-              {isHindi ? 'रसीद संशोधन व सुरक्षा लॉग रिकॉर्ड' : 'Tamper-evident audit trail'}
-            </p>
+          <div className="space-y-2">
+            {(feeReceipts.length > 0 ? feeReceipts.slice(0, 5) : [
+              { id: 'R001', studentName: 'Rahul Kumar', paidAmount: 8500, date: '2026-10-23', category: 'Tuition' },
+              { id: 'R002', studentName: 'Priya Sharma', paidAmount: 4200, date: '2026-10-23', category: 'Transport' },
+              { id: 'R003', studentName: 'Amit Verma', paidAmount: 10000, date: '2026-10-22', category: 'Tuition' },
+              { id: 'R004', studentName: 'Sneha Gupta', paidAmount: 3500, date: '2026-10-22', category: 'Activities' },
+              { id: 'R005', studentName: 'Rohan Singh', paidAmount: 8500, date: '2026-10-21', category: 'Tuition' },
+            ] as any[]).map((r, i) => (
+              <div key={r.id || i} className="flex items-center justify-between py-2.5 px-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-black text-[10px]">
+                    ₹
+                  </div>
+                  <div>
+                    <div className="font-extrabold text-xs text-slate-900 dark:text-white">{r.studentName}</div>
+                    <div className="text-[10px] text-slate-400">{r.date} • {r.category || 'Tuition'}</div>
+                  </div>
+                </div>
+                <div className="font-black text-sm text-emerald-600 dark:text-emerald-400">₹{r.paidAmount?.toLocaleString()}</div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -422,54 +518,98 @@ export const PrincipalAIDashboardModule: React.FC = () => {
   }
 
   // --- 4. PRINCIPAL & SUPER ADMIN COMMAND CENTER (ONESCHOOLERP PRO DASHBOARD) ---
+  // Admissions CRM fast leads strip data
+  const crmLeads = [
+    { name: 'Aryan Mehta', class: 'Class VI', phone: '+91 98765 43210', source: 'Website', status: isHindi ? 'नया' : 'New', color: 'indigo' },
+    { name: 'Kavya Nair', class: 'Class IX', phone: '+91 87654 32109', source: 'Walk-In', status: isHindi ? 'काउंसलिंग' : 'Counselling', color: 'amber' },
+    { name: 'Rohan Verma', class: 'Class VIII', phone: '+91 76543 21098', source: 'WhatsApp', status: isHindi ? 'दस्तावेज़ जांच' : 'Docs Pending', color: 'rose' },
+  ];
+
+  const pendingExams = examPapers.length;
+
+  const launchpadTiles = [
+    { id: 'student_management', icon: Users, label: isHindi ? 'विद्यार्थी SIS' : 'Students', sublabel: `${totalStudents} ${isHindi ? 'नामांकित' : 'Enrolled'}`, color: 'indigo', badge: 0 },
+    { id: 'admission_workflow', icon: UserPlus, label: isHindi ? 'प्रवेश CRM' : 'Admissions', sublabel: `${pendingAdmissionsCount} ${isHindi ? 'लंबित' : 'Pending'}`, color: 'blue', badge: pendingAdmissionsCount },
+    { id: 'fee_management', icon: CreditCard, label: isHindi ? 'फीस काउंटर' : 'Fee Counter', sublabel: `₹${(totalFeeCollected / 100000).toFixed(1)}L ${isHindi ? 'वसूली' : 'Collected'}`, color: 'emerald', badge: 0 },
+    { id: 'attendance_timetable', icon: CalendarCheck, label: isHindi ? 'उपस्थिति' : 'Attendance', sublabel: `${avgAttendance}% ${isHindi ? 'आज' : 'Today'}`, color: 'purple', badge: 0 },
+    { id: 'examination_ai', icon: FileQuestion, label: isHindi ? 'परीक्षाएं' : 'Examinations', sublabel: isHindi ? 'एआई पेपर मेकर' : 'AI Test Maker', color: 'rose', badge: pendingExams > 0 ? pendingExams : 0 },
+    { id: 'examination_result_engine', icon: Award, label: isHindi ? 'परिणाम' : 'Results', sublabel: isHindi ? 'ग्रेड इंजन' : 'Grade Engine', color: 'amber', badge: 0 },
+    { id: 'staff_workforce', icon: User, label: isHindi ? 'स्टाफ HR' : 'Staff HR', sublabel: isHindi ? '50 संकाय' : '50 Faculty', color: 'cyan', badge: 0 },
+    { id: 'homework_learning', icon: BookOpen, label: isHindi ? 'गृहकार्य LMS' : 'Homework LMS', sublabel: isHindi ? 'डिजिटल कार्य' : 'Digital Tasks', color: 'violet', badge: 0 },
+    { id: 'library_transport', icon: Bus, label: isHindi ? 'फ्लीट व पुस्तकालय' : 'Fleet & Library', sublabel: isHindi ? '12 GPS बसें' : '12 GPS Buses', color: 'orange', badge: 0 },
+    { id: 'payroll_expenses', icon: DollarSign, label: isHindi ? 'वेतन' : 'Payroll', sublabel: isHindi ? 'मासिक वेतन' : 'Monthly Salary', color: 'teal', badge: 0 },
+    { id: 'website_builder', icon: Globe, label: isHindi ? 'स्कूल वेबसाइट' : 'School Website', sublabel: isHindi ? 'मार्केटिंग हब' : 'Marketing Hub', color: 'pink', badge: 0 },
+    { id: 'admission_workflow', icon: PhoneCall, label: isHindi ? 'एडमिशन CRM' : 'Admissions CRM', sublabel: isHindi ? 'WhatsApp लीड्स' : 'WhatsApp Leads', color: 'green', badge: 0 },
+  ];
+
   return (
     <div className="space-y-6 animate-fade-in pb-12 text-xs">
-      {/* Title Header with Session & Edge Status */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div className="flex items-center gap-4">
-          {branding.logoUrl ? (
-            <img src={branding.logoUrl} alt={branding.name} className="h-12 w-12 rounded-2xl object-cover border border-slate-200 dark:border-slate-700 shadow-sm" />
-          ) : (
-            <div className="h-12 w-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-black text-lg shadow-sm">
-              {branding.name?.charAt(0) || 'S'}
-            </div>
-          )}
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/70 px-2.5 py-0.5 rounded-full border border-indigo-200 dark:border-indigo-800">
-                {isHindi ? 'प्रधानाचार्य व प्रशासनिक कमान' : 'Principal & Administrative Cockpit'}
-              </span>
-              <span className="text-[10px] font-bold text-slate-400">
-                {isHindi ? `सत्र: ${branding.academicSession || '2026-2027'}` : `Session: ${branding.academicSession || '2026-2027'}`}
-              </span>
-            </div>
-            <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-1 tracking-tight">
-              {branding.name}
-            </h2>
-            <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
-              {isHindi
-                ? 'OneSchoolERP मानक: सहज सिम्बॉलिक टाइल्स, लाइव वित्तीय स्थिति एवं एआई सहायक'
-                : 'OneSchoolERP Standard: Minimalist operational tiles, real-time fiscal telemetry & automated CRM funnel.'}
-            </p>
-          </div>
-        </div>
+      {/* APPLE-GRADE HERO GRADIENT HEADER */}
+      <div className="relative bg-gradient-to-br from-indigo-700 via-purple-700 to-blue-700 text-white p-7 rounded-3xl shadow-2xl overflow-hidden">
+        {/* Decorative radial glow */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.18)_0%,_transparent_60%)] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(139,92,246,0.4)_0%,_transparent_70%)] pointer-events-none" />
 
-        <div className="flex items-center gap-2 self-start sm:self-center">
-          <div className="flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-950/60 px-3.5 py-2 rounded-2xl border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 font-bold text-xs">
-            <ShieldCheck className="w-4 h-4 text-emerald-500" />
-            <span>{isHindi ? 'सिस्टम स्थिति: 100% सक्रिय' : 'System Health: 100% Live'}</span>
+        <div className="relative flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+          <div className="flex items-center gap-4">
+            {branding.logoUrl ? (
+              <img src={branding.logoUrl} alt={branding.name} className="h-16 w-16 rounded-2xl object-cover border-2 border-white/40 shadow-xl" />
+            ) : (
+              <div className="h-16 w-16 rounded-2xl bg-white/20 backdrop-blur-sm border-2 border-white/40 text-white flex items-center justify-center font-black text-2xl shadow-xl">
+                {branding.name?.charAt(0) || 'S'}
+              </div>
+            )}
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-white text-[10px] font-extrabold uppercase tracking-widest border border-white/30">
+                  {isHindi ? '🏫 प्रधानाचार्य कमान केंद्र' : '🏫 Principal Command Center'}
+                </span>
+                <span className="text-[10px] font-bold text-white/70 bg-white/10 px-2 py-0.5 rounded-full">
+                  {isHindi ? `सत्र: ${branding.academicSession || '2026-27'}` : `Session: ${branding.academicSession || '2026-27'}`}
+                </span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black tracking-tight mt-1">{branding.name}</h2>
+              <p className="text-indigo-200 text-xs font-medium">
+                {isHindi
+                  ? 'OneSchoolERP: लाइव वित्तीय, उपस्थिति एवं एआई सहायक'
+                  : 'OneSchoolERP: Live financials, attendance & AI-powered operations'}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:items-end gap-3 shrink-0">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 bg-emerald-500/20 border border-emerald-400/40 px-3.5 py-2 rounded-2xl font-bold text-xs text-emerald-200">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />
+                {isHindi ? 'सिस्टम: 100% लाइव' : 'System: 100% Live'}
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-3 text-center bg-white/10 backdrop-blur-sm rounded-2xl px-4 py-3 border border-white/20">
+              <div>
+                <div className="text-lg font-black text-white">{totalStudents}</div>
+                <div className="text-[10px] text-indigo-200 font-medium">{isHindi ? 'छात्र' : 'Students'}</div>
+              </div>
+              <div className="border-x border-white/20">
+                <div className="text-lg font-black text-emerald-300">{avgAttendance}%</div>
+                <div className="text-[10px] text-indigo-200 font-medium">{isHindi ? 'उपस्थिति' : 'Attendance'}</div>
+              </div>
+              <div>
+                <div className="text-lg font-black text-amber-300">₹{(totalFeeCollected / 100000).toFixed(1)}L</div>
+                <div className="text-[10px] text-indigo-200 font-medium">{isHindi ? 'फीस' : 'Fee Coll.'}</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Top 4 KPI Metric Cards (OneSchoolERP Style) */}
+      {/* Top 4 KPI Metric Cards — Apple-grade with squircle icons */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* KPI 1: Student Attendance */}
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 relative overflow-hidden group hover:border-indigo-500 transition-all">
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[10px] font-bold uppercase tracking-wider">{isHindi ? 'आज की छात्र उपस्थिति' : "Student Attendance Today"}</span>
-            <div className="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400">
-              <Users className="w-4 h-4" />
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 relative overflow-hidden group hover:border-purple-400 dark:hover:border-purple-600 hover:shadow-lg transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">{isHindi ? 'आज की छात्र उपस्थिति' : 'Student Attendance Today'}</span>
+            <div className="w-10 h-10 rounded-2xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800 flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
+              <Users className="w-4.5 h-4.5" />
             </div>
           </div>
           <div>
@@ -478,20 +618,20 @@ export const PrincipalAIDashboardModule: React.FC = () => {
               <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">↑ 1.2%</span>
             </div>
             <p className="text-slate-400 text-[11px] mt-1">
-              {isHindi ? `${Math.round(totalStudents * 0.948)} उपस्थित / ${totalStudents} नामांकित` : `${Math.round(totalStudents * 0.948)} Present / ${totalStudents} Total Enrolled`}
+              {isHindi ? `${Math.round(totalStudents * 0.948)} उपस्थित / ${totalStudents} नामांकित` : `${Math.round(totalStudents * 0.948)} Present / ${totalStudents} Total`}
             </p>
           </div>
-          <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
-            <div className="bg-gradient-to-r from-purple-500 to-indigo-600 h-full rounded-full" style={{ width: `${avgAttendance}%` }} />
+          <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+            <div className="bg-gradient-to-r from-purple-500 to-indigo-600 h-full rounded-full transition-all" style={{ width: `${avgAttendance}%` }} />
           </div>
         </div>
 
         {/* KPI 2: Faculty Attendance */}
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 relative overflow-hidden group hover:border-indigo-500 transition-all">
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[10px] font-bold uppercase tracking-wider">{isHindi ? 'शिक्षक व स्टाफ उपस्थिति' : "Faculty & Staff Attendance"}</span>
-            <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400">
-              <CalendarCheck className="w-4 h-4" />
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 relative overflow-hidden group hover:border-amber-400 dark:hover:border-amber-600 hover:shadow-lg transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">{isHindi ? 'शिक्षक व स्टाफ उपस्थिति' : 'Faculty & Staff Status'}</span>
+            <div className="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 flex items-center justify-center text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform">
+              <CalendarCheck className="w-4.5 h-4.5" />
             </div>
           </div>
           <div>
@@ -503,17 +643,17 @@ export const PrincipalAIDashboardModule: React.FC = () => {
               {isHindi ? '48 शिक्षक ड्यूटी पर • 2 स्वीकृत अवकाश पर' : '48 Faculty on Duty • 2 on Approved Leave'}
             </p>
           </div>
-          <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+          <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
             <div className="bg-gradient-to-r from-amber-500 to-orange-500 h-full rounded-full" style={{ width: '96%' }} />
           </div>
         </div>
 
-        {/* KPI 3: Fee Realization Velocity */}
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 relative overflow-hidden group hover:border-emerald-500 transition-all">
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[10px] font-bold uppercase tracking-wider">{isHindi ? 'कुल फीस संग्रह' : 'Fee Realization'}</span>
-            <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
-              <CreditCard className="w-4 h-4" />
+        {/* KPI 3: Fee Realization */}
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 relative overflow-hidden group hover:border-emerald-400 dark:hover:border-emerald-600 hover:shadow-lg transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">{isHindi ? 'कुल फीस संग्रह' : 'Fee Realization'}</span>
+            <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
+              <CreditCard className="w-4.5 h-4.5" />
             </div>
           </div>
           <div>
@@ -525,17 +665,17 @@ export const PrincipalAIDashboardModule: React.FC = () => {
               {isHindi ? 'लक्ष्य: ₹22,00,000 • बकाया: ₹3,55,000' : 'Target: ₹22,00,000 • Outstanding: ₹3,55,000'}
             </p>
           </div>
-          <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+          <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
             <div className="bg-gradient-to-r from-emerald-500 to-teal-500 h-full rounded-full" style={{ width: '83.8%' }} />
           </div>
         </div>
 
-        {/* KPI 4: Admission CRM Pipeline */}
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 relative overflow-hidden group hover:border-indigo-500 transition-all">
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[10px] font-bold uppercase tracking-wider">{isHindi ? 'प्रवेश व लीड्स (CRM)' : 'Admissions CRM Pipeline'}</span>
-            <div className="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
-              <UserPlus className="w-4 h-4" />
+        {/* KPI 4: Admissions CRM */}
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 relative overflow-hidden group hover:border-indigo-400 dark:hover:border-indigo-600 hover:shadow-lg transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">{isHindi ? 'प्रवेश व लीड्स (CRM)' : 'Admissions CRM Pipeline'}</span>
+            <div className="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform">
+              <UserPlus className="w-4.5 h-4.5" />
             </div>
           </div>
           <div>
@@ -544,22 +684,22 @@ export const PrincipalAIDashboardModule: React.FC = () => {
               <span className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400">{enrolledAdmissionsCount} {isHindi ? 'नामांकित' : 'Enrolled'}</span>
             </div>
             <p className="text-slate-400 text-[11px] mt-1">
-              {isHindi ? `${pendingAdmissionsCount} आवेदन प्रक्रियाधीन • व्हाट्सएप ऑटो-ड्रिप सक्रिय` : `${pendingAdmissionsCount} Pending Verification • WhatsApp Drip Active`}
+              {isHindi ? `${pendingAdmissionsCount} आवेदन प्रक्रियाधीन • WhatsApp ड्रिप सक्रिय` : `${pendingAdmissionsCount} Pending Verification • WhatsApp Drip Active`}
             </p>
           </div>
-          <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+          <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
             <div className="bg-gradient-to-r from-indigo-500 to-blue-600 h-full rounded-full" style={{ width: `${Math.min(100, (enrolledAdmissionsCount / (admissions.length || 1)) * 100)}%` }} />
           </div>
         </div>
       </div>
 
-      {/* ONE SCHOOL ERP STYLE 12-TILE OPERATIONAL APP GRID */}
+      {/* ONESCHOOLERP STYLE 12-TILE SQUIRCLE LAUNCHPAD */}
       <div className="space-y-3">
         <div className="flex items-center justify-between px-1">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-indigo-500" />
             <h3 className="font-extrabold text-sm text-slate-900 dark:text-white">
-              {isHindi ? 'दैनिक परिचालन शॉर्टकट टाइल्स (OneSchoolERP ग्रिड)' : 'Daily Operational Launchpad (OneSchoolERP Tiles)'}
+              {isHindi ? 'दैनिक परिचालन लॉन्चपैड (OneSchoolERP)' : 'Daily Operations Launchpad (OneSchoolERP)'}
             </h3>
           </div>
           <span className="text-[11px] font-semibold text-slate-400">
@@ -568,281 +708,26 @@ export const PrincipalAIDashboardModule: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3.5">
-          {/* Tile 1: Fee Counter */}
-          <button
-            onClick={() => setActiveModule('fee_management')}
-            className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-left flex flex-col justify-between hover:border-emerald-500 hover:shadow-lg transition-all group cursor-pointer"
-          >
-            <div className="flex items-start justify-between w-full">
-              <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-500 text-white flex items-center justify-center shadow-md shadow-emerald-500/20">
-                <CreditCard className="w-5 h-5" />
+          {launchpadTiles.map((tile, idx) => (
+            <button
+              key={`${tile.id}-${idx}`}
+              onClick={() => setActiveModule(tile.id)}
+              className={`relative p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-${tile.color}-300 dark:hover:border-${tile.color}-700 transition-all group text-left space-y-2 cursor-pointer`}
+            >
+              <div className={`w-11 h-11 rounded-2xl bg-${tile.color}-50 dark:bg-${tile.color}-950/60 border border-${tile.color}-200 dark:border-${tile.color}-800 flex items-center justify-center text-${tile.color}-600 dark:text-${tile.color}-400 group-hover:scale-110 transition-transform`}>
+                <tile.icon className="w-5 h-5" />
               </div>
-              <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                POS
-              </span>
-            </div>
-            <div className="mt-3">
-              <div className="font-black text-slate-900 dark:text-white text-xs group-hover:text-emerald-600 transition-colors">
-                {isHindi ? 'फीस काउंटर' : 'Fee Counter'}
+              <div>
+                <p className="font-extrabold text-xs text-slate-900 dark:text-white leading-tight">{tile.label}</p>
+                <p className="text-[10px] text-slate-500 mt-0.5">{tile.sublabel}</p>
               </div>
-              <div className="text-[10px] text-slate-400 mt-0.5">
-                {isHindi ? 'रसीद व ऑनलाइन वसूली' : 'Collect & Receipt Desk'}
-              </div>
-            </div>
-          </button>
-
-          {/* Tile 2: Daily Attendance */}
-          <button
-            onClick={() => setActiveModule('attendance_timetable')}
-            className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-left flex flex-col justify-between hover:border-purple-500 hover:shadow-lg transition-all group cursor-pointer"
-          >
-            <div className="flex items-start justify-between w-full">
-              <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-purple-500 to-indigo-600 text-white flex items-center justify-center shadow-md shadow-purple-500/20">
-                <CalendarCheck className="w-5 h-5" />
-              </div>
-              <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-purple-50 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
-                {avgAttendance}%
-              </span>
-            </div>
-            <div className="mt-3">
-              <div className="font-black text-slate-900 dark:text-white text-xs group-hover:text-purple-600 transition-colors">
-                {isHindi ? 'दैनिक उपस्थिति' : 'Daily Attendance'}
-              </div>
-              <div className="text-[10px] text-slate-400 mt-0.5">
-                {isHindi ? 'रोस्टर व डेली लॉक' : 'Roster & Tamper Lock'}
-              </div>
-            </div>
-          </button>
-
-          {/* Tile 3: Student SIS */}
-          <button
-            onClick={() => setActiveModule('student_management')}
-            className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-left flex flex-col justify-between hover:border-blue-500 hover:shadow-lg transition-all group cursor-pointer"
-          >
-            <div className="flex items-start justify-between w-full">
-              <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-blue-500 to-cyan-500 text-white flex items-center justify-center shadow-md shadow-blue-500/20">
-                <Users className="w-5 h-5" />
-              </div>
-              <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                {totalStudents}
-              </span>
-            </div>
-            <div className="mt-3">
-              <div className="font-black text-slate-900 dark:text-white text-xs group-hover:text-blue-600 transition-colors">
-                {isHindi ? 'विद्यार्थी विवरण' : 'Student SIS'}
-              </div>
-              <div className="text-[10px] text-slate-400 mt-0.5">
-                {isHindi ? '360° प्रोफाइल व आईडी' : '360° Profile & Roster'}
-              </div>
-            </div>
-          </button>
-
-          {/* Tile 4: Admissions & CRM */}
-          <button
-            onClick={() => setActiveModule('admissions_workflow')}
-            className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-left flex flex-col justify-between hover:border-amber-500 hover:shadow-lg transition-all group cursor-pointer"
-          >
-            <div className="flex items-start justify-between w-full">
-              <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white flex items-center justify-center shadow-md shadow-amber-500/20">
-                <UserPlus className="w-5 h-5" />
-              </div>
-              <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
-                CRM
-              </span>
-            </div>
-            <div className="mt-3">
-              <div className="font-black text-slate-900 dark:text-white text-xs group-hover:text-amber-600 transition-colors">
-                {isHindi ? 'एडमिशन व लीड्स' : 'Admissions CRM'}
-              </div>
-              <div className="text-[10px] text-slate-400 mt-0.5">
-                {isHindi ? 'व्हाट्सएप ऑटो-टारगेट' : 'Inquiries & WhatsApp'}
-              </div>
-            </div>
-          </button>
-
-          {/* Tile 5: Timetable */}
-          <button
-            onClick={() => setActiveModule('timetable_engine')}
-            className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-left flex flex-col justify-between hover:border-indigo-500 hover:shadow-lg transition-all group cursor-pointer"
-          >
-            <div className="flex items-start justify-between w-full">
-              <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center shadow-md shadow-indigo-600/20">
-                <Calendar className="w-5 h-5" />
-              </div>
-              <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-                Routine
-              </span>
-            </div>
-            <div className="mt-3">
-              <div className="font-black text-slate-900 dark:text-white text-xs group-hover:text-indigo-600 transition-colors">
-                {isHindi ? 'समय सारिणी' : 'Timetable Engine'}
-              </div>
-              <div className="text-[10px] text-slate-400 mt-0.5">
-                {isHindi ? 'क्लास व शिक्षक रूटीन' : 'Period Slots & Conflicts'}
-              </div>
-            </div>
-          </button>
-
-          {/* Tile 6: Homework & LMS */}
-          <button
-            onClick={() => setActiveModule('homework_learning')}
-            className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-left flex flex-col justify-between hover:border-rose-500 hover:shadow-lg transition-all group cursor-pointer"
-          >
-            <div className="flex items-start justify-between w-full">
-              <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-rose-500 to-pink-500 text-white flex items-center justify-center shadow-md shadow-rose-500/20">
-                <BookOpen className="w-5 h-5" />
-              </div>
-              <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800">
-                LMS
-              </span>
-            </div>
-            <div className="mt-3">
-              <div className="font-black text-slate-900 dark:text-white text-xs group-hover:text-rose-600 transition-colors">
-                {isHindi ? 'गृहकार्य व नोट्स' : 'Homework & LMS'}
-              </div>
-              <div className="text-[10px] text-slate-400 mt-0.5">
-                {isHindi ? 'डिजिटल असाइनमेंट' : 'Submissions & Review'}
-              </div>
-            </div>
-          </button>
-
-          {/* Tile 7: Exams & AI Papers */}
-          <button
-            onClick={() => setActiveModule('examination_ai')}
-            className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-left flex flex-col justify-between hover:border-violet-500 hover:shadow-lg transition-all group cursor-pointer"
-          >
-            <div className="flex items-start justify-between w-full">
-              <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-600 text-white flex items-center justify-center shadow-md shadow-violet-500/20">
-                <FileQuestion className="w-5 h-5" />
-              </div>
-              <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-violet-50 dark:bg-violet-950 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-800">
-                AI
-              </span>
-            </div>
-            <div className="mt-3">
-              <div className="font-black text-slate-900 dark:text-white text-xs group-hover:text-violet-600 transition-colors">
-                {isHindi ? 'परीक्षा व प्रश्न पत्र' : 'Exams & Papers'}
-              </div>
-              <div className="text-[10px] text-slate-400 mt-0.5">
-                {isHindi ? '1-क्लिक पेपर जनरेटर' : 'Blueprints & Questions'}
-              </div>
-            </div>
-          </button>
-
-          {/* Tile 8: Report Cards */}
-          <button
-            onClick={() => setActiveModule('report_cards')}
-            className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-left flex flex-col justify-between hover:border-yellow-500 hover:shadow-lg transition-all group cursor-pointer"
-          >
-            <div className="flex items-start justify-between w-full">
-              <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-amber-400 to-yellow-500 text-slate-950 flex items-center justify-center shadow-md shadow-yellow-500/20">
-                <Award className="w-5 h-5" />
-              </div>
-              <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-yellow-50 dark:bg-yellow-950 text-yellow-700 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800">
-                NEP 2020
-              </span>
-            </div>
-            <div className="mt-3">
-              <div className="font-black text-slate-900 dark:text-white text-xs group-hover:text-amber-600 transition-colors">
-                {isHindi ? 'प्रगति पत्रक (Marks)' : 'Report Cards'}
-              </div>
-              <div className="text-[10px] text-slate-400 mt-0.5">
-                {isHindi ? 'सीबीएसई ग्रेड व प्रिंट' : 'NEP & CBSE Marksheets'}
-              </div>
-            </div>
-          </button>
-
-          {/* Tile 9: Bus & Transport Fleet */}
-          <button
-            onClick={() => setActiveModule('library_transport')}
-            className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-left flex flex-col justify-between hover:border-orange-500 hover:shadow-lg transition-all group cursor-pointer"
-          >
-            <div className="flex items-start justify-between w-full">
-              <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-600 text-white flex items-center justify-center shadow-md shadow-orange-500/20">
-                <Bus className="w-5 h-5" />
-              </div>
-              <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800">
-                GPS
-              </span>
-            </div>
-            <div className="mt-3">
-              <div className="font-black text-slate-900 dark:text-white text-xs group-hover:text-orange-600 transition-colors">
-                {isHindi ? 'स्कूल बस व फ्लीट' : 'Fleet & Transport'}
-              </div>
-              <div className="text-[10px] text-slate-400 mt-0.5">
-                {isHindi ? 'रूट व स्टॉप ट्रैकिंग' : 'Live Routes & Drivers'}
-              </div>
-            </div>
-          </button>
-
-          {/* Tile 10: Library Books */}
-          <button
-            onClick={() => setActiveModule('library_transport')}
-            className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-left flex flex-col justify-between hover:border-teal-500 hover:shadow-lg transition-all group cursor-pointer"
-          >
-            <div className="flex items-start justify-between w-full">
-              <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-teal-500 to-emerald-600 text-white flex items-center justify-center shadow-md shadow-teal-500/20">
-                <Layers className="w-5 h-5" />
-              </div>
-              <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800">
-                Catalog
-              </span>
-            </div>
-            <div className="mt-3">
-              <div className="font-black text-slate-900 dark:text-white text-xs group-hover:text-teal-600 transition-colors">
-                {isHindi ? 'पुस्तकालय (Library)' : 'Digital Library'}
-              </div>
-              <div className="text-[10px] text-slate-400 mt-0.5">
-                {isHindi ? 'एनसीईआरटी बुक्स व इशू' : 'Books Issue & Fines'}
-              </div>
-            </div>
-          </button>
-
-          {/* Tile 11: Staff Workforce */}
-          <button
-            onClick={() => setActiveModule('staff_workforce')}
-            className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-left flex flex-col justify-between hover:border-slate-500 hover:shadow-lg transition-all group cursor-pointer"
-          >
-            <div className="flex items-start justify-between w-full">
-              <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-slate-700 to-slate-900 text-white flex items-center justify-center shadow-md shadow-slate-700/20">
-                <User className="w-5 h-5" />
-              </div>
-              <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700">
-                Staff
-              </span>
-            </div>
-            <div className="mt-3">
-              <div className="font-black text-slate-900 dark:text-white text-xs group-hover:text-slate-700 transition-colors">
-                {isHindi ? 'स्टाफ व छुट्टियां' : 'Staff Workforce'}
-              </div>
-              <div className="text-[10px] text-slate-400 mt-0.5">
-                {isHindi ? 'सैलरी व लीव अप्रूवल' : 'Leave Ledger & Pay'}
-              </div>
-            </div>
-          </button>
-
-          {/* Tile 12: School Website CMS */}
-          <button
-            onClick={() => setActiveModule('website_builder')}
-            className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-left flex flex-col justify-between hover:border-indigo-500 hover:shadow-lg transition-all group cursor-pointer"
-          >
-            <div className="flex items-start justify-between w-full">
-              <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-fuchsia-600 to-pink-600 text-white flex items-center justify-center shadow-md shadow-pink-500/20">
-                <Globe className="w-5 h-5" />
-              </div>
-              <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-pink-50 dark:bg-pink-950 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800">
-                Live
-              </span>
-            </div>
-            <div className="mt-3">
-              <div className="font-black text-slate-900 dark:text-white text-xs group-hover:text-pink-600 transition-colors">
-                {isHindi ? 'स्कूल वेबसाइट व वीडियो' : 'Website & Media'}
-              </div>
-              <div className="text-[10px] text-slate-400 mt-0.5">
-                {isHindi ? 'प्रमोशनल वीडियो व गैलरी' : 'Marketing & Subdomain'}
-              </div>
-            </div>
-          </button>
+              {tile.badge > 0 && (
+                <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center justify-center shadow-sm">
+                  {tile.badge}
+                </span>
+              )}
+            </button>
+          ))}
         </div>
       </div>
 

@@ -1,24 +1,24 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
-  School,
-  Building2,
-  GraduationCap,
-  Target,
-  BookOpen,
-  Baby,
-  Trophy,
-  ArrowRight,
-  ShieldCheck,
-  CheckCircle2,
-  Sparkles,
-  Zap,
-  Lock,
-  Layers,
-  Users,
   CreditCard,
+  Users,
   Bus,
+  ClipboardList,
+  Smartphone,
+  BarChart3,
+  ArrowRight,
+  CheckCircle,
+  Star,
+  Play,
+  Zap,
+  Shield,
+  TrendingUp,
+  School,
+  ChevronRight,
+  Award,
+  Globe2,
   Clock,
-  Play
+  Sparkles,
 } from 'lucide-react';
 import { PublicRoute } from '../../../types';
 
@@ -28,307 +28,690 @@ interface HomePageProps {
   isHindi?: boolean;
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenLogin, isHindi = false }) => {
-  const categories = [
-    {
-      slug: 'k12-schools',
-      name: isHindi ? 'K-12 स्कूल' : 'K-12 Schools',
-      subtitle: 'CBSE / ICSE / State Boards',
-      tagline: isHindi ? 'प्रवेश से लेकर रिपोर्ट कार्ड व परिवहन तक संपूर्ण समाधान' : 'Admissions, continuous grading, fees & bus GPS',
-      icon: School,
-      color: 'from-blue-600 to-indigo-600'
-    },
-    {
-      slug: 'school-groups-trusts',
-      name: isHindi ? 'स्कूल ग्रुप्स व ट्रस्ट्स' : 'School Groups & Trusts',
-      subtitle: 'Multi-Branch Governance',
-      tagline: isHindi ? 'केंद्रीय वित्तीय नियंत्रण व शाखा-वार मानकीकृत रिपोर्टिंग' : 'Centralized fee treasury & multi-campus oversight',
-      icon: Building2,
-      color: 'from-purple-600 to-indigo-600'
-    },
-    {
-      slug: 'colleges-higher-ed',
-      name: isHindi ? 'कॉलेज व उच्च शिक्षा' : 'Higher Ed Colleges',
-      subtitle: 'NEP 2020 & CBCS Matrix',
-      tagline: isHindi ? 'क्रेडिट आधारित ग्रेडिंग, विभाग आवंटन व प्लेसमेंट सेल' : 'Course electives, semester hall tickets & placements',
-      icon: GraduationCap,
-      color: 'from-cyan-600 to-blue-600'
-    },
-    {
-      slug: 'coaching-institutes',
-      name: isHindi ? 'कोचिंग व टेस्ट-प्रेप' : 'Coaching Institutes',
-      subtitle: 'JEE / NEET / UPSC',
-      tagline: isHindi ? 'बैच-वार टाइमटेबल, ऑनलाइन टेस्ट सीरीज व रैंक एनालिटिक्स' : 'Batch scheduling, CBT tests & percentile analytics',
-      icon: Target,
-      color: 'from-amber-600 to-orange-600'
-    },
-    {
-      slug: 'tuition-centres',
-      name: isHindi ? 'ट्यूशन सेंटर्स' : 'Tuition Centres',
-      subtitle: 'Micro-Academies & Tutors',
-      tagline: isHindi ? 'त्वरित मोबाइल अटेंडेंस, यूपीआई फीस व होमवर्क ब्रॉडकास्ट' : 'Fast check-in, UPI fee links & parent WhatsApp cards',
-      icon: BookOpen,
-      color: 'from-emerald-600 to-teal-600'
-    },
-    {
-      slug: 'preschools',
-      name: isHindi ? 'प्रीस्कूल व डेकेयर' : 'Preschools & Daycares',
-      subtitle: 'Toddlers & Kindergarten',
-      tagline: isHindi ? 'माइलस्टोन ट्रैकिंग, सुरक्षा लॉग्स व खुशहाल पेरेंट फीड' : 'Milestone logs, daily meal/nap notes & photo moments',
-      icon: Baby,
-      color: 'from-pink-600 to-rose-600'
-    },
-    {
-      slug: 'sports-arts-academies',
-      name: isHindi ? 'स्पोर्ट्स व कला एकेडमी' : 'Sports & Arts Academies',
-      subtitle: 'Athletics & Performing Arts',
-      tagline: isHindi ? 'कोर्ट/स्टुडियो स्लॉट शेड्यूलिंग, बेल्ट ग्रेडिंग व टूर्नामेंट रोस्टर' : 'Court reservations, belt assessments & competition rosters',
-      icon: Trophy,
-      color: 'from-violet-600 to-purple-600'
-    }
-  ];
+/* ── Marquee animation via inline style injection ─────────────────────── */
+const MARQUEE_STYLE = `
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee { animation: marquee 28s linear infinite; }
+.animate-marquee:hover { animation-play-state: paused; }
 
-  const highlights = [
-    {
-      icon: School,
-      title: isHindi ? 'स्मार्ट छात्र सूचना प्रणाली (SIS)' : 'Comprehensive Student SIS',
-      desc: isHindi ? 'डिजिटल प्रवेश फॉर्म, दस्तावेज सत्यापन और छात्र प्रोफाइल प्रबंधन।' : 'End-to-end digital admissions, document repository, and student biodata.'
-    },
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+.animate-float { animation: float 4s ease-in-out infinite; }
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.6; }
+  50%       { opacity: 1; }
+}
+.animate-pulse-glow { animation: pulse-glow 2.5s ease-in-out infinite; }
+`;
+
+export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenLogin, isHindi = false }) => {
+  const styleRef = useRef<HTMLStyleElement | null>(null);
+
+  useEffect(() => {
+    if (!document.getElementById('hp-marquee-style')) {
+      const el = document.createElement('style');
+      el.id = 'hp-marquee-style';
+      el.textContent = MARQUEE_STYLE;
+      document.head.appendChild(el);
+      styleRef.current = el;
+    }
+    return () => {
+      // keep style alive while navigating; remove only on full unmount if needed
+    };
+  }, []);
+
+  /* ── Data ──────────────────────────────────────────────────────────── */
+
+  const features = [
     {
       icon: CreditCard,
-      title: isHindi ? 'स्वचालित फीस ट्रेजरी व यूपीआई' : 'Automated Fee Treasury & UPI',
-      desc: isHindi ? 'मासिक/त्रैमासिक चालान, यूपीआई भुगतान लिंक और तत्काल डिजिटल रसीदें।' : 'Automated fee schedule generation, payment links, and instant receipts.'
+      title: 'Fee Management',
+      desc: 'Automated fee schedules, UPI payment links, instant digital receipts & arrear tracking.',
+      color: 'from-emerald-500 to-green-600',
+      bg: 'bg-emerald-500/10',
+      border: 'border-emerald-500/20',
+      text: 'text-emerald-400',
     },
     {
-      icon: Layers,
-      title: isHindi ? 'सीबीएसई व बोर्ड रिपोर्ट कार्ड' : 'Board-Compliant Evaluation',
-      desc: isHindi ? 'सीबीएसई, आईसीएसई व स्टेट बोर्ड के अनुसार मार्कशीट व समग्र मूल्यांकन।' : 'Pre-configured scholastic & co-scholastic rubrics for all major boards.'
+      icon: Users,
+      title: 'Smart Attendance',
+      desc: 'Biometric & RFID integration, daily roll-call app, SMS absent alerts to parents.',
+      color: 'from-indigo-500 to-blue-600',
+      bg: 'bg-indigo-500/10',
+      border: 'border-indigo-500/20',
+      text: 'text-indigo-400',
     },
     {
       icon: Bus,
-      title: isHindi ? 'लाइव स्कूल बस जीपीएस ट्रैकिंग' : 'Live Fleet GPS & Geofencing',
-      desc: isHindi ? 'बस चालकों के लिए मोबाइल ऐप, गति अलर्ट और अभिभावकों हेतु लाइव मैप।' : 'Real-time vehicle tracking, route geofences, and parent arrival alerts.'
+      title: 'Transport GPS',
+      desc: 'Live bus tracking, route geofencing, driver app & real-time parent arrival alerts.',
+      color: 'from-amber-500 to-orange-600',
+      bg: 'bg-amber-500/10',
+      border: 'border-amber-500/20',
+      text: 'text-amber-400',
     },
     {
-      icon: Clock,
-      title: isHindi ? 'बायोमेट्रिक व आरएफआईडी अटेंडेंस' : 'Hardware Biometric Attendance',
-      desc: isHindi ? 'ZKTeco व eSSL डिवाइसों से स्वचालित पंच सिंक और अनुपस्थिति एसएमएस।' : 'Direct integration with physical turnstiles, RFID cards, and biometric clocks.'
+      icon: ClipboardList,
+      title: 'Online Exams',
+      desc: 'AI question bank, CBSE/ICSE rubrics, CBT exams with instant ranking & reports.',
+      color: 'from-rose-500 to-pink-600',
+      bg: 'bg-rose-500/10',
+      border: 'border-rose-500/20',
+      text: 'text-rose-400',
     },
     {
-      icon: Sparkles,
-      title: isHindi ? 'एआई क्वेश्चन बैंक व ऑनलाइन परीक्षा' : 'AI Question Bank & CBT Exams',
-      desc: isHindi ? 'अध्याय-वार स्वतः प्रश्न पत्र निर्माण, टाइमर आधारित ऑनलाइन टेस्ट।' : 'Automated test paper generation and online CBT exams with instant ranking.'
-    }
+      icon: Smartphone,
+      title: 'Parent Portal',
+      desc: 'Mobile app with fees, attendance, homework, bus location & direct teacher chat.',
+      color: 'from-cyan-500 to-teal-600',
+      bg: 'bg-cyan-500/10',
+      border: 'border-cyan-500/20',
+      text: 'text-cyan-400',
+    },
+    {
+      icon: BarChart3,
+      title: 'AI Reports',
+      desc: 'Auto-generated board report cards, analytics dashboards & WhatsApp progress shares.',
+      color: 'from-violet-500 to-purple-600',
+      bg: 'bg-violet-500/10',
+      border: 'border-violet-500/20',
+      text: 'text-violet-400',
+    },
+  ];
+
+  const steps = [
+    {
+      num: '01',
+      title: 'Register Your School',
+      desc: 'Sign up in minutes. Add school details, logo, branches and admin accounts.',
+      icon: School,
+      color: 'from-indigo-500 to-blue-600',
+    },
+    {
+      num: '02',
+      title: 'Configure Classes & Fees',
+      desc: 'Set classes, sections, subjects, fee structures and academic calendar.',
+      icon: Zap,
+      color: 'from-purple-500 to-indigo-600',
+    },
+    {
+      num: '03',
+      title: 'Go Live Instantly',
+      desc: 'Invite staff, parents & students. Collect fees, track attendance from Day 1.',
+      icon: TrendingUp,
+      color: 'from-emerald-500 to-teal-600',
+    },
+  ];
+
+  const stats = [
+    { value: '500+', label: 'Schools Onboard', icon: School, color: 'text-indigo-400' },
+    { value: '5L+', label: 'Students Managed', icon: Users, color: 'text-emerald-400' },
+    { value: '₹50Cr+', label: 'Fee Collected', icon: CreditCard, color: 'text-amber-400' },
+    { value: '4.9★', label: 'Average Rating', icon: Star, color: 'text-rose-400' },
+  ];
+
+  const testimonials = [
+    {
+      quote:
+        'i2A SchoolOS transformed how we manage fees. Collection is up 40% and zero manual errors since we switched.',
+      name: 'Mrs. Rekha Sharma',
+      role: 'Principal',
+      school: 'Delhi Public Academy, Noida',
+      initials: 'RS',
+      color: 'from-indigo-600 to-purple-600',
+    },
+    {
+      quote:
+        'Parents love the real-time bus tracking and attendance alerts. Our parent satisfaction score jumped to 4.8 stars.',
+      name: 'Mr. Arvind Nair',
+      role: 'Director',
+      school: 'Sunrise International School, Kochi',
+      initials: 'AN',
+      color: 'from-emerald-600 to-teal-600',
+    },
+    {
+      quote:
+        'The AI-generated CBSE report cards saved our staff 200+ hours per term. Best EdTech decision we made.',
+      name: 'Dr. Priya Iyer',
+      role: 'Academic Head',
+      school: 'Vidya Niketan CBSE School, Pune',
+      initials: 'PI',
+      color: 'from-rose-600 to-pink-600',
+    },
+  ];
+
+  const pricingPlans = [
+    {
+      name: 'Starter',
+      price: '₹2,999',
+      period: '/month',
+      desc: 'Perfect for small schools up to 300 students.',
+      features: ['Fee Management', 'Attendance Module', 'Parent App', 'Basic Reports', 'Email Support'],
+      cta: 'Start Free Trial',
+      color: 'border-slate-700',
+      badge: null,
+      btnClass: 'bg-slate-800 hover:bg-slate-700 text-white',
+    },
+    {
+      name: 'Professional',
+      price: '₹6,999',
+      period: '/month',
+      desc: 'Full-featured for schools up to 1,500 students.',
+      features: ['Everything in Starter', 'Transport GPS', 'Online Exams & CBT', 'AI Report Cards', 'WhatsApp Alerts', 'Priority Support'],
+      cta: 'Start Free Trial',
+      color: 'border-indigo-500',
+      badge: 'Most Popular',
+      btnClass: 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-xl shadow-indigo-600/30',
+    },
+    {
+      name: 'Enterprise',
+      price: 'Custom',
+      period: '',
+      desc: 'For school groups, trusts & multi-campus setups.',
+      features: ['Unlimited Students', 'Multi-Branch Dashboard', 'Custom Integrations', 'SLA Guarantee', 'Dedicated Manager'],
+      cta: 'Contact Sales',
+      color: 'border-slate-700',
+      badge: null,
+      btnClass: 'bg-slate-800 hover:bg-slate-700 text-white',
+    },
+  ];
+
+  const schoolLogos = [
+    'Delhi Public School', 'Ryan International', 'DAV Schools', 'Kendriya Vidyalaya',
+    'Amity Schools', 'Bal Bharati', 'GD Goenka', 'Lotus Valley', 'Seth Anandram Jaipuria',
+    'Mothers International', 'Blue Bells', 'Springdales',
+  ];
+
+  // Duplicate for seamless marquee loop
+  const logoStrip = [...schoolLogos, ...schoolLogos];
+
+  /* ── Module mock cards (hero screenshot area) ───────────────────────── */
+  const mockModules = [
+    { label: 'Fee Collection', value: '₹2.4L', sub: 'This Month', color: 'from-emerald-500/20 to-emerald-600/10', icon: CreditCard, iconColor: 'text-emerald-400' },
+    { label: 'Attendance', value: '94.2%', sub: 'Today Present', color: 'from-indigo-500/20 to-indigo-600/10', icon: Users, iconColor: 'text-indigo-400' },
+    { label: 'Bus Tracking', value: '12 Live', sub: 'Vehicles On Route', color: 'from-amber-500/20 to-amber-600/10', icon: Bus, iconColor: 'text-amber-400' },
+    { label: 'Exam Results', value: '87.3%', sub: 'Class Average', color: 'from-rose-500/20 to-rose-600/10', icon: ClipboardList, iconColor: 'text-rose-400' },
+    { label: 'Parent Msgs', value: '1,240', sub: 'Sent Today', color: 'from-cyan-500/20 to-cyan-600/10', icon: Smartphone, iconColor: 'text-cyan-400' },
+    { label: 'AI Reports', value: '48', sub: 'Generated Today', color: 'from-violet-500/20 to-violet-600/10', icon: BarChart3, iconColor: 'text-violet-400' },
   ];
 
   return (
-    <div className="space-y-20 py-8 sm:py-12">
-      {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 text-center space-y-8" aria-label="Hero">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-950/70 border border-indigo-700/50 text-indigo-300 text-xs font-semibold animate-fade-in shadow-inner">
-          <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-          <span>{isHindi ? 'भारत का अग्रणी स्वायत्त स्कूल ऑपरेटिंग सिस्टम' : 'Next-Gen Multi-Tenant Education Operating System'}</span>
-          <span className="hidden sm:inline text-slate-500">•</span>
-          <span className="hidden sm:inline text-slate-300">DPDP Act 2023 Architecture Readiness</span>
+    <div className="overflow-x-hidden">
+
+      {/* ═══════════════════════════════════════════════════════════════
+          1. HERO SECTION
+      ═══════════════════════════════════════════════════════════════ */}
+      <section
+        className="relative min-h-[92vh] flex flex-col items-center justify-center text-center px-4 sm:px-6 py-20 sm:py-28 overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 40%, #1e3a8a 75%, #1e1b4b 100%)' }}
+        aria-label="Hero"
+      >
+        {/* Background glow blobs */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl animate-pulse-glow" />
+          <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-blue-600/20 rounded-full blur-3xl animate-pulse-glow" style={{ animationDelay: '1.2s' }} />
+          <div className="absolute top-1/3 right-10 w-60 h-60 bg-purple-600/15 rounded-full blur-3xl" />
+          {/* Grid pattern */}
+          <div
+            className="absolute inset-0 opacity-[0.03]"
+            style={{
+              backgroundImage: 'linear-gradient(rgba(99,102,241,1) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,1) 1px, transparent 1px)',
+              backgroundSize: '60px 60px',
+            }}
+          />
         </div>
 
-        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight max-w-4xl mx-auto leading-tight sm:leading-none">
-          {isHindi ? (
-            <>
-              भारतीय शिक्षण संस्थानों हेतु{' '}
-              <span className="bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400 bg-clip-text text-transparent">
-                आधुनिक, स्वायत्त व सुरक्षित
-              </span>{' '}
-              क्लाउड ईआरपी
-            </>
-          ) : (
-            <>
-              The Autonomous ERP Operating System for{' '}
-              <span className="bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400 bg-clip-text text-transparent">
-                Indian Schools & Institutions
-              </span>
-            </>
-          )}
-        </h1>
-
-        <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-          {isHindi
-            ? 'प्रवेश, दैनिक उपस्थिति, सीबीएसई मूल्यांकन, डिजिटल फीस, स्कूल बस ट्रैकिंग और अभिभावक ऐप — सभी 7 शैक्षणिक श्रेणियों के लिए एक एकीकृत, मजबूत प्लेटफॉर्म।'
-            : 'Unite paperless admissions, automated fee reconciliation, board-compliant report cards, biometric attendance, fleet GPS, and parent mobile engagement in one ultra-reliable cloud platform.'}
-        </p>
-
-        {/* CTA Buttons */}
-        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 pt-2">
-          <button
-            onClick={() => onNavigate('register')}
-            className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-extrabold text-sm shadow-xl shadow-indigo-600/30 transition-all transform hover:-translate-y-0.5 cursor-pointer flex items-center gap-2"
-          >
-            <span>{isHindi ? '14-दिवसीय निःशुल्क ट्रायल शुरू करें' : 'Start 14-Day Free Trial'}</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-
-          <button
-            onClick={() => onNavigate('solutions')}
-            className="px-6 py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-slate-200 hover:text-white font-bold text-sm border border-slate-800 hover:border-slate-700 transition cursor-pointer flex items-center gap-2"
-          >
-            <span>{isHindi ? '7 शैक्षणिक श्रेणियां देखें' : 'Explore 7 Categories'}</span>
-          </button>
-
-          <button
-            onClick={onOpenLogin}
-            className="px-5 py-3.5 rounded-2xl text-slate-400 hover:text-white font-semibold text-sm transition cursor-pointer flex items-center gap-1.5"
-          >
-            <Play className="w-4 h-4 text-indigo-400" />
-            <span>{isHindi ? 'स्कूल पोर्टल लॉगिन' : 'Institutional Sign In'}</span>
-          </button>
-        </div>
-
-        {/* Factual Live Metrics Banner */}
-        <div className="pt-8 max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-          <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800">
-            <div className="text-2xl font-black text-indigo-400">99.9%</div>
-            <div className="text-xs text-slate-400 mt-0.5 font-medium">{isHindi ? 'क्लाउड अपटाइम एसएलए' : 'Uptime SLA'}</div>
+        <div className="relative z-10 max-w-5xl mx-auto space-y-8">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-950/80 border border-indigo-500/40 text-indigo-300 text-xs sm:text-sm font-semibold shadow-lg backdrop-blur-sm">
+            <span className="text-base">🇮🇳</span>
+            <span>India's #1 School Management Platform</span>
+            <span className="hidden sm:flex items-center gap-1 ml-1 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold border border-emerald-500/30">
+              <Sparkles className="w-2.5 h-2.5" />
+              TRUSTED
+            </span>
           </div>
-          <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800">
-            <div className="text-2xl font-black text-emerald-400">7</div>
-            <div className="text-xs text-slate-400 mt-0.5 font-medium">{isHindi ? 'संस्थान श्रेणियां' : 'Supported Verticals'}</div>
-          </div>
-          <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800">
-            <div className="text-2xl font-black text-purple-400">100%</div>
-            <div className="text-xs text-slate-400 mt-0.5 font-medium">{isHindi ? 'डेटा संप्रभुता (भारत)' : 'Indian Data Residency'}</div>
-          </div>
-          <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800">
-            <div className="text-2xl font-black text-pink-400">14 Days</div>
-            <div className="text-xs text-slate-400 mt-0.5 font-medium">{isHindi ? 'जोखिम-मुक्त ट्रायल' : 'Zero-Risk Full Trial'}</div>
-          </div>
-        </div>
-      </section>
 
-      {/* 7 Educational Categories Grid */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 space-y-8" aria-label="Educational Categories">
-        <div className="text-center space-y-2 max-w-2xl mx-auto">
-          <span className="text-indigo-400 font-bold uppercase tracking-wider text-xs">
-            {isHindi ? 'विशिष्ट शैक्षणिक श्रेणियां' : 'Purpose-Built Educational Modules'}
-          </span>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
-            {isHindi ? 'प्रत्येक प्रकार के संस्थान हेतु अनुकूलित ऑपरेटिंग सिस्टम' : 'Engineered for Every Educational Institution Type'}
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-400">
-            {isHindi
-              ? 'चाहे सिंगल-कैंपस स्कूल हो या 50+ शाखाओं का एजुकेशनल ट्रस्ट, i2A SchoolOS प्रत्येक वर्कफ़्लो के अनुकूल है।'
-              : 'From standalone preschools to university degree colleges and multi-branch educational trusts.'}
+          {/* H1 */}
+          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black text-white tracking-tight leading-[1.05]">
+            Manage Your School
+            <br />
+            <span
+              className="bg-clip-text text-transparent"
+              style={{ backgroundImage: 'linear-gradient(90deg, #818cf8, #c084fc, #f472b6)' }}
+            >
+              with Intelligence
+            </span>
+          </h1>
+
+          {/* Subtitle */}
+          <p className="text-base sm:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
+            Complete CBSE / ICSE / State board school ERP —&nbsp;
+            <span className="text-white font-semibold">Fee, Attendance, Transport, Exams &amp; More</span>
+            &nbsp;— all in one beautiful platform.
           </p>
-        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {categories.map((cat) => {
-            const Icon = cat.icon;
-            return (
-              <div
-                key={cat.slug}
-                onClick={() => onNavigate('category-detail', cat.slug)}
-                className="group p-5 rounded-2xl bg-slate-900/70 hover:bg-slate-900 border border-slate-800 hover:border-indigo-500/50 transition-all duration-200 cursor-pointer flex flex-col justify-between space-y-4 hover:shadow-xl hover:shadow-indigo-950/20"
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="p-3 rounded-2xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 group-hover:scale-105 transition-transform">
-                      <Icon className="w-5 h-5" />
+          {/* CTA Buttons */}
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 pt-2">
+            <button
+              onClick={() => onNavigate('register')}
+              className="group inline-flex items-center gap-2.5 px-7 py-4 rounded-2xl bg-white text-slate-900 font-extrabold text-sm sm:text-base shadow-2xl hover:shadow-white/20 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer"
+            >
+              <Zap className="w-4 h-4 text-indigo-600" />
+              Start Free Trial
+              <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+            </button>
+            <button
+              onClick={onOpenLogin}
+              className="inline-flex items-center gap-2.5 px-7 py-4 rounded-2xl bg-transparent border-2 border-white/30 text-white font-bold text-sm sm:text-base hover:bg-white/10 hover:border-white/50 transition-all duration-200 cursor-pointer backdrop-blur-sm"
+            >
+              <Play className="w-4 h-4 text-indigo-300 fill-indigo-300" />
+              Watch Demo
+            </button>
+          </div>
+
+          {/* Trust badges */}
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 pt-4">
+            {[
+              { icon: School, label: '500+ Schools' },
+              { icon: Users, label: '5L+ Students' },
+              { icon: Shield, label: '99.9% Uptime' },
+            ].map(({ icon: Icon, label }) => (
+              <div key={label} className="flex items-center gap-2 text-slate-300 text-sm font-semibold">
+                <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center">
+                  <Icon className="w-4 h-4 text-indigo-300" />
+                </div>
+                {label}
+              </div>
+            ))}
+          </div>
+
+          {/* Hero product screenshot */}
+          <div className="mt-10 sm:mt-14 max-w-3xl mx-auto animate-float">
+            <div className="relative rounded-3xl bg-slate-900/80 border border-slate-700/50 shadow-2xl shadow-black/60 backdrop-blur-xl p-1.5 sm:p-2">
+              {/* Fake browser bar */}
+              <div className="flex items-center gap-1.5 px-3 py-2 border-b border-slate-800">
+                <div className="w-2.5 h-2.5 rounded-full bg-rose-500/70" />
+                <div className="w-2.5 h-2.5 rounded-full bg-amber-500/70" />
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/70" />
+                <div className="flex-1 mx-3 h-4 bg-slate-800 rounded-md flex items-center px-2">
+                  <span className="text-[9px] text-slate-500">app.i2aschoolos.in/dashboard</span>
+                </div>
+                <Globe2 className="w-3 h-3 text-slate-600" />
+              </div>
+              {/* Module grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-3">
+                {mockModules.map((mod) => {
+                  const Icon = mod.icon;
+                  return (
+                    <div
+                      key={mod.label}
+                      className={`rounded-2xl bg-gradient-to-br ${mod.color} border border-slate-700/50 p-3 sm:p-4 text-left space-y-1.5 hover:scale-105 transition-transform duration-200`}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <Icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${mod.iconColor}`} />
+                        <span className="text-[10px] sm:text-xs text-slate-400 font-medium truncate">{mod.label}</span>
+                      </div>
+                      <div className="text-base sm:text-xl font-black text-white">{mod.value}</div>
+                      <div className="text-[9px] sm:text-[10px] text-slate-500">{mod.sub}</div>
                     </div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
-                      {cat.subtitle}
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-sm text-white group-hover:text-indigo-300 transition-colors">
-                      {cat.name}
-                    </h3>
-                    <p className="text-xs text-slate-400 mt-1 leading-relaxed line-clamp-2">
-                      {cat.tagline}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-indigo-400 group-hover:text-indigo-300">
-                  <span>{isHindi ? 'वर्कफ़्लो देखें' : 'View Workflows'}</span>
-                  <ArrowRight className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" />
-                </div>
+                  );
+                })}
               </div>
-            );
-          })}
-        </div>
-
-        <div className="text-center pt-2">
-          <button
-            onClick={() => onNavigate('solutions')}
-            className="text-xs font-bold text-indigo-400 hover:text-indigo-300 underline underline-offset-4 cursor-pointer"
-          >
-            {isHindi ? 'सभी 7 श्रेणियों का विस्तृत तुलनात्मक चार्ट देखें →' : 'Compare all 7 categories and workflows in detail →'}
-          </button>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Operational Highlights Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 space-y-8" aria-label="Feature Highlights">
-        <div className="text-center space-y-2 max-w-2xl mx-auto">
-          <span className="text-indigo-400 font-bold uppercase tracking-wider text-xs">
-            {isHindi ? 'प्लेटफॉर्म मुख्य क्षमताएं' : 'Operational Pillars'}
-          </span>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
-            {isHindi ? 'एक ही डैशबोर्ड से संचालित करें संपूर्ण कैंपस' : 'Complete Campus Autonomy in One Dashboard'}
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-400">
-            {isHindi
-              ? 'बिखरे हुए सॉफ़्टवेयरों और कागज़ी रजिस्टरों को अलविदा कहें। आधुनिक भारतीय शिक्षा प्रणाली हेतु तैयार।'
-              : 'Say goodbye to fragmented point solutions and paper registers with an all-in-one cloud foundation.'}
+      {/* ═══════════════════════════════════════════════════════════════
+          2. MARQUEE TRUST LOGOS STRIP
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-10 bg-slate-950 border-y border-slate-800/60 overflow-hidden" aria-label="Trusted Schools">
+        <div className="text-center mb-5">
+          <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+            Trusted by leading schools across India
           </p>
         </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {highlights.map((h, i) => {
-            const Icon = h.icon;
-            return (
-              <div key={i} className="p-6 rounded-2xl bg-slate-900/40 border border-slate-800 space-y-3">
-                <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 w-fit">
-                  <Icon className="w-5 h-5" />
-                </div>
-                <h3 className="font-bold text-sm text-white">{h.title}</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">{h.desc}</p>
+        <div className="relative">
+          {/* Fade edges */}
+          <div className="absolute left-0 top-0 bottom-0 w-24 z-10 pointer-events-none"
+            style={{ background: 'linear-gradient(to right, #020617, transparent)' }} />
+          <div className="absolute right-0 top-0 bottom-0 w-24 z-10 pointer-events-none"
+            style={{ background: 'linear-gradient(to left, #020617, transparent)' }} />
+          <div className="flex animate-marquee whitespace-nowrap">
+            {logoStrip.map((name, i) => (
+              <div
+                key={i}
+                className="inline-flex items-center gap-2 mx-6 px-5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 text-xs sm:text-sm font-semibold shrink-0 hover:border-indigo-500/40 hover:text-slate-200 transition"
+              >
+                <Award className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                {name}
               </div>
-            );
-          })}
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Bottom CTA Card */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6" aria-label="Get Started Banner">
-        <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-indigo-950 via-purple-950 to-slate-950 border border-indigo-500/30 text-center space-y-6 relative overflow-hidden shadow-2xl">
-          <div className="max-w-2xl mx-auto space-y-3">
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-white">
-              {isHindi ? 'क्या आप अपने संस्थान को आधुनिक बनाने हेतु तैयार हैं?' : 'Ready to Transform Your Campus Administration?'}
+      {/* ═══════════════════════════════════════════════════════════════
+          3. FEATURES GRID
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-20 sm:py-28 px-4 sm:px-6 bg-slate-950" aria-label="Features">
+        <div className="max-w-7xl mx-auto space-y-14">
+          <div className="text-center space-y-3 max-w-2xl mx-auto">
+            <span className="inline-block text-indigo-400 font-bold uppercase tracking-widest text-xs">
+              Platform Features
+            </span>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">
+              Everything Your School Needs,{' '}
+              <span className="bg-clip-text text-transparent"
+                style={{ backgroundImage: 'linear-gradient(90deg, #818cf8, #c084fc)' }}>
+                In One Place
+              </span>
             </h2>
-            <p className="text-xs sm:text-sm text-slate-300">
-              {isHindi
-                ? 'बिना किसी क्रेडिट कार्ड के 14 दिनों का निःशुल्क ट्रायल प्राप्त करें। हमारा ऑनबोर्डिंग दल आपके मौजूदा डेटा को सुरक्षित रूप से माइग्रेट करने में सहायता करेगा।'
-                : 'Experience full institutional access for 14 days without a credit card. Our specialists assist in zero-loss data migration.'}
+            <p className="text-slate-400 text-sm sm:text-base">
+              From admission to alumni — manage every workflow with powerful, easy-to-use modules.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+            {features.map((f) => {
+              const Icon = f.icon;
+              return (
+                <div
+                  key={f.title}
+                  className="group relative p-6 sm:p-8 rounded-3xl bg-slate-900 border border-slate-800 hover:border-slate-600 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 cursor-pointer overflow-hidden"
+                >
+                  {/* Gradient accent on hover */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${f.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300 rounded-3xl`} />
+                  <div className={`inline-flex p-3 rounded-2xl ${f.bg} border ${f.border} mb-5 group-hover:scale-110 transition-transform duration-300`}>
+                    <Icon className={`w-6 h-6 ${f.text}`} />
+                  </div>
+                  <h3 className="text-white font-bold text-lg mb-2 group-hover:text-indigo-200 transition-colors">{f.title}</h3>
+                  <p className="text-slate-400 text-sm leading-relaxed">{f.desc}</p>
+                  <div className={`mt-5 flex items-center gap-1.5 text-xs font-semibold ${f.text} opacity-0 group-hover:opacity-100 transition-opacity`}>
+                    Learn more <ChevronRight className="w-3.5 h-3.5" />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          4. HOW IT WORKS
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-20 sm:py-28 px-4 sm:px-6" style={{ background: 'linear-gradient(180deg, #020617 0%, #0f172a 100%)' }} aria-label="How it works">
+        <div className="max-w-5xl mx-auto space-y-14">
+          <div className="text-center space-y-3">
+            <span className="inline-block text-indigo-400 font-bold uppercase tracking-widest text-xs">
+              Simple Onboarding
+            </span>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white">
+              Up & Running in{' '}
+              <span className="bg-clip-text text-transparent"
+                style={{ backgroundImage: 'linear-gradient(90deg, #34d399, #06b6d4)' }}>
+                3 Easy Steps
+              </span>
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {steps.map((step, idx) => {
+              const Icon = step.icon;
+              return (
+                <div key={step.num} className="relative text-center space-y-5">
+                  {/* Connector line (not last) */}
+                  {idx < steps.length - 1 && (
+                    <div className="hidden md:block absolute top-10 left-[calc(50%+48px)] right-0 h-px bg-gradient-to-r from-indigo-500/40 to-transparent" />
+                  )}
+                  <div className={`w-20 h-20 rounded-3xl bg-gradient-to-br ${step.color} p-0.5 mx-auto shadow-xl`}>
+                    <div className="w-full h-full rounded-[22px] bg-slate-950 flex items-center justify-center">
+                      <Icon className="w-8 h-8 text-white" />
+                    </div>
+                  </div>
+                  <div className="text-4xl font-black text-slate-800 leading-none">{step.num}</div>
+                  <div className="space-y-2">
+                    <h3 className="text-white font-bold text-lg">{step.title}</h3>
+                    <p className="text-slate-400 text-sm leading-relaxed px-2">{step.desc}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="text-center pt-4">
             <button
               onClick={() => onNavigate('register')}
-              className="px-6 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-sm shadow-xl shadow-indigo-600/30 transition cursor-pointer"
+              className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm sm:text-base shadow-xl shadow-indigo-600/30 transition-all hover:-translate-y-0.5 cursor-pointer"
             >
-              {isHindi ? 'निःशुल्क ट्रायल आवेदन भरें' : 'Apply for Free Trial'}
-            </button>
-            <button
-              onClick={() => onNavigate('contact')}
-              className="px-6 py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-slate-200 font-bold text-sm border border-slate-700 transition cursor-pointer"
-            >
-              {isHindi ? 'विशेषज्ञ से परामर्श लें' : 'Talk to Education Advisor'}
+              Get Started for Free
+              <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
         </div>
       </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          5. STATS SECTION
+      ═══════════════════════════════════════════════════════════════ */}
+      <section
+        className="py-16 sm:py-20 px-4 sm:px-6"
+        style={{ background: 'linear-gradient(135deg, #1e1b4b 0%, #1e3a8a 50%, #1e1b4b 100%)' }}
+        aria-label="Stats"
+      >
+        <div className="max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+            {stats.map((s) => {
+              const Icon = s.icon;
+              return (
+                <div key={s.label} className="text-center space-y-2 p-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/8 transition">
+                  <div className={`flex justify-center mb-2`}>
+                    <Icon className={`w-6 h-6 ${s.color}`} />
+                  </div>
+                  <div className={`text-3xl sm:text-4xl font-black ${s.color}`}>{s.value}</div>
+                  <div className="text-slate-300 text-xs sm:text-sm font-medium">{s.label}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          6. TESTIMONIALS
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-20 sm:py-28 px-4 sm:px-6 bg-slate-950" aria-label="Testimonials">
+        <div className="max-w-6xl mx-auto space-y-14">
+          <div className="text-center space-y-3">
+            <span className="inline-block text-indigo-400 font-bold uppercase tracking-widest text-xs">
+              School Success Stories
+            </span>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white">
+              Loved by{' '}
+              <span className="bg-clip-text text-transparent"
+                style={{ backgroundImage: 'linear-gradient(90deg, #f472b6, #818cf8)' }}>
+                School Leaders
+              </span>
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {testimonials.map((t) => (
+              <div
+                key={t.name}
+                className="flex flex-col p-7 rounded-3xl bg-slate-900 border border-slate-800 hover:border-slate-600 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
+              >
+                {/* Stars */}
+                <div className="flex gap-1 mb-5">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />
+                  ))}
+                </div>
+                <blockquote className="text-slate-300 text-sm leading-relaxed flex-1 mb-6">
+                  "{t.quote}"
+                </blockquote>
+                <div className="flex items-center gap-3 pt-4 border-t border-slate-800">
+                  <div className={`w-10 h-10 rounded-2xl bg-gradient-to-br ${t.color} flex items-center justify-center text-white font-bold text-sm shrink-0`}>
+                    {t.initials}
+                  </div>
+                  <div>
+                    <div className="text-white font-bold text-sm">{t.name}</div>
+                    <div className="text-slate-500 text-xs">{t.role} · {t.school}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          7. PRICING PREVIEW
+      ═══════════════════════════════════════════════════════════════ */}
+      <section
+        className="py-20 sm:py-28 px-4 sm:px-6"
+        style={{ background: 'linear-gradient(180deg, #020617 0%, #0f172a 100%)' }}
+        aria-label="Pricing"
+      >
+        <div className="max-w-6xl mx-auto space-y-14">
+          <div className="text-center space-y-3">
+            <span className="inline-block text-indigo-400 font-bold uppercase tracking-widest text-xs">
+              Transparent Pricing
+            </span>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white">
+              Plans for Every{' '}
+              <span className="bg-clip-text text-transparent"
+                style={{ backgroundImage: 'linear-gradient(90deg, #818cf8, #c084fc)' }}>
+                School Size
+              </span>
+            </h2>
+            <p className="text-slate-400 text-sm sm:text-base">
+              14-day free trial on all plans · No credit card required · Cancel anytime
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {pricingPlans.map((plan) => (
+              <div
+                key={plan.name}
+                className={`relative flex flex-col p-7 sm:p-8 rounded-3xl bg-slate-900 border-2 ${plan.color} transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 ${plan.name === 'Professional' ? 'shadow-2xl shadow-indigo-600/20 scale-[1.02]' : ''}`}
+              >
+                {plan.badge && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-bold shadow-lg whitespace-nowrap">
+                    {plan.badge}
+                  </div>
+                )}
+                <div className="space-y-1 mb-6">
+                  <h3 className="text-white font-black text-xl">{plan.name}</h3>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-3xl sm:text-4xl font-black text-white">{plan.price}</span>
+                    <span className="text-slate-400 text-sm">{plan.period}</span>
+                  </div>
+                  <p className="text-slate-400 text-sm">{plan.desc}</p>
+                </div>
+                <ul className="space-y-2.5 flex-1 mb-7">
+                  {plan.features.map((feat) => (
+                    <li key={feat} className="flex items-start gap-2.5 text-sm text-slate-300">
+                      <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                      {feat}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  onClick={() => plan.name === 'Enterprise' ? onNavigate('contact') : onNavigate('register')}
+                  className={`w-full py-3.5 rounded-2xl font-bold text-sm transition-all duration-200 hover:-translate-y-0.5 cursor-pointer ${plan.btnClass}`}
+                >
+                  {plan.cta}
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <button
+              onClick={() => onNavigate('pricing')}
+              className="text-sm text-indigo-400 hover:text-indigo-300 font-semibold underline underline-offset-4 cursor-pointer transition-colors"
+            >
+              View full pricing & compare plans →
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          8. FINAL CTA BANNER
+      ═══════════════════════════════════════════════════════════════ */}
+      <section
+        className="py-20 sm:py-28 px-4 sm:px-6 relative overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%)' }}
+        aria-label="Get Started"
+      >
+        {/* Decorative glows */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-indigo-600/15 rounded-full blur-3xl" />
+        </div>
+
+        <div className="relative z-10 max-w-3xl mx-auto text-center space-y-8">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-950/80 border border-indigo-500/30 text-indigo-300 text-xs font-semibold">
+            <Clock className="w-3.5 h-3.5" />
+            <span>Get started in under 5 minutes</span>
+          </div>
+
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">
+            Ready to Transform{' '}
+            <span
+              className="bg-clip-text text-transparent"
+              style={{ backgroundImage: 'linear-gradient(90deg, #818cf8, #c084fc, #f472b6)' }}
+            >
+              Your School?
+            </span>
+          </h2>
+
+          <p className="text-slate-300 text-sm sm:text-lg leading-relaxed">
+            Join 500+ schools across India using i2A SchoolOS to automate administration,
+            delight parents, and empower teachers. Start your free 14-day trial today.
+          </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <button
+              onClick={() => onNavigate('register')}
+              className="group inline-flex items-center gap-2.5 px-8 py-4 sm:py-5 rounded-2xl bg-white text-slate-900 font-extrabold text-sm sm:text-base shadow-2xl hover:shadow-white/25 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer"
+            >
+              <Zap className="w-4 h-4 text-indigo-600" />
+              Start Free Trial
+              <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+            </button>
+            <button
+              onClick={() => onNavigate('contact')}
+              className="inline-flex items-center gap-2.5 px-8 py-4 sm:py-5 rounded-2xl border-2 border-slate-700 text-slate-200 font-bold text-sm sm:text-base hover:bg-slate-800 hover:border-slate-600 transition-all duration-200 cursor-pointer"
+            >
+              Talk to an Expert
+            </button>
+          </div>
+
+          {/* Micro-trust row */}
+          <div className="flex flex-wrap items-center justify-center gap-5 pt-4">
+            {[
+              { icon: Shield, label: 'No Credit Card Required' },
+              { icon: CheckCircle, label: '14-Day Free Trial' },
+              { icon: TrendingUp, label: 'Cancel Anytime' },
+            ].map(({ icon: Icon, label }) => (
+              <div key={label} className="flex items-center gap-1.5 text-slate-400 text-xs font-medium">
+                <Icon className="w-3.5 h-3.5 text-emerald-400" />
+                {label}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 };
