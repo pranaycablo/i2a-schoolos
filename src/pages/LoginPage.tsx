@@ -16,10 +16,10 @@ export interface LoginPageProps {
 export const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onCancel }) => {
   const { tenants, activeTenant, loginToSchool, setCurrentRole, setViewMode, syncWithBackend } = useSchool();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('abcschool@gmail.com');
+  const [password, setPassword] = useState('i2A@123');
   const [selectedSchoolId, setSelectedSchoolId] = useState(activeTenant?.id || 'I2A-SCH-000001');
-  const [selectedRole, setSelectedRole] = useState<UserRole>('PRINCIPAL');
+  const [selectedRole, setSelectedRole] = useState<UserRole>('ADMIN');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 

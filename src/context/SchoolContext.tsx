@@ -259,7 +259,7 @@ const initialBranding: SchoolBranding = {
   secondaryColor: '#06B6D4',
   address: 'Baily Road, Near Golf Course, Patna, Bihar - 800001',
   phone: '+91 612 2345678',
-  email: 'info@abcpublicschool.edu.in',
+  email: 'abcschool@gmail.com',
   whatsappNumber: '+91 9876543210',
   website: 'abcpublicschool.yourschoolos.com',
   principalName: 'Dr. Ramesh Chandra Sharma',
@@ -710,7 +710,7 @@ const initialTenants: SchoolTenant[] = [
     board: 'CBSE',
     city: 'Patna',
     adminName: 'Dr. Ramesh Chandra Sharma',
-    adminEmail: 'info@abcpublicschool.edu.in',
+    adminEmail: 'abcschool@gmail.com',
     adminPhone: '+91 612 2345678',
     planId: 'PROFESSIONAL',
     planName: 'Professional Plan',
@@ -1141,8 +1141,8 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const ROLE_CREDENTIALS: Record<string, { email: string; pass: string }> = {
     SUPER_ADMIN: { email: 'superadmin@i2aschoolos.com', pass: 'SuperAdmin@2026#' },
-    PRINCIPAL: { email: 'principal@abcpublicschool.edu.in', pass: 'Principal@2026#' },
-    ADMIN: { email: 'admin@abcpublicschool.edu.in', pass: 'Admin@2026#' },
+    PRINCIPAL: { email: 'abcschool@gmail.com', pass: 'i2A@123' },
+    ADMIN: { email: 'abcschool@gmail.com', pass: 'i2A@123' },
     TEACHER: { email: 'sunita.mishra@abcpublicschool.edu.in', pass: 'Teacher@2026#' },
     ACCOUNTANT: { email: 'alok.nath@abcpublicschool.edu.in', pass: 'Accountant@2026#' },
     STAFF: { email: 'office@abcpublicschool.edu.in', pass: 'Staff@2026#' },

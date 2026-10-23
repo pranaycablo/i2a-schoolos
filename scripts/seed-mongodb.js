@@ -94,6 +94,7 @@ const tenants = [
 ];
 
 const users = [
+  { id: 'usr-demo-abc', name: 'ABC Public School Demo Admin', email: 'abcschool@gmail.com', role: 'ADMIN', schoolId: 'I2A-SCH-000001', status: 'ACTIVE' },
   { id: 'usr-001', name: 'i2A SaaS Master Admin', email: 'superadmin@i2aschoolos.com', role: 'SUPER_ADMIN', schoolId: 'ALL' },
   { id: 'usr-002', name: 'Dr. Ramesh Chandra Sharma', email: 'principal@abcpublicschool.edu.in', role: 'PRINCIPAL', schoolId: 'I2A-SCH-000001' },
   { id: 'usr-003', name: 'School Administration Team', email: 'admin@abcpublicschool.edu.in', role: 'ADMIN', schoolId: 'I2A-SCH-000001' },
