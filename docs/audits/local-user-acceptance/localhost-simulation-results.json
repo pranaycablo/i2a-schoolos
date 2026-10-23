@@ -1,0 +1,270 @@
+{
+  "timestamp": "2026-10-22T14:57:24.748Z",
+  "environment": {
+    "node": "v24.15.0",
+    "database": "i2a_schoolos_synthetic_test",
+    "backendUrl": "http://127.0.0.1:5004",
+    "frontendUrl": "http://localhost:5176"
+  },
+  "rolesMatrix": [
+    {
+      "role": "SUPER_ADMIN",
+      "label": "Platform Super Admin",
+      "supported": true,
+      "loginStatus": "PASS",
+      "tokenIssued": true,
+      "verifiedRole": "SUPER_ADMIN"
+    },
+    {
+      "role": "ORG_DIRECTOR",
+      "label": "Organization/Group Director",
+      "supported": true,
+      "loginStatus": "PASS",
+      "tokenIssued": true,
+      "verifiedRole": "ORG_DIRECTOR"
+    },
+    {
+      "role": "ADMIN",
+      "label": "School Owner/Admin",
+      "supported": true,
+      "loginStatus": "PASS",
+      "tokenIssued": true,
+      "verifiedRole": "ADMIN"
+    },
+    {
+      "role": "PRINCIPAL",
+      "label": "School Principal",
+      "supported": true,
+      "loginStatus": "PASS",
+      "tokenIssued": true,
+      "verifiedRole": "PRINCIPAL"
+    },
+    {
+      "role": "BRANCH_ADMIN",
+      "label": "Branch Administrator",
+      "supported": true,
+      "loginStatus": "PASS",
+      "tokenIssued": true,
+      "verifiedRole": "ADMIN"
+    },
+    {
+      "role": "HR",
+      "label": "HR / Workforce Manager",
+      "supported": true,
+      "loginStatus": "PASS",
+      "tokenIssued": true,
+      "verifiedRole": "ADMIN"
+    },
+    {
+      "role": "TEACHER",
+      "label": "Teacher / Faculty",
+      "supported": true,
+      "loginStatus": "PASS",
+      "tokenIssued": true,
+      "verifiedRole": "TEACHER"
+    },
+    {
+      "role": "ACCOUNTANT",
+      "label": "Accountant / Finance",
+      "supported": true,
+      "loginStatus": "PASS",
+      "tokenIssued": true,
+      "verifiedRole": "ACCOUNTANT"
+    },
+    {
+      "role": "LIBRARIAN",
+      "label": "Librarian",
+      "supported": true,
+      "loginStatus": "PASS",
+      "tokenIssued": true,
+      "verifiedRole": "LIBRARIAN"
+    },
+    {
+      "role": "TRANSPORT",
+      "label": "Transport Manager",
+      "supported": true,
+      "loginStatus": "PASS",
+      "tokenIssued": true,
+      "verifiedRole": "TRANSPORT"
+    },
+    {
+      "role": "STAFF",
+      "label": "General Non-Teaching Staff",
+      "supported": true,
+      "loginStatus": "PASS",
+      "tokenIssued": true,
+      "verifiedRole": "STAFF"
+    },
+    {
+      "role": "STUDENT",
+      "label": "Enrolled Student",
+      "supported": true,
+      "loginStatus": "PASS",
+      "tokenIssued": true,
+      "verifiedRole": "STUDENT"
+    },
+    {
+      "role": "PARENT",
+      "label": "Parent / Legal Guardian",
+      "supported": true,
+      "loginStatus": "PASS",
+      "tokenIssued": true,
+      "verifiedRole": "PARENT"
+    }
+  ],
+  "schoolBranchWorkflow": {
+    "schoolOnboarding": "PASS",
+    "branchCreationWithGeo": "PASS",
+    "crossTenantIsolation": "PASS"
+  },
+  "studentLifecycle": {
+    "provisioning": "PASS",
+    "activation": "PASS"
+  },
+  "parentLifecycle": {
+    "provisioning": "PASS",
+    "boundChild": "STU-SIM-101",
+    "activation": "PASS"
+  },
+  "teacherLifecycle": {
+    "provisioning": "PASS",
+    "assignedClass": "Class X-A",
+    "activation": "PASS"
+  },
+  "authLifecycle": {
+    "otpGeneration": "PASS",
+    "passwordReset": "PASS",
+    "oldPasswordRejected": "PASS",
+    "newPasswordAccepted": "PASS",
+    "tokenReplayDefense": "PASS"
+  },
+  "responsiveViewports": [
+    {
+      "viewport": "320x568",
+      "device": "Mobile Small (iPhone SE)",
+      "screenshot": "viewport_320x568.png",
+      "horizontalOverflow": "NONE",
+      "status": "PASS_REAL_BROWSER"
+    },
+    {
+      "viewport": "375x667",
+      "device": "Mobile Standard (iPhone 8)",
+      "screenshot": "viewport_375x667.png",
+      "horizontalOverflow": "NONE",
+      "status": "PASS_REAL_BROWSER"
+    },
+    {
+      "viewport": "430x932",
+      "device": "Mobile Large (iPhone 14 Pro Max)",
+      "screenshot": "viewport_430x932.png",
+      "horizontalOverflow": "NONE",
+      "status": "PASS_REAL_BROWSER"
+    },
+    {
+      "viewport": "768x1024",
+      "device": "Tablet Portrait (iPad Mini)",
+      "screenshot": "viewport_768x1024.png",
+      "horizontalOverflow": "NONE",
+      "status": "PASS_REAL_BROWSER"
+    },
+    {
+      "viewport": "1024x768",
+      "device": "Tablet Landscape (iPad Air)",
+      "screenshot": "viewport_1024x768.png",
+      "horizontalOverflow": "NONE",
+      "status": "PASS_REAL_BROWSER"
+    },
+    {
+      "viewport": "1366x768",
+      "device": "Laptop Standard (1366x768)",
+      "screenshot": "viewport_1366x768.png",
+      "horizontalOverflow": "NONE",
+      "status": "PASS_REAL_BROWSER"
+    },
+    {
+      "viewport": "1440x900",
+      "device": "Desktop Standard (MacBook Pro 13)",
+      "screenshot": "viewport_1440x900.png",
+      "horizontalOverflow": "NONE",
+      "status": "PASS_REAL_BROWSER"
+    },
+    {
+      "viewport": "1920x1080",
+      "device": "Full HD Desktop (1080p)",
+      "screenshot": "viewport_1920x1080.png",
+      "horizontalOverflow": "NONE",
+      "status": "PASS_REAL_BROWSER"
+    }
+  ],
+  "consoleErrors": [
+    {
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "location": {
+        "url": "http://localhost:5000/api/health"
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "location": {
+        "url": "http://localhost:5000/api/health"
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "location": {
+        "url": "http://localhost:5000/api/health"
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "location": {
+        "url": "http://localhost:5000/api/health"
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "location": {
+        "url": "http://localhost:5000/api/auth/login"
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "location": {
+        "url": "http://localhost:5000/api/health"
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "location": {
+        "url": "http://localhost:5000/api/health"
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "location": {
+        "url": "http://localhost:5000/api/auth/login"
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "location": {
+        "url": "http://localhost:5000/api/health"
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "location": {
+        "url": "http://localhost:5000/api/health"
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "location": {
+        "url": "http://localhost:5000/api/auth/login"
+      }
+    }
+  ],
+  "networkErrors": [],
+  "defectsDiscovered": [],
+  "status": "SUCCESS"
+}

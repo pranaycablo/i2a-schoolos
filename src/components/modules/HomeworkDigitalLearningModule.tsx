@@ -30,7 +30,7 @@ import {
 const homeworkService = new HomeworkDigitalLearningService();
 
 export const HomeworkDigitalLearningModule: React.FC = () => {
-  const { branding, currentRole, students, staffList, logAction } = useSchool();
+  const { branding, currentRole, students, staffList, logAction, currentUser, selectedChildId } = useSchool();
   const [activeTab, setActiveTab] = useState<
     'homework_desk' | 'student_portal' | 'evaluation_desk' | 'digital_books' | 'ai_content_generator' | 'ocr_pipeline' | 'analytics_desk'
   >('homework_desk');
@@ -41,13 +41,16 @@ export const HomeworkDigitalLearningModule: React.FC = () => {
   const [selectedClass, setSelectedClass] = useState<string>('Class VIII');
   const [selectedSection, setSelectedSection] = useState<string>('A');
 
+  const activeStudentId = currentUser?.studentId || (currentUser?.role === 'PARENT' ? selectedChildId : currentUser?.id) || students[0]?.id || 'std-101';
+  const parentChildren = currentUser?.childrenIds || (selectedChildId ? [selectedChildId] : []);
+
   const session: UserSession = {
-    id: currentRole === 'STUDENT' ? 'std-101' : currentRole === 'TEACHER' ? 'stf-1' : 'user-active',
-    email: 'user@school.com',
+    id: currentRole === 'STUDENT' ? activeStudentId : currentRole === 'TEACHER' ? (currentUser?.id || 'stf-1') : (currentUser?.id || 'user-active'),
+    email: currentUser?.email || 'user@school.com',
     tenantId: schoolId,
     role: currentRole,
     status: 'ACTIVE',
-    childrenIds: ['std-101']
+    childrenIds: parentChildren
   };
 
   // State Collections
@@ -134,7 +137,7 @@ export const HomeworkDigitalLearningModule: React.FC = () => {
   // Handle Student Submission
   const handleSubmitWork = (e: React.FormEvent) => {
     e.preventDefault();
-    const activeStudent = students[0] || { id: 'std-101', name: 'Rahul Kumar', admissionNo: '1024' };
+    const activeStudent = students.find((s) => s.id === activeStudentId) || students[0] || { id: activeStudentId, name: currentUser?.name || 'Rahul Kumar', admissionNo: '1024' };
 
     const sub = homeworkService.submitHomework(
       {

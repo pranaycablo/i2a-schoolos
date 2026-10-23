@@ -1,0 +1,60 @@
+{
+  "timestamp": "2026-10-22T14:07:04.856Z",
+  "database": "i2a_schoolos_synthetic_test",
+  "backendUrl": "http://127.0.0.1:5003",
+  "frontendUrl": "http://localhost:5175",
+  "journeys": [
+    {
+      "journey": "1. Student Provisioning & Activation",
+      "status": "PASS",
+      "user": "priya.sharma.synth@test.i2aschoolos.internal",
+      "tokenIssued": true,
+      "activated": true,
+      "loginVerified": true
+    },
+    {
+      "journey": "2. Parent Provisioning with Scoped Child Binding",
+      "status": "PASS",
+      "user": "parent.sharma.synth@test.i2aschoolos.internal",
+      "childLinked": "STU-SYNTH-901",
+      "activated": true
+    },
+    {
+      "journey": "3. Teacher Onboarding & Scoped RBAC",
+      "status": "PASS",
+      "authorizedActionAllowed": true,
+      "unauthorizedActionDenied": true
+    },
+    {
+      "journey": "4. Forgot Password & OTP Credential Rotation",
+      "status": "PASS",
+      "otpReceived": true,
+      "oldPasswordRejected": true,
+      "newPasswordAccepted": true
+    },
+    {
+      "journey": "5. Admin Revokes Invitation",
+      "status": "PASS",
+      "revocationConfirmed": true,
+      "activationRejectedCode": 400
+    },
+    {
+      "journey": "6. Account Disabled Access Termination",
+      "status": "PASS",
+      "loginBlocked": true,
+      "errorMessage": "Account is disabled. Contact school administrator."
+    }
+  ],
+  "screenshots": [
+    "lifecycle_01_student_activation_form.png",
+    "lifecycle_01_student_activation_success.png",
+    "lifecycle_01_student_logged_in.png",
+    "lifecycle_02_parent_activation_form.png",
+    "lifecycle_02_parent_scoped_view.png",
+    "lifecycle_03_teacher_workspace.png",
+    "lifecycle_04_forgot_password_request.png",
+    "lifecycle_05_revoked_token_rejected.png",
+    "lifecycle_06_disabled_account_denied.png"
+  ],
+  "status": "SUCCESS"
+}

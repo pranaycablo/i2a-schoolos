@@ -70,11 +70,6 @@ export const AttendanceLeaveModule: React.FC = () => {
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [selectedStudentSummary, setSelectedStudentSummary] = useState<AttendanceSummary | null>(null);
 
-  // Load state on mount / filter change
-  useEffect(() => {
-    refreshData();
-  }, [selectedClass, selectedSection, selectedDate]);
-
   const refreshData = () => {
     const locked = attendanceService.isAttendanceLocked(schoolId, selectedClass, selectedSection, selectedDate);
     setIsLocked(locked);
@@ -105,6 +100,11 @@ export const AttendanceLeaveModule: React.FC = () => {
     setStaffLeaves(attendanceService.getStaffLeaveRequests(schoolId));
     setCorrections(attendanceService.getAttendanceCorrections(schoolId));
   };
+
+  // Load state on mount / filter change
+  useEffect(() => {
+    refreshData();
+  }, [selectedClass, selectedSection, selectedDate]);
 
   // Bulk Actions
   const handleMarkAllPresent = () => {

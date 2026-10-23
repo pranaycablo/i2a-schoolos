@@ -1,0 +1,25 @@
+# i2A SchoolOS — Canonical Robots.txt
+User-agent: *
+Allow: /
+Allow: /product
+Allow: /features
+Allow: /solutions
+Allow: /solutions/*
+Allow: /pricing
+Allow: /about
+Allow: /contact
+Allow: /faq
+Allow: /privacy
+Allow: /terms
+Allow: /security
+Allow: /register
+Allow: /login
+
+# Disallow private operational API endpoints and authenticated user portals
+Disallow: /api/
+Disallow: /portal/
+Disallow: /admin/
+Disallow: /shell/
+
+# Sitemap Location
+Sitemap: https://schoolos.i2a.in/sitemap.xml

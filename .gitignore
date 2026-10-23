@@ -25,4 +25,6 @@ dist-ssr
 .env
 .env.*
 .vercel
+.mongo_rs_data/
+.mongo_rs_test/
 

@@ -1,4 +1,5 @@
 import { TenantSecurityService, type UserSession, TenantSecurityException } from './TenantSecurityService';
+import { marketplaceApi } from './apiClient';
 import type {
   MarketplaceProduct,
   MarketplaceProductCategory,
@@ -611,6 +612,7 @@ export class MarketplaceStoreService {
 
     this.products.set(newProd.id, newProd);
     this.syncToStorage();
+    marketplaceApi.products.create(newProd).catch(() => {});
     return newProd;
   }
 
@@ -880,6 +882,7 @@ export class MarketplaceStoreService {
       this.processedIdempotencyKeys.add(params.idempotencyKey);
     }
     this.syncToStorage();
+    marketplaceApi.orders.create(newOrder).catch(() => {});
     return newOrder;
   }
 
@@ -1006,5 +1009,32 @@ export class MarketplaceStoreService {
       completedOrdersCount: schoolOrders.filter((o) => o.orderStatus === 'DELIVERED').length,
       categorySalesBreakdown: breakdown
     };
+  }
+
+  public async syncFromBackend(schoolId: string): Promise<void> {
+    try {
+      const [prodRes, ordRes] = await Promise.all([
+        marketplaceApi.products.list(schoolId),
+        marketplaceApi.orders.list(schoolId)
+      ]);
+      if (prodRes.ok && Array.isArray(prodRes.data)) {
+        (prodRes.data as MarketplaceProduct[]).forEach((p) => {
+          if (p.id) this.products.set(p.id, p);
+        });
+      }
+      if (ordRes.ok && Array.isArray(ordRes.data)) {
+        (ordRes.data as MarketplaceOrder[]).forEach((o) => {
+          if (o.id) {
+            this.orders.set(o.id, o);
+            if (o.idempotencyKey) {
+              this.processedIdempotencyKeys.add(o.idempotencyKey);
+            }
+          }
+        });
+      }
+      this.syncToStorage();
+    } catch {
+      // In-memory fallback
+    }
   }
 }

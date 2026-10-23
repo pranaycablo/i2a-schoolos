@@ -62,7 +62,9 @@ export const Header: React.FC = () => {
     t,
     notifications,
     markNotificationAsRead,
-    clearAllNotifications
+    clearAllNotifications,
+    isBackendConnected,
+    isSyncing
   } = useSchool();
 
   const [showNotifications, setShowNotifications] = useState(false);
@@ -133,7 +135,7 @@ export const Header: React.FC = () => {
   const visibleNavItems = navItems.filter((n) => n.roles.includes(currentRole));
 
   const handleRoleChange = (newRole: UserRole) => {
-    setCurrentRole(newRole);
+    loginToSchool(activeTenant?.id || 'I2A-SCH-000001', newRole);
     if (newRole === 'STUDENT') {
       setActiveModule('digital_books_ai');
     } else if (newRole === 'PARENT') {
@@ -356,6 +358,19 @@ export const Header: React.FC = () => {
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* Database & Backend Connectivity Indicator */}
+          <div
+            className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[10px] font-bold border transition-colors ${
+              isBackendConnected
+                ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300'
+                : 'bg-amber-50 dark:bg-amber-950/60 border-amber-300 dark:border-amber-800 text-amber-700 dark:text-amber-300'
+            }`}
+            title={isBackendConnected ? 'Connected to MongoDB Live Database' : 'Running in Offline / Local Mode'}
+          >
+            <span className={`w-2 h-2 rounded-full ${isBackendConnected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+            <span>{isSyncing ? 'Syncing...' : isBackendConnected ? 'DB Live' : 'Offline'}</span>
           </div>
 
           {/* Pending Approval Notifications Drawer Trigger */}

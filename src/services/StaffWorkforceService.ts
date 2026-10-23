@@ -1,4 +1,5 @@
 import { TenantSecurityService, type UserSession, TenantSecurityException } from './TenantSecurityService';
+import { staffApi } from './apiClient';
 
 export interface EmployeeProfile {
   id: string;
@@ -15,6 +16,9 @@ export interface EmployeeProfile {
   reportingManagerId?: string;
   linkedUserId?: string; // Optional user login link
   isTeacher: boolean;
+  primaryBranchId?: string;
+  allowedBranchIds?: string[];
+  biometricId?: string;
 }
 
 export interface TeacherProfileExtension {
@@ -28,14 +32,15 @@ export interface TeacherProfileExtension {
 
 export interface LeaveRequest {
   id: string;
-  tenantId: string;
+  tenantId?: string;
+  schoolId?: string;
   staffId: string;
   staffName: string;
-  leaveType: 'CASUAL' | 'SICK' | 'EARNED' | 'UNPAID';
+  leaveType: 'CASUAL' | 'SICK' | 'EARNED' | 'MATERNITY' | 'PATERNITY' | 'UNPAID';
   startDate: string;
   endDate: string;
   reason: string;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
   approverId?: string;
   approverComments?: string;
 }
@@ -92,5 +97,65 @@ export class StaffWorkforceService {
       approverId: approver.id,
       approverComments: comments || `Decision ${decision} by ${approver.email}`
     };
+  }
+
+  /**
+   * Fetch staff roster from backend REST API
+   */
+  public static async fetchStaffRoster(params?: {
+    branchId?: string;
+    department?: string;
+    designation?: string;
+    status?: string;
+    isTeacher?: boolean;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{ success: boolean; data: EmployeeProfile[] }> {
+    try {
+      const res = await staffApi.listStaff(params);
+      if (res.ok && res.data?.data) {
+        return { success: true, data: res.data.data };
+      }
+      return { success: false, data: [] };
+    } catch {
+      return { success: false, data: [] };
+    }
+  }
+
+  /**
+   * Create staff member via backend REST API
+   */
+  public static async createStaffMember(data: any): Promise<any> {
+    return await staffApi.createStaff(data);
+  }
+
+  /**
+   * Update staff status via backend REST API
+   */
+  public static async updateStaffStatusApi(staffId: string, status: string, reason?: string): Promise<any> {
+    return await staffApi.updateStatus(staffId, status, reason);
+  }
+
+  /**
+   * Fetch leave requests via backend REST API
+   */
+  public static async fetchLeavesApi(params?: { staffId?: string; status?: string; branchId?: string }): Promise<{ success: boolean; data: LeaveRequest[] }> {
+    try {
+      const res = await staffApi.listLeaves(params);
+      if (res.ok && res.data?.data) {
+        return { success: true, data: res.data.data };
+      }
+      return { success: false, data: [] };
+    } catch {
+      return { success: false, data: [] };
+    }
+  }
+
+  /**
+   * Process leave decision via backend REST API
+   */
+  public static async processLeaveDecisionApi(leaveId: string, decision: 'APPROVED' | 'REJECTED', comments?: string): Promise<any> {
+    return await staffApi.processLeaveDecision(leaveId, decision, comments);
   }
 }

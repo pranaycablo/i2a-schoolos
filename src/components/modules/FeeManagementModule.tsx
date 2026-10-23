@@ -16,6 +16,7 @@ import {
   Search,
   ShieldCheck,
   Send,
+  AlertCircle,
   X
 } from 'lucide-react';
 
@@ -36,6 +37,8 @@ export const FeeManagementModule: React.FC = () => {
   const [selectedFeeIds, setSelectedFeeIds] = useState<string[]>(['fee-1', 'fee-2']);
   const [paymentMode, setPaymentMode] = useState<FeeReceipt['paymentMode']>('UPI');
   const [activeReceiptModal, setActiveReceiptModal] = useState<FeeReceipt | null>(null);
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [collectionError, setCollectionError] = useState<string | null>(null);
 
   // Custom fee modal
   const [showFeeModal, setShowFeeModal] = useState(false);
@@ -51,10 +54,20 @@ export const FeeManagementModule: React.FC = () => {
 
   const selectedStudent = students.find((s) => s.id === selectedStudentId) || students[0];
 
-  const handlePayNow = () => {
-    if (!selectedStudent || selectedFeeIds.length === 0) return;
-    const rcp = processFeePayment(selectedStudent.id, selectedFeeIds, paymentMode);
-    setActiveReceiptModal(rcp);
+  const handlePayNow = async () => {
+    if (!selectedStudent || selectedFeeIds.length === 0 || isProcessing) return;
+    setIsProcessing(true);
+    setCollectionError(null);
+
+    const idempotencyKey = `idem-${selectedStudent.id}-${[...selectedFeeIds].sort().join('-')}-${Date.now()}`;
+    const result = await processFeePayment(selectedStudent.id, selectedFeeIds, paymentMode, idempotencyKey);
+    setIsProcessing(false);
+
+    if (result.success && result.receipt) {
+      setActiveReceiptModal(result.receipt);
+    } else {
+      setCollectionError(result.error || 'Server rejected payment transaction. No receipt was created.');
+    }
   };
 
   const handleAddFeeSubmit = (e: React.FormEvent) => {
@@ -203,13 +216,30 @@ export const FeeManagementModule: React.FC = () => {
                 </p>
               </div>
 
-              <button
-                onClick={handlePayNow}
-                disabled={selectedFeeIds.length === 0}
-                className="px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs shadow-lg shadow-emerald-500/25 flex items-center gap-2 transition-all cursor-pointer"
-              >
-                <CheckCircle2 className="w-4 h-4" /> Process & Generate Branded Receipt
-              </button>
+              <div className="flex flex-col items-end gap-2">
+                {collectionError && (
+                  <div role="alert" className="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2 max-w-md">
+                    <AlertCircle className="w-4 h-4 shrink-0" />
+                    <span>{collectionError}</span>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={handlePayNow}
+                  disabled={selectedFeeIds.length === 0 || isProcessing}
+                  className="px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs shadow-lg shadow-emerald-500/25 flex items-center gap-2 transition-all cursor-pointer"
+                >
+                  {isProcessing ? (
+                    <>
+                      <span className="animate-spin mr-1">⏳</span> Verifying Collection...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2 className="w-4 h-4" /> Process & Generate Branded Receipt
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
 

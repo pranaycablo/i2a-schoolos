@@ -1,0 +1,123 @@
+{
+  "timestamp": "2026-10-22T13:23:51.516Z",
+  "environment": {
+    "node": "v24.15.0",
+    "database": "i2a_schoolos_synthetic_test",
+    "browser": "Google Chrome (Headless)",
+    "executable": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+  },
+  "rolesTested": [
+    {
+      "role": "STUDENT",
+      "status": "VERIFIED_IN_BROWSER"
+    },
+    {
+      "role": "PARENT",
+      "status": "VERIFIED_IN_BROWSER"
+    },
+    {
+      "role": "TEACHER",
+      "status": "VERIFIED_IN_BROWSER"
+    },
+    {
+      "role": "PRINCIPAL",
+      "status": "VERIFIED_IN_BROWSER"
+    }
+  ],
+  "screenshotsCaptured": [
+    "01_student_portal_desktop.png",
+    "01_student_portal_mobile_375x667.png",
+    "02_parent_portal_overview.png",
+    "02_parent_portal_mobile_375x667.png",
+    "03_teacher_workspace_roster.png",
+    "04_staff_workforce_directory.png",
+    "05_forgot_password_dialog.png"
+  ],
+  "consoleErrors": [
+    {
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "location": {
+        "url": "http://localhost:5000/api/health"
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "location": {
+        "url": "http://localhost:5000/api/health"
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "location": {
+        "url": "http://localhost:5000/api/auth/login"
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "location": {
+        "url": "http://localhost:5000/api/health"
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "location": {
+        "url": "http://localhost:5000/api/health"
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "location": {
+        "url": "http://localhost:5000/api/auth/login"
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "location": {
+        "url": "http://localhost:5000/api/health"
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "location": {
+        "url": "http://localhost:5000/api/health"
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "location": {
+        "url": "http://localhost:5000/api/auth/login"
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "location": {
+        "url": "http://localhost:5000/api/health"
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "location": {
+        "url": "http://localhost:5000/api/health"
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "location": {
+        "url": "http://localhost:5000/api/auth/login"
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "location": {
+        "url": "http://localhost:5000/api/health"
+      }
+    },
+    {
+      "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "location": {
+        "url": "http://localhost:5000/api/health"
+      }
+    }
+  ],
+  "status": "SUCCESS"
+}

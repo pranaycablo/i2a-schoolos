@@ -1,5 +1,20 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { translate, AppLanguage } from '../utils/translations';
+import {
+  authApi,
+  tenantsApi,
+  studentsApi,
+  admissionsApi,
+  feeApi,
+  operationsApi,
+  notificationsApi,
+  auditLogsApi,
+  healthApi,
+  examApi,
+  setAuthToken,
+  getAuthToken,
+  clearAuth
+} from '../services/apiClient';
 import type {
   UserRole,
   SchoolBranding,
@@ -31,6 +46,19 @@ export interface SubscriptionPlan {
   features: string[];
 }
 
+export interface SchoolTenantLocation {
+  street?: string;
+  locality?: string;
+  city?: string;
+  district?: string;
+  state?: string;
+  postalCode?: string;
+  country?: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  isGeocoded?: boolean;
+}
+
 export interface SchoolTenant {
   id: string; // Immutable server-generated School ID, e.g., "I2A-SCH-000001"
   name: string;
@@ -48,12 +76,28 @@ export interface SchoolTenant {
   expiresAt: string;
   studentLimit: number;
   isOnboarded: boolean;
+  branchCount?: number;
+  branches?: any[];
+  location?: SchoolTenantLocation;
+  branding?: any;
+  category?: string;
+}
+
+export interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  schoolId: string;
+  studentId?: string;
+  childrenIds?: string[];
+  assignedClasses?: string[];
 }
 
 interface SchoolContextType {
   // View Mode & Multi-Tenant State
-  viewMode: 'PUBLIC_SAAS' | 'SCHOOL_PORTAL' | 'PLATFORM_ADMIN';
-  setViewMode: (mode: 'PUBLIC_SAAS' | 'SCHOOL_PORTAL' | 'PLATFORM_ADMIN') => void;
+  viewMode: 'PUBLIC_SAAS' | 'SCHOOL_PORTAL' | 'PLATFORM_ADMIN' | 'LOGIN';
+  setViewMode: (mode: 'PUBLIC_SAAS' | 'SCHOOL_PORTAL' | 'PLATFORM_ADMIN' | 'LOGIN') => void;
   activeSchoolId: string;
   tenants: SchoolTenant[];
   activeTenant: SchoolTenant;
@@ -68,7 +112,25 @@ interface SchoolContextType {
     planId: 'STARTER' | 'PROFESSIONAL' | 'ENTERPRISE';
     billingCycle: 'MONTHLY' | 'YEARLY';
   }) => SchoolTenant;
-  loginToSchool: (schoolId: string, role?: UserRole) => void;
+  onboardSchool: (params: {
+    name: string;
+    code?: string;
+    board?: 'CBSE' | 'ICSE' | 'STATE_BOARD' | 'IB';
+    category?: string;
+    adminName: string;
+    adminEmail: string;
+    adminPhone: string;
+    planId: 'STARTER' | 'PROFESSIONAL' | 'ENTERPRISE';
+    billingCycle?: 'MONTHLY' | 'YEARLY';
+    address?: SchoolTenantLocation;
+    initialBranch?: {
+      branchCode?: string;
+      name?: string;
+      capacity?: number;
+    };
+  }) => Promise<{ success: boolean; tenant?: SchoolTenant; error?: string }>;
+  updateSchoolLocation: (schoolId: string, location: SchoolTenantLocation) => Promise<{ success: boolean; error?: string }>;
+  loginToSchool: (schoolId: string, role?: UserRole, user?: AuthUser) => void;
   updateTenantSubscription: (schoolId: string, status: string, planId: string) => void;
   toggleSchoolSuspension: (schoolId: string) => void;
   returnToPublicSaas: () => void;
@@ -102,7 +164,12 @@ interface SchoolContextType {
   addFeeType: (fee: Omit<FeeType, 'id'>) => void;
 
   feeReceipts: FeeReceipt[];
-  processFeePayment: (studentId: string, feeIds: string[], paymentMode: FeeReceipt['paymentMode']) => FeeReceipt;
+  processFeePayment: (studentId: string, feeIds: string[], paymentMode: FeeReceipt['paymentMode'], idempotencyKey?: string) => Promise<{ success: boolean; receipt?: FeeReceipt; error?: string }>;
+
+  currentUser: AuthUser | null;
+  setCurrentUser: (u: AuthUser | null) => void;
+  selectedChildId: string;
+  setSelectedChildId: (id: string) => void;
 
   digitalBooks: DigitalBook[];
   questionBank: QuestionBankItem[];
@@ -166,6 +233,13 @@ interface SchoolContextType {
     username: string;
     password?: string;
   }) => SystemNotification;
+
+  // Backend Connection & Synchronization Engine
+  isBackendConnected: boolean;
+  isSyncing: boolean;
+  backendError: string | null;
+  syncWithBackend: () => Promise<void>;
+  loginWithCredentials: (email: string, password: string) => Promise<boolean>;
 }
 
 // Initial Realistic Seed Data
@@ -601,7 +675,60 @@ const initialTenants: SchoolTenant[] = [
     registeredAt: '2026-01-10',
     expiresAt: '2027-01-10',
     studentLimit: 1000,
-    isOnboarded: true
+    isOnboarded: true,
+    branchCount: 2,
+    location: {
+      street: 'Bailey Road, Near Golf Course',
+      locality: 'Shastri Nagar',
+      city: 'Patna',
+      district: 'Patna',
+      state: 'Bihar',
+      postalCode: '800001',
+      country: 'IN',
+      latitude: 25.5941,
+      longitude: 85.1376,
+      isGeocoded: true
+    },
+    branches: [
+      {
+        id: 'BR-I2A-SCH-000001-MAIN',
+        branchCode: 'MAIN',
+        name: 'ABC Public School (Main Campus)',
+        displayName: 'Main Campus - Bailey Road',
+        isMainBranch: true,
+        status: 'ACTIVE',
+        capacity: 1000,
+        address: {
+          street: 'Bailey Road, Near Golf Course',
+          city: 'Patna',
+          district: 'Patna',
+          state: 'Bihar',
+          postalCode: '800001',
+          country: 'IN',
+          latitude: 25.5941,
+          longitude: 85.1376
+        }
+      },
+      {
+        id: 'BR-I2A-SCH-000001-KANKAR',
+        branchCode: 'KANKAR',
+        name: 'ABC Junior Wing (Kankarbagh)',
+        displayName: 'Junior Wing - Kankarbagh Colony',
+        isMainBranch: false,
+        status: 'ACTIVE',
+        capacity: 450,
+        address: {
+          street: 'Kankarbagh Main Road, Doctors Colony',
+          city: 'Patna',
+          district: 'Patna',
+          state: 'Bihar',
+          postalCode: '800020',
+          country: 'IN',
+          latitude: 25.5912,
+          longitude: 85.1584
+        }
+      }
+    ]
   },
   {
     id: 'I2A-SCH-000002',
@@ -619,7 +746,41 @@ const initialTenants: SchoolTenant[] = [
     registeredAt: '2026-10-01',
     expiresAt: '2026-10-31',
     studentLimit: 250,
-    isOnboarded: false
+    isOnboarded: false,
+    branchCount: 1,
+    location: {
+      street: 'Gandhi Maidan Road, West Gate',
+      locality: 'Muradpur',
+      city: 'Patna',
+      district: 'Patna',
+      state: 'Bihar',
+      postalCode: '800004',
+      country: 'IN',
+      latitude: 25.6179,
+      longitude: 85.1415,
+      isGeocoded: true
+    },
+    branches: [
+      {
+        id: 'BR-I2A-SCH-000002-MAIN',
+        branchCode: 'MAIN',
+        name: 'St. Xavier Senior Secondary School (Main)',
+        displayName: 'Gandhi Maidan Campus',
+        isMainBranch: true,
+        status: 'ACTIVE',
+        capacity: 600,
+        address: {
+          street: 'Gandhi Maidan Road, West Gate',
+          city: 'Patna',
+          district: 'Patna',
+          state: 'Bihar',
+          postalCode: '800004',
+          country: 'IN',
+          latitude: 25.6179,
+          longitude: 85.1415
+        }
+      }
+    ]
   }
 ];
 
@@ -767,8 +928,43 @@ const SchoolContext = createContext<SchoolContextType | undefined>(undefined);
 
 export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // SaaS Multi-Tenant Platform State
-  const [viewMode, setViewMode] = useState<'PUBLIC_SAAS' | 'SCHOOL_PORTAL' | 'PLATFORM_ADMIN'>('PUBLIC_SAAS');
-  const [activeSchoolId, setActiveSchoolId] = useState<string>('I2A-SCH-000001');
+  const [viewMode, setViewMode] = useState<'PUBLIC_SAAS' | 'SCHOOL_PORTAL' | 'PLATFORM_ADMIN' | 'LOGIN'>(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const search = window.location.search || '';
+        const path = window.location.pathname || '';
+        if (
+          search.includes('token=') ||
+          search.includes('activateToken=') ||
+          search.includes('invitationToken=') ||
+          search.includes('resetOtp=') ||
+          search.includes('view=LOGIN') ||
+          path.includes('/activate') ||
+          path.includes('/reset-password')
+        ) {
+          return 'LOGIN';
+        }
+      }
+      const token = sessionStorage.getItem('i2a_auth_token');
+      const userStr = sessionStorage.getItem('i2a_user');
+      if (token && userStr) {
+        const u = JSON.parse(userStr);
+        if (u.role === 'SUPER_ADMIN') return 'PLATFORM_ADMIN';
+        return 'SCHOOL_PORTAL';
+      }
+    } catch {}
+    return 'PUBLIC_SAAS';
+  });
+  const [activeSchoolId, setActiveSchoolId] = useState<string>(() => {
+    try {
+      const userStr = sessionStorage.getItem('i2a_user');
+      if (userStr) {
+        const u = JSON.parse(userStr);
+        if (u.schoolId && u.schoolId !== 'ALL') return u.schoolId;
+      }
+    } catch {}
+    return 'I2A-SCH-000001';
+  });
 
   const [tenants, setTenants] = useState<SchoolTenant[]>(() => {
     const saved = localStorage.getItem('i2a_tenants');
@@ -777,9 +973,52 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const activeTenant = tenants.find((t) => t.id === activeSchoolId) || tenants[0];
 
-  const [currentRole, setCurrentRole] = useState<UserRole>('PRINCIPAL');
+  const [currentRole, setCurrentRole] = useState<UserRole>(() => {
+    try {
+      const userStr = sessionStorage.getItem('i2a_user');
+      if (userStr) {
+        const u = JSON.parse(userStr);
+        if (u.role) return u.role;
+      }
+    } catch {}
+    return 'PRINCIPAL';
+  });
   const [darkMode, setDarkMode] = useState<boolean>(() => localStorage.getItem('i2a_dark') === 'true');
-  const [activeModule, setActiveModule] = useState<string>('principal_dashboard');
+  const [activeModule, setActiveModule] = useState<string>(() => {
+    try {
+      const userStr = sessionStorage.getItem('i2a_user');
+      if (userStr) {
+        const u = JSON.parse(userStr);
+        if (u.role === 'PARENT') return 'parent_portal';
+        if (u.role === 'STUDENT') return 'student_portal';
+        if (u.role === 'ACCOUNTANT') return 'fee_management';
+        if (u.role === 'TEACHER') return 'attendance_timetable';
+        if (u.role === 'TRANSPORT') return 'library_transport';
+      }
+    } catch {}
+    return 'principal_dashboard';
+  });
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(() => {
+    try {
+      const saved = sessionStorage.getItem('i2a_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [selectedChildId, setSelectedChildId] = useState<string>(() => {
+    return sessionStorage.getItem('i2a_selected_child') || '';
+  });
+
+  useEffect(() => {
+    if (currentUser?.role === 'PARENT') {
+      const allowed = currentUser.childrenIds || (currentUser.studentId ? [currentUser.studentId] : []);
+      if (allowed.length > 0 && (!selectedChildId || !allowed.includes(selectedChildId))) {
+        setSelectedChildId(allowed[0]);
+        sessionStorage.setItem('i2a_selected_child', allowed[0]);
+      }
+    }
+  }, [currentUser, selectedChildId]);
   const [language, setLanguageState] = useState<AppLanguage>(() => {
     return (localStorage.getItem('i2a_lang') as AppLanguage) || 'en';
   });
@@ -816,11 +1055,11 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return saved ? JSON.parse(saved) : initialReceipts;
   });
 
-  const [digitalBooks] = useState<DigitalBook[]>(initialBooks);
+  const [digitalBooks, setDigitalBooks] = useState<DigitalBook[]>(initialBooks);
   const [questionBank, setQuestionBank] = useState<QuestionBankItem[]>(initialQuestions);
   const [examPapers, setExamPapers] = useState<ExamPaper[]>(initialExamPapers);
   const [examSubmissions, setExamSubmissions] = useState<OnlineExamSubmission[]>(initialSubmissions);
-  const [staffList] = useState<Staff[]>(initialStaff);
+  const [staffList, setStaffList] = useState<Staff[]>(initialStaff);
   const [payrollRecords, setPayrollRecords] = useState<PayrollRecord[]>(initialPayroll);
   const [expenses, setExpenses] = useState<SchoolExpense[]>(initialExpenses);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>(initialAuditLogs);
@@ -833,6 +1072,161 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return saved ? JSON.parse(saved) : initialTransportRoutes;
   });
 
+  // Backend Connection & Synchronization States
+  const [isBackendConnected, setIsBackendConnected] = useState<boolean>(false);
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
+  const [backendError, setBackendError] = useState<string | null>(null);
+
+  const ROLE_CREDENTIALS: Record<string, { email: string; pass: string }> = {
+    SUPER_ADMIN: { email: 'superadmin@i2aschoolos.com', pass: 'SuperAdmin@2026#' },
+    PRINCIPAL: { email: 'principal@abcpublicschool.edu.in', pass: 'Principal@2026#' },
+    ADMIN: { email: 'admin@abcpublicschool.edu.in', pass: 'Admin@2026#' },
+    TEACHER: { email: 'sunita.mishra@abcpublicschool.edu.in', pass: 'Teacher@2026#' },
+    ACCOUNTANT: { email: 'alok.nath@abcpublicschool.edu.in', pass: 'Accountant@2026#' },
+    STAFF: { email: 'office@abcpublicschool.edu.in', pass: 'Staff@2026#' },
+    TRANSPORT: { email: 'driver.manoj@abcpublicschool.edu.in', pass: 'Transport@2026#' },
+    PARENT: { email: 'sanjay.kumar@gmail.com', pass: 'Parent@2026#' },
+    STUDENT: { email: 'rahul.kumar@abcpublicschool.edu.in', pass: 'Student@2026#' }
+  };
+
+  const syncWithBackend = async () => {
+    setIsSyncing(true);
+    try {
+      const health = await healthApi.check();
+      if (!health.ok) {
+        setIsBackendConnected(false);
+        setBackendError('Backend database offline');
+        setIsSyncing(false);
+        return;
+      }
+      setIsBackendConnected(true);
+      setBackendError(null);
+
+      // Fail closed: Do NOT auto-authenticate with mock/seed credentials
+      let token = getAuthToken();
+      if (!token) {
+        // Unauthenticated session: fetch public tenant info only
+        try {
+          const tenantsRes = await tenantsApi.list();
+          if (tenantsRes.ok && Array.isArray(tenantsRes.data) && tenantsRes.data.length > 0) {
+            setTenants(tenantsRes.data as SchoolTenant[]);
+            const curTenant = (tenantsRes.data as any[]).find((t) => t.id === activeSchoolId);
+            if (curTenant?.branding) {
+              setBranding(curTenant.branding);
+            }
+          }
+        } catch {}
+        setIsSyncing(false);
+        return;
+      }
+
+      // Fetch tenants
+      const tenantsRes = await tenantsApi.list();
+      if (tenantsRes.ok && Array.isArray(tenantsRes.data) && tenantsRes.data.length > 0) {
+        setTenants(tenantsRes.data as SchoolTenant[]);
+        const curTenant = (tenantsRes.data as any[]).find((t) => t.id === activeSchoolId);
+        if (curTenant?.branding) {
+          setBranding(curTenant.branding);
+        }
+      }
+
+      // Fetch students
+      const studentsRes = await studentsApi.list(activeSchoolId);
+      if (studentsRes.ok && Array.isArray(studentsRes.data)) {
+        setStudents(studentsRes.data as Student[]);
+      }
+
+      // Fetch admissions
+      const admissionsRes = await admissionsApi.list(activeSchoolId);
+      if (admissionsRes.ok && Array.isArray(admissionsRes.data)) {
+        setAdmissions(admissionsRes.data as OnlineAdmissionApplication[]);
+      }
+
+      // Fetch fee types & receipts
+      const feeTypesRes = await feeApi.types.list(activeSchoolId);
+      if (feeTypesRes.ok && Array.isArray(feeTypesRes.data)) {
+        setFeeTypes(feeTypesRes.data as FeeType[]);
+      }
+      const receiptsRes = await feeApi.receipts.list(activeSchoolId);
+      if (receiptsRes.ok && Array.isArray(receiptsRes.data)) {
+        setFeeReceipts(receiptsRes.data as FeeReceipt[]);
+      }
+
+      // Fetch operations
+      const staffRes = await operationsApi.staff.list(activeSchoolId);
+      if (staffRes.ok && Array.isArray(staffRes.data)) {
+        setStaffList(staffRes.data as Staff[]);
+      }
+      const payrollRes = await operationsApi.payroll.list(activeSchoolId);
+      if (payrollRes.ok && Array.isArray(payrollRes.data)) {
+        setPayrollRecords(payrollRes.data as PayrollRecord[]);
+      }
+      const expensesRes = await operationsApi.expenses.list(activeSchoolId);
+      if (expensesRes.ok && Array.isArray(expensesRes.data)) {
+        setExpenses(expensesRes.data as SchoolExpense[]);
+      }
+      const transportRes = await operationsApi.transport.list(activeSchoolId);
+      if (transportRes.ok && Array.isArray(transportRes.data)) {
+        setTransportRoutes(transportRes.data as TransportRouteItem[]);
+      }
+
+      // Fetch notifications & audit logs
+      const notifsRes = await notificationsApi.list(activeSchoolId);
+      if (notifsRes.ok && Array.isArray(notifsRes.data)) {
+        setNotifications(notifsRes.data as SystemNotification[]);
+      }
+      const logsRes = await auditLogsApi.list(activeSchoolId);
+      if (logsRes.ok && Array.isArray(logsRes.data)) {
+        setAuditLogs(logsRes.data as AuditLog[]);
+      }
+
+      // Fetch exams & submissions
+      const examsRes = await examApi.papers.list({ schoolId: activeSchoolId });
+      if (examsRes.ok && Array.isArray(examsRes.data) && examsRes.data.length > 0) {
+        setExamPapers(examsRes.data as ExamPaper[]);
+      }
+      const submissionsRes = await examApi.submissions({ schoolId: activeSchoolId });
+      if (submissionsRes.ok && Array.isArray(submissionsRes.data) && submissionsRes.data.length > 0) {
+        setExamSubmissions(submissionsRes.data as OnlineExamSubmission[]);
+      }
+
+      // Fetch digital library books
+      const libraryRes = await operationsApi.library.list(activeSchoolId);
+      if (libraryRes.ok && Array.isArray(libraryRes.data) && libraryRes.data.length > 0) {
+        setDigitalBooks(libraryRes.data as DigitalBook[]);
+      }
+    } catch (err) {
+      console.warn('Backend sync warning:', err);
+      setIsBackendConnected(false);
+      setBackendError(err instanceof Error ? err.message : 'Backend unreachable');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const loginWithCredentials = async (email: string, password: string): Promise<boolean> => {
+    try {
+      const res = await authApi.login({ email, password });
+      if (res.ok && res.data?.token) {
+        setAuthToken(res.data.token);
+        setCurrentRole(res.data.user.role as UserRole);
+        if (res.data.user.schoolId && res.data.user.schoolId !== 'ALL') {
+          setActiveSchoolId(res.data.user.schoolId);
+        }
+        setViewMode(res.data.user.role === 'SUPER_ADMIN' ? 'PLATFORM_ADMIN' : 'SCHOOL_PORTAL');
+        await syncWithBackend();
+        return true;
+      }
+      return false;
+    } catch {
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    syncWithBackend();
+  }, [activeSchoolId]);
+
   const [notifications, setNotifications] = useState<SystemNotification[]>(() => {
     const saved = localStorage.getItem('i2a_notifications');
     return saved ? JSON.parse(saved) : initialSystemNotifications;
@@ -844,10 +1238,12 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const markNotificationAsRead = (id: string) => {
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
+    notificationsApi.markRead(id).catch((e) => console.warn('Notification read API error:', e));
   };
 
   const clearAllNotifications = () => {
     setNotifications([]);
+    notificationsApi.clearRead().catch((e) => console.warn('Notification clear API error:', e));
   };
 
   const dispatchCredentialsNotification = (params: {
@@ -862,7 +1258,8 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     username: string;
     password?: string;
   }): SystemNotification => {
-    const pwd = params.password || 'Welcome@2026';
+    // Privacy & Security: Never store cleartext passwords in notification payloads or client state
+    const pwd = '•••••••••••• (Dispatched securely to recipient)';
     const schoolTitle = params.schoolName || branding.name;
     const schId = params.schoolId || activeTenant?.id || 'I2A-SCH-000001';
 
@@ -899,6 +1296,19 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     };
 
     setNotifications((prev) => [newNotif, ...prev]);
+
+    notificationsApi.dispatch({
+      recipientType: params.recipientType,
+      recipientName: params.recipientName,
+      recipientEmail: params.recipientEmail,
+      recipientPhone: params.recipientPhone,
+      role: params.role,
+      title: newNotif.title,
+      message: newNotif.message,
+      channel: 'EMAIL',
+      schoolId: schId
+    }).catch((e) => console.warn('Notification dispatch API error:', e));
+
     return newNotif;
   };
 
@@ -962,7 +1372,11 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const updateBranding = (newBranding: Partial<SchoolBranding>) => {
-    setBranding((prev) => ({ ...prev, ...newBranding }));
+    setBranding((prev) => {
+      const updated = { ...prev, ...newBranding };
+      tenantsApi.updateBranding(activeSchoolId, updated).catch((e) => console.warn('Branding API sync error:', e));
+      return updated;
+    });
     logAction('UPDATE_BRANDING', 'SCHOOL_SETUP', 'Updated school identity & theme configurations');
   };
 
@@ -973,6 +1387,9 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     };
     setStudents((prev) => [...prev, newStudent]);
     logAction('ADD_STUDENT', 'STUDENT_MANAGEMENT', `Created digital profile for ${newStudent.name}`);
+
+    // Persist to MongoDB API
+    studentsApi.create({ ...newStudent, schoolId: activeSchoolId }).catch((e) => console.warn('Student API sync error:', e));
 
     // Auto-dispatch credentials & mobile webapp link to student & parent email
     if (newStudent.parentEmail) {
@@ -994,6 +1411,7 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const updateStudent = (id: string, updated: Partial<Student>) => {
     setStudents((prev) => prev.map((s) => (s.id === id ? { ...s, ...updated } : s)));
     logAction('UPDATE_STUDENT', 'STUDENT_MANAGEMENT', `Updated student data for ID ${id}`);
+    studentsApi.update(id, updated).catch((e) => console.warn('Student update API error:', e));
   };
 
   const addAdmission = (appData: Omit<OnlineAdmissionApplication, 'id' | 'applicationNo' | 'submittedDate'>) => {
@@ -1007,6 +1425,7 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     };
     setAdmissions((prev) => [newApp, ...prev]);
     logAction('ONLINE_ADMISSION_SUBMIT', 'ONLINE_ADMISSION', `Parent submitted application ${appNo} for ${newApp.studentName}`);
+    admissionsApi.submitPublic({ ...newApp, schoolId: activeSchoolId }).catch((e) => console.warn('Admission API error:', e));
   };
 
   const updateAdmissionStatus = (id: string, status: OnlineAdmissionApplication['status'], score?: number, remarks?: string) => {
@@ -1016,6 +1435,7 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       )
     );
     logAction('UPDATE_ADMISSION_STATUS', 'ONLINE_ADMISSION', `Application ${id} status updated to ${status}`);
+    admissionsApi.updateStatus(id, { status, testScore: score, remarks }).catch((e) => console.warn('Admission status API error:', e));
   };
 
   const approveAdmissionAndCreateStudent = (id: string) => {
@@ -1071,49 +1491,89 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       'ONLINE_ADMISSION',
       `Approved application ${app.applicationNo}. Automatically generated Student Profile #${newAdmissionNo}, Parent Account, Class Allocation, and Fee Ledger.`
     );
+    admissionsApi.approve(id).catch((e) => console.warn('Admission approve API error:', e));
   };
 
   const addFeeType = (fee: Omit<FeeType, 'id'>) => {
     const newFee: FeeType = { ...fee, id: `fee-${Date.now()}` };
     setFeeTypes((prev) => [...prev, newFee]);
     logAction('CREATE_FEE_TYPE', 'FEE_MANAGEMENT', `Created fee type ${fee.name} (₹${fee.amount})`);
+    feeApi.types.create({ ...newFee, schoolId: activeSchoolId }).catch((e) => console.warn('Fee type API error:', e));
   };
 
-  const processFeePayment = (studentId: string, feeIds: string[], paymentMode: FeeReceipt['paymentMode']): FeeReceipt => {
+  const processFeePayment = async (
+    studentId: string,
+    feeIds: string[],
+    paymentMode: FeeReceipt['paymentMode'],
+    idempotencyKey?: string
+  ): Promise<{ success: boolean; receipt?: FeeReceipt; error?: string }> => {
     const std = students.find((s) => s.id === studentId) || students[0];
     const selectedFees = feeTypes.filter((f) => feeIds.includes(f.id));
     const total = selectedFees.reduce((acc, f) => acc + f.amount, 0);
+    const key = idempotencyKey || `idem-${studentId}-${[...feeIds].sort().join('-')}-${Date.now()}`;
 
-    const rcpNo = `INV-2026-${Math.floor(100000 + Math.random() * 900000)}`;
-    const newReceipt: FeeReceipt = {
-      id: `rcp-${Date.now()}`,
-      receiptNo: rcpNo,
-      studentId: std.id,
-      studentName: std.name,
-      admissionNo: std.admissionNo,
-      className: std.className,
-      section: std.section,
-      feeBreakup: selectedFees.map((f) => ({ feeName: f.name, amount: f.amount })),
-      totalAmount: total,
-      paidAmount: total,
-      balanceAmount: 0,
-      paymentMode,
-      transactionId: `${paymentMode}-${Math.floor(1000000000 + Math.random() * 9000000000)}`,
-      paymentDate: new Date().toLocaleString('en-IN'),
-      status: 'SUCCESS',
-      emailSent: true,
-      whatsappSent: true
-    };
+    try {
+      const res = await feeApi.receipts.collect({
+        studentId,
+        feeIds,
+        paymentMode,
+        idempotencyKey: key,
+        transactionRef: key
+      });
 
-    setFeeReceipts((prev) => [newReceipt, ...prev]);
+      if (!res.ok || !res.data?.receipt) {
+        return {
+          success: false,
+          error: (res.data as any)?.error || res.error || 'Server rejected fee collection transaction.'
+        };
+      }
 
-    logAction(
-      'AUTOMATIC_FEE_COLLECTION',
-      'FEE_MANAGEMENT',
-      `Processed payment ${rcpNo} for ${std.name} (₹${total}). Auto-triggered PDF Receipt, WhatsApp alert, and Email invoice.`
-    );
+      const serverReceipt = res.data.receipt as any;
+      const formattedReceipt: FeeReceipt = {
+        id: serverReceipt.id || `rcp-${Date.now()}`,
+        receiptNo: serverReceipt.receiptNo,
+        studentId: serverReceipt.studentId || std?.id || studentId,
+        studentName: serverReceipt.studentName || std?.name || 'Student',
+        admissionNo: serverReceipt.admissionNo || std?.admissionNo || '',
+        className: serverReceipt.className || std?.className || '',
+        section: serverReceipt.section || std?.section || '',
+        feeBreakup: serverReceipt.feeBreakup && serverReceipt.feeBreakup.length > 0
+          ? serverReceipt.feeBreakup.map((f: any) => ({ feeName: f.feeName || f.name, amount: f.amount }))
+          : selectedFees.map((f) => ({ feeName: f.name, amount: f.amount })),
+        totalAmount: serverReceipt.totalAmount || total,
+        paidAmount: serverReceipt.paidAmount || total,
+        balanceAmount: serverReceipt.balanceAmount || 0,
+        paymentMode: serverReceipt.paymentMode || paymentMode,
+        transactionId: serverReceipt.transactionRef || serverReceipt.id,
+        paymentDate: serverReceipt.paymentDate || new Date().toLocaleString('en-IN'),
+        status: serverReceipt.status === 'PAID' ? 'SUCCESS' : (serverReceipt.status || 'SUCCESS'),
+        emailSent: true,
+        whatsappSent: true
+      };
 
-    return newReceipt;
+      setFeeReceipts((prev) => {
+        const exists = prev.some((r) => r.receiptNo === formattedReceipt.receiptNo || r.id === formattedReceipt.id);
+        if (exists) return prev;
+        return [formattedReceipt, ...prev];
+      });
+
+      logAction(
+        'AUTOMATIC_FEE_COLLECTION',
+        'FEE_MANAGEMENT',
+        `Processed verified payment ${formattedReceipt.receiptNo} for ${formattedReceipt.studentName} (₹${formattedReceipt.paidAmount}). Verified by server.`
+      );
+
+      return {
+        success: true,
+        receipt: formattedReceipt
+      };
+    } catch (err: any) {
+      console.error('Fee collection processing error:', err);
+      return {
+        success: false,
+        error: err?.message || 'Network error: Failed to reach fee processing service.'
+      };
+    }
   };
 
   const addQuestionToBank = (q: Omit<QuestionBankItem, 'id'>) => {
@@ -1139,6 +1599,15 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     };
 
     setExamPapers((prev) => [newPaper, ...prev]);
+    examApi.papers.create({
+      paperTitle: params.title,
+      className: params.className,
+      subject: params.subject,
+      totalMarks: params.marks,
+      durationMinutes: params.duration,
+      questions: selectedQ,
+      status: 'AI_DRAFT'
+    }).catch((e) => console.warn('Exam Paper API error:', e));
     logAction(
       'ONE_CLICK_AI_PAPER_GENERATOR',
       'EXAM_AI',
@@ -1237,12 +1706,14 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       prev.map((p) => (p.id === recordId ? { ...p, status: 'DISBURSED', disbursedDate: new Date().toISOString().split('T')[0] } : p))
     );
     logAction('DISBURSE_PAYROLL', 'STAFF_PAYROLL', `Payroll disbursed for record ${recordId}`);
+    operationsApi.payroll.disburse(recordId).catch((e) => console.warn('Payroll API error:', e));
   };
 
   const addExpense = (expData: Omit<SchoolExpense, 'id'>) => {
     const newExp: SchoolExpense = { ...expData, id: `exp-${Date.now()}` };
     setExpenses((prev) => [newExp, ...prev]);
     logAction('RECORD_EXPENSE', 'EXPENSE_MANAGEMENT', `Recorded expense ₹${expData.amount} for ${expData.title}`);
+    operationsApi.expenses.create({ ...newExp, schoolId: activeSchoolId }).catch((e) => console.warn('Expense API error:', e));
   };
 
   const registerSchool = (params: {
@@ -1309,6 +1780,7 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setBranding(newBranding);
 
     logAction('REGISTER_SCHOOL', 'PLATFORM', `New school registered: ${params.name} (School ID: ${newSchoolId})`);
+    authApi.registerSchool(params).catch((e) => console.warn('School registration API error:', e));
 
     // Auto-dispatch School Credentials & Mobile WebApp access link to School Principal/Admin email
     dispatchCredentialsNotification({
@@ -1327,7 +1799,113 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return newTenant;
   };
 
-  const loginToSchool = (schoolId: string, role?: UserRole) => {
+  const onboardSchool = async (params: {
+    name: string;
+    code?: string;
+    board?: 'CBSE' | 'ICSE' | 'STATE_BOARD' | 'IB';
+    category?: string;
+    adminName: string;
+    adminEmail: string;
+    adminPhone: string;
+    planId: 'STARTER' | 'PROFESSIONAL' | 'ENTERPRISE';
+    billingCycle?: 'MONTHLY' | 'YEARLY';
+    address?: SchoolTenantLocation;
+    initialBranch?: {
+      branchCode?: string;
+      name?: string;
+      capacity?: number;
+    };
+  }): Promise<{ success: boolean; tenant?: SchoolTenant; error?: string }> => {
+    try {
+      const res = await tenantsApi.createTenant(params);
+      if (res.ok && res.data?.tenant) {
+        const createdTenant = res.data.tenant as SchoolTenant;
+        setTenants((prev) => [createdTenant, ...prev.filter((t) => t.id !== createdTenant.id)]);
+        logAction('ONBOARD_SCHOOL', 'PLATFORM_ADMIN', `Onboarded school "${createdTenant.name}" (${createdTenant.id}) with location.`);
+        return { success: true, tenant: createdTenant };
+      }
+
+      // Offline / fallback creation
+      const num = Math.floor(100000 + Math.random() * 900000);
+      const newSchoolId = `I2A-SCH-${num}`;
+      const plan = initialSubscriptionPlans.find((p) => p.id === params.planId) || initialSubscriptionPlans[1];
+      const city = params.address?.city || 'Patna';
+      const state = params.address?.state || 'Bihar';
+
+      const fallbackTenant: SchoolTenant = {
+        id: newSchoolId,
+        name: params.name,
+        code: params.code || (params.name.substring(0, 4).toUpperCase() + '-' + city.toUpperCase()),
+        board: params.board || 'CBSE',
+        category: params.category || 'k12-schools',
+        city,
+        adminName: params.adminName,
+        adminEmail: params.adminEmail,
+        adminPhone: params.adminPhone,
+        planId: params.planId,
+        planName: plan.name,
+        billingCycle: params.billingCycle || 'YEARLY',
+        subscriptionStatus: 'ACTIVE',
+        registeredAt: new Date().toISOString().split('T')[0],
+        expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        studentLimit: plan.maxStudents,
+        isOnboarded: true,
+        branchCount: 1,
+        location: params.address || {
+          city,
+          state,
+          country: 'IN'
+        },
+        branches: [
+          {
+            id: `BR-${newSchoolId}-MAIN`,
+            branchCode: params.initialBranch?.branchCode || 'MAIN',
+            name: params.initialBranch?.name || `${params.name} (Main Campus)`,
+            isMainBranch: true,
+            status: 'ACTIVE',
+            capacity: params.initialBranch?.capacity || 1000,
+            address: params.address
+          }
+        ]
+      };
+
+      const updated = [fallbackTenant, ...tenants];
+      setTenants(updated);
+      localStorage.setItem('i2a_tenants', JSON.stringify(updated));
+      return { success: true, tenant: fallbackTenant };
+    } catch (err) {
+      return { success: false, error: err instanceof Error ? err.message : 'Failed to onboard school' };
+    }
+  };
+
+  const updateSchoolLocation = async (schoolId: string, location: SchoolTenantLocation): Promise<{ success: boolean; error?: string }> => {
+    try {
+      await tenantsApi.updateLocation(schoolId, location);
+      setTenants((prev) =>
+        prev.map((t) => (t.id === schoolId ? { ...t, location: { ...t.location, ...location } } : t))
+      );
+      if (activeSchoolId === schoolId) {
+        setBranding((prev) => ({
+          ...prev,
+          address: `${location.street ? location.street + ', ' : ''}${location.city || ''}, ${location.state || ''}${location.postalCode ? ' - ' + location.postalCode : ''}`
+        }));
+      }
+      return { success: true };
+    } catch (err) {
+      return { success: false, error: err instanceof Error ? err.message : 'Failed to update location' };
+    }
+  };
+
+  const loginToSchool = (schoolId: string, role?: UserRole, user?: AuthUser) => {
+    if (user) {
+      setCurrentUser(user);
+      sessionStorage.setItem('i2a_user', JSON.stringify(user));
+      if (user.childrenIds && user.childrenIds.length > 0) {
+        setSelectedChildId(user.childrenIds[0]);
+      } else if (user.studentId) {
+        setSelectedChildId(user.studentId);
+      }
+    }
     setActiveSchoolId(schoolId);
     const targetTenant = tenants.find((t) => t.id === schoolId) || tenants[0];
     setBranding((prev) => ({
@@ -1339,15 +1917,30 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       board: targetTenant.board
     }));
 
+    const nextRole = role || currentRole;
     if (role) {
       setCurrentRole(role);
       if (role === 'SUPER_ADMIN') {
         setViewMode('PLATFORM_ADMIN');
-        return;
+      } else {
+        setViewMode('SCHOOL_PORTAL');
       }
+    } else {
+      setViewMode('SCHOOL_PORTAL');
     }
-    setViewMode('SCHOOL_PORTAL');
-    if (!targetTenant.isOnboarded) {
+
+    // Direct role-based dashboard landing
+    if (nextRole === 'PARENT') {
+      setActiveModule('parent_portal');
+    } else if (nextRole === 'STUDENT') {
+      setActiveModule('student_portal');
+    } else if (nextRole === 'ACCOUNTANT') {
+      setActiveModule('fee_management');
+    } else if (nextRole === 'TEACHER') {
+      setActiveModule('attendance_timetable');
+    } else if (nextRole === 'TRANSPORT') {
+      setActiveModule('library_transport');
+    } else if (!targetTenant?.isOnboarded && (nextRole === 'PRINCIPAL' || nextRole === 'ADMIN' || nextRole === 'SUPER_ADMIN')) {
       setActiveModule('school_setup');
     } else {
       setActiveModule('principal_dashboard');
@@ -1423,12 +2016,12 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       id: formattedId,
       name: app.schoolName,
       code: `${cleanCode}-${app.city.toUpperCase()}`,
-      board: app.board,
+      board: (app.board as 'CBSE' | 'ICSE' | 'STATE_BOARD' | 'IB') || 'CBSE',
       city: app.city,
       adminName: app.adminName,
       adminEmail: app.adminEmail,
       adminPhone: app.adminPhone,
-      planId: app.planId,
+      planId: app.planId || 'PROFESSIONAL',
       planName: plan.name,
       billingCycle: 'YEARLY',
       subscriptionStatus: 'ACTIVE',
@@ -1541,6 +2134,9 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const returnToPublicSaas = () => {
+    clearAuth();
+    setCurrentUser(null);
+    setSelectedChildId('');
     setViewMode('PUBLIC_SAAS');
   };
 
@@ -1571,6 +2167,8 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         activeTenant,
         subscriptionPlans: initialSubscriptionPlans,
         registerSchool,
+        onboardSchool,
+        updateSchoolLocation,
         loginToSchool,
         updateTenantSubscription,
         toggleSchoolSuspension,
@@ -1597,6 +2195,10 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         addFeeType,
         feeReceipts,
         processFeePayment,
+        currentUser,
+        setCurrentUser,
+        selectedChildId,
+        setSelectedChildId,
         digitalBooks,
         questionBank,
         addQuestionToBank,
@@ -1625,7 +2227,12 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         notifications,
         markNotificationAsRead,
         clearAllNotifications,
-        dispatchCredentialsNotification
+        dispatchCredentialsNotification,
+        isBackendConnected,
+        isSyncing,
+        backendError,
+        syncWithBackend,
+        loginWithCredentials
       }}
     >
       {children}

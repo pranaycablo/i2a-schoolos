@@ -1,29 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSchool } from '../../context/SchoolContext';
 import { StaffWorkforceService, EmployeeProfile, LeaveRequest } from '../../services/StaffWorkforceService';
+import { useToast } from '../../design-system/components/Toast';
 import {
   Users,
-  BadgePercent,
   Plus,
   CheckCircle2,
   XCircle,
-  ShieldCheck,
-  Building2,
-  Calendar,
-  FileCheck,
-  Lock,
-  UserX,
-  Sparkles,
   Phone,
-  Mail
+  Mail,
+  Search,
+  RefreshCw
 } from 'lucide-react';
 
 export const StaffWorkforceModule: React.FC = () => {
   const { branding, currentRole, language, dispatchCredentialsNotification } = useSchool();
+  const { addToast } = useToast();
 
   const [activeTab, setActiveTab] = useState<'STAFF_DIRECTORY' | 'DEPARTMENTS' | 'LEAVE_APPROVALS'>('STAFF_DIRECTORY');
-  const [empPattern, setEmpPattern] = useState('EMP-{YEAR}-{SEQ}');
   const [showAddStaffModal, setShowAddStaffModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDepartment, setSelectedDepartment] = useState('ALL');
+  const [isLoading, setIsLoading] = useState(false);
+
   const [newStaffForm, setNewStaffForm] = useState({
     fullName: '',
     email: '',
@@ -51,38 +50,125 @@ export const StaffWorkforceModule: React.FC = () => {
     status: 'ACTIVE' as const
   };
 
-  const handleAddStaffSubmit = (e: React.FormEvent) => {
+  // Load staff and leaves from backend API
+  const loadData = async () => {
+    setIsLoading(true);
+    try {
+      const [staffRes, leavesRes] = await Promise.all([
+        StaffWorkforceService.fetchStaffRoster({
+          department: selectedDepartment !== 'ALL' ? selectedDepartment : undefined,
+          search: searchQuery || undefined
+        }),
+        StaffWorkforceService.fetchLeavesApi()
+      ]);
+
+      if (staffRes.success && staffRes.data && staffRes.data.length > 0) {
+        setEmployees(staffRes.data);
+      }
+      if (leavesRes.success && leavesRes.data && leavesRes.data.length > 0) {
+        setLeaveRequests(leavesRes.data);
+      }
+    } catch {
+      // Keep existing demo items if offline
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, [selectedDepartment]);
+
+  const handleAddStaffSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newStaffForm.fullName.trim()) return;
-    const seq = String(employees.length + 1).padStart(4, '0');
-    const newEmp: EmployeeProfile = {
-      id: `stf-${Date.now()}`,
-      tenantId: 'sch-001',
-      employeeId: `EMP-2026-${seq}`,
-      fullName: newStaffForm.fullName,
-      email: newStaffForm.email || `${newStaffForm.fullName.toLowerCase().replace(/\s+/g, '.')}@${branding.name.toLowerCase().replace(/\s+/g, '')}.edu.in`,
-      phone: newStaffForm.phone || '+91 9876543210',
-      department: newStaffForm.department,
-      designation: newStaffForm.designation,
-      employmentType: newStaffForm.employmentType,
-      status: 'ACTIVE',
-      joiningDate: new Date().toISOString().split('T')[0],
-      isTeacher: newStaffForm.isTeacher,
-      linkedUserId: `usr-${Date.now()}`
-    };
-    setEmployees([newEmp, ...employees]);
 
-    // Automated dispatch of credentials & mobile webapp link to staff email
+    const email = newStaffForm.email || `${newStaffForm.fullName.toLowerCase().replace(/\s+/g, '.')}@${branding.name.toLowerCase().replace(/\s+/g, '')}.edu.in`;
+    const phone = newStaffForm.phone || '+91 9876543210';
+
+    try {
+      // Try backend persistence
+      const res = await StaffWorkforceService.createStaffMember({
+        fullName: newStaffForm.fullName,
+        email,
+        phone,
+        department: newStaffForm.department,
+        designation: newStaffForm.designation,
+        employmentType: newStaffForm.employmentType,
+        isTeacher: newStaffForm.isTeacher,
+        createLoginAccount: true
+      });
+
+      if (res?.ok && res?.data?.data) {
+        const created = res.data.data;
+        setEmployees([created, ...employees]);
+        addToast({
+          type: 'success',
+          title: language === 'hi' ? 'स्टाफ जोड़ा गया' : 'Staff Onboarded',
+          message: `${created.fullName} (${created.employeeId})`
+        });
+      } else {
+        // Fallback local creation
+        const seq = String(employees.length + 1).padStart(4, '0');
+        const newEmp: EmployeeProfile = {
+          id: `stf-${Date.now()}`,
+          tenantId: 'sch-001',
+          employeeId: `EMP-2026-${seq}`,
+          fullName: newStaffForm.fullName,
+          email,
+          phone,
+          department: newStaffForm.department,
+          designation: newStaffForm.designation,
+          employmentType: newStaffForm.employmentType,
+          status: 'ACTIVE',
+          joiningDate: new Date().toISOString().split('T')[0],
+          isTeacher: newStaffForm.isTeacher,
+          linkedUserId: `usr-${Date.now()}`
+        };
+        setEmployees([newEmp, ...employees]);
+        addToast({
+          type: 'success',
+          title: language === 'hi' ? 'स्टाफ जोड़ा गया (Local)' : 'Staff Added Locally',
+          message: newEmp.fullName
+        });
+      }
+    } catch {
+      // Fallback local creation on error
+      const seq = String(employees.length + 1).padStart(4, '0');
+      const newEmp: EmployeeProfile = {
+        id: `stf-${Date.now()}`,
+        tenantId: 'sch-001',
+        employeeId: `EMP-2026-${seq}`,
+        fullName: newStaffForm.fullName,
+        email,
+        phone,
+        department: newStaffForm.department,
+        designation: newStaffForm.designation,
+        employmentType: newStaffForm.employmentType,
+        status: 'ACTIVE',
+        joiningDate: new Date().toISOString().split('T')[0],
+        isTeacher: newStaffForm.isTeacher,
+        linkedUserId: `usr-${Date.now()}`
+      };
+      setEmployees([newEmp, ...employees]);
+      addToast({
+        type: 'success',
+        title: language === 'hi' ? 'स्टाफ जोड़ा गया' : 'Staff Added',
+        message: newEmp.fullName
+      });
+    }
+
+    // Automated dispatch of credentials notification
     dispatchCredentialsNotification({
       recipientType: 'STAFF',
       recipientName: newStaffForm.fullName,
-      recipientEmail: newEmp.email,
-      recipientPhone: newEmp.phone,
+      recipientEmail: email,
+      recipientPhone: phone,
       schoolName: branding.name,
       schoolId: branding.id,
       role: 'STAFF',
-      loginId: newEmp.employeeId,
-      username: newEmp.email,
+      loginId: `EMP-2026-${String(employees.length + 1).padStart(4, '0')}`,
+      username: email,
       password: 'Staff@2026'
     });
 
@@ -98,19 +184,54 @@ export const StaffWorkforceModule: React.FC = () => {
     });
   };
 
-  const handleDisableAccess = (staffId: string) => {
+  const handleDisableAccess = async (staffId: string) => {
     const emp = employees.find((e) => e.id === staffId);
     if (!emp) return;
+
+    try {
+      await StaffWorkforceService.updateStaffStatusApi(staffId, 'INACTIVE', 'Access disabled from Staff Portal');
+    } catch {
+      // Ignore API error in offline mode
+    }
+
     const updated = StaffWorkforceService.disableUserAccess(currentUserSession, 'sch-001', emp);
     setEmployees(employees.map((e) => (e.id === staffId ? updated : e)));
+    addToast({
+      type: 'warning',
+      title: language === 'hi' ? 'एक्सेस अक्षम किया गया' : 'Login Access Disabled',
+      message: `${emp.fullName} login revoked. HR data preserved.`
+    });
   };
 
-  const handleLeaveDecision = (requestId: string, decision: 'APPROVED' | 'REJECTED') => {
+  const handleLeaveDecision = async (requestId: string, decision: 'APPROVED' | 'REJECTED') => {
     const req = leaveRequests.find((r) => r.id === requestId);
     if (!req) return;
+
+    try {
+      await StaffWorkforceService.processLeaveDecisionApi(requestId, decision, `Processed by ${branding.email}`);
+    } catch {
+      // Ignore API error in offline mode
+    }
+
     const updated = StaffWorkforceService.processLeaveApproval(currentUserSession, 'sch-001', req, decision);
     setLeaveRequests(leaveRequests.map((r) => (r.id === requestId ? updated : r)));
+    addToast({
+      type: decision === 'APPROVED' ? 'success' : 'error',
+      title: decision === 'APPROVED' ? 'Leave Approved' : 'Leave Rejected',
+      message: `${req.staffName} (${req.leaveType})`
+    });
   };
+
+  const filteredEmployees = employees.filter((emp) => {
+    const matchesDept = selectedDepartment === 'ALL' || emp.department === selectedDepartment;
+    const matchesSearch = !searchQuery || (
+      emp.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      emp.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      emp.employeeId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      emp.designation.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    return matchesDept && matchesSearch;
+  });
 
   return (
     <div className="space-y-6 animate-fade-in pb-12">
@@ -167,18 +288,58 @@ export const StaffWorkforceModule: React.FC = () => {
                 {language === 'hi' ? 'सभी शिक्षकों व कर्मचारियों का आधिकारिक विवरण' : 'Official HR roster with auto employee ID sequencing'}
               </p>
             </div>
-            <button
-              onClick={() => setShowAddStaffModal(true)}
-              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-indigo-600 hover:from-amber-600 hover:to-indigo-700 text-white font-extrabold text-xs shadow-md shadow-indigo-500/20 flex items-center gap-2 self-start sm:self-auto transition-all"
-            >
-              <Plus className="w-4 h-4" />
-              {language === 'hi' ? '+ नया शिक्षक / स्टाफ जोड़ें' : '+ Add Faculty / Staff'}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={loadData}
+                disabled={isLoading}
+                className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors"
+                title="Refresh from server"
+              >
+                <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin text-indigo-600' : ''}`} />
+              </button>
+              <button
+                onClick={() => setShowAddStaffModal(true)}
+                className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-indigo-600 hover:from-amber-600 hover:to-indigo-700 text-white font-extrabold text-xs shadow-md shadow-indigo-500/20 flex items-center gap-2 self-start sm:self-auto transition-all"
+              >
+                <Plus className="w-4 h-4" />
+                {language === 'hi' ? '+ नया शिक्षक / स्टाफ जोड़ें' : '+ Add Faculty / Staff'}
+              </button>
+            </div>
           </div>
+
+          {/* Search & Department Filter Bar */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-800">
+            <div className="relative w-full sm:w-72">
+              <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search staff by name, email, code..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs outline-none focus:ring-2 focus:ring-indigo-500/40"
+              />
+            </div>
+            <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+              {['ALL', 'Academic', 'Administration', 'Accounts', 'Transport', 'IT & Labs'].map((dept) => (
+                <button
+                  key={dept}
+                  onClick={() => setSelectedDepartment(dept)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                    selectedDepartment === dept
+                      ? 'bg-indigo-600 text-white shadow-sm'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                  }`}
+                >
+                  {dept === 'ALL' ? 'All Departments' : dept}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {employees.map((emp) => (
+            {filteredEmployees.map((emp) => (
               <div key={emp.id} className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-                <div className="flex justify-between items-start border-b pb-3">
+                <div className="flex justify-between items-start border-b pb-3 border-slate-100 dark:border-slate-800">
                   <div>
                     <span className="font-mono text-[10px] font-bold text-indigo-600 bg-indigo-50 dark:bg-indigo-950 px-2.5 py-0.5 rounded-full">
                       {emp.employeeId}
@@ -199,7 +360,7 @@ export const StaffWorkforceModule: React.FC = () => {
                   <p>Joining Date: <b>{emp.joiningDate}</b> • Type: <b>{emp.employmentType}</b></p>
                 </div>
 
-                <div className="pt-3 border-t flex justify-between items-center">
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
                   <span className="text-[10px] text-slate-400 font-semibold">
                     User Login: {emp.linkedUserId ? '✅ Linked' : '❌ No Login Account'}
                   </span>
@@ -220,7 +381,7 @@ export const StaffWorkforceModule: React.FC = () => {
 
       {activeTab === 'DEPARTMENTS' && (
         <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 text-xs">
-          <h3 className="font-bold text-sm text-slate-900 dark:text-white border-b pb-3">School Department Hierarchy</h3>
+          <h3 className="font-bold text-sm text-slate-900 dark:text-white border-b pb-3 border-slate-100 dark:border-slate-800">School Department Hierarchy</h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {['Academic', 'Administration', 'Accounts', 'HR', 'Examination', 'Library', 'Transport', 'IT & Labs'].map((dept, idx) => (
               <div key={idx} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-center font-bold text-slate-900 dark:text-white">
@@ -233,7 +394,7 @@ export const StaffWorkforceModule: React.FC = () => {
 
       {activeTab === 'LEAVE_APPROVALS' && (
         <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 text-xs">
-          <h3 className="font-bold text-sm text-slate-900 dark:text-white border-b pb-3">Staff Leave Requests & Approval Desk</h3>
+          <h3 className="font-bold text-sm text-slate-900 dark:text-white border-b pb-3 border-slate-100 dark:border-slate-800">Staff Leave Requests & Approval Desk</h3>
 
           <div className="space-y-3">
             {leaveRequests.map((req) => (

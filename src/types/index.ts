@@ -38,29 +38,86 @@ export interface SchoolBranding {
   certificateTheme: 'OFFICIAL' | 'ELEGANT' | 'MODERN';
 }
 
+export type ApplicationStatus =
+  | 'DRAFT'
+  | 'SUBMITTED'
+  | 'PENDING_VERIFICATION'
+  | 'UNDER_REVIEW'
+  | 'DOCS_REVIEWED'
+  | 'NEEDS_CORRECTION'
+  | 'APPROVED'
+  | 'REJECTED'
+  | 'SUSPENDED'
+  | 'CANCELLED';
+
+export interface ApplicationStatusHistoryItem {
+  status?: ApplicationStatus;
+  fromStatus?: string;
+  toStatus?: string;
+  timestamp?: string;
+  changedAt?: string;
+  changedBy?: string;
+  actorRole?: string;
+  reason?: string;
+  notes?: string;
+}
+
+export interface ApplicationVerificationChecklist {
+  docVerified?: boolean;
+  contactVerified?: boolean;
+  boardAffiliationVerified?: boolean;
+  identityVerified?: boolean;
+  documentAuthenticityVerified?: boolean;
+  affiliationVerified?: boolean;
+  addressVerified?: boolean;
+  feeCommercialVerified?: boolean;
+  antiFraudCheckPassed?: boolean;
+  verifiedAt?: string;
+  verifiedBy?: string;
+}
+
+export interface ApplicationSubmittedDocument {
+  type: string;
+  fileName: string;
+  fileSizeBytes: number;
+  mimeType: string;
+  storageKey: string;
+  uploadedAt: string;
+}
+
 export interface SchoolRegistrationApplication {
   id: string;
   applicationNo: string;
   schoolName: string;
-  board: 'CBSE' | 'ICSE' | 'STATE_BOARD' | 'IB';
+  category?: string;
+  board?: 'CBSE' | 'ICSE' | 'STATE_BOARD' | 'IB' | 'CAMBRIDGE' | 'UNIVERSITY' | 'OTHER' | string;
   city: string;
   state: string;
   adminName: string;
   adminEmail: string;
   adminPhone: string;
-  domainType: 'SUBDOMAIN' | 'CUSTOM_DOMAIN';
-  subdomainSlug: string;
+  domainType?: 'SUBDOMAIN' | 'CUSTOM_DOMAIN';
+  subdomainSlug?: string;
   customDomain?: string;
-  planId: 'STARTER' | 'PROFESSIONAL' | 'ENTERPRISE';
-  status: 'PENDING_VERIFICATION' | 'DOCS_REVIEWED' | 'APPROVED' | 'REJECTED';
+  planId?: 'STARTER' | 'PROFESSIONAL' | 'ENTERPRISE';
+  planInterest?: 'STARTER' | 'PROFESSIONAL' | 'ENTERPRISE';
+  estimatedStudents?: number;
+  notes?: string;
+  status: ApplicationStatus;
   submittedDate: string;
   affiliationNumber?: string;
-  documentsSubmitted: {
-    govtRegCert?: string;
-    affiliationDoc?: string;
-    principalIdDoc?: string;
-  };
+  documentsSubmitted?: Record<string, string | ApplicationSubmittedDocument>;
   rejectionReason?: string;
+  correctionNotes?: string;
+  reviewNotes?: string;
+  reviewerId?: string;
+  reviewedAt?: string;
+  approvedAt?: string;
+  approvedBy?: string;
+  tenantId?: string;
+  verificationChecklist?: ApplicationVerificationChecklist;
+  statusHistory?: ApplicationStatusHistoryItem[];
+  verified?: boolean;
 }
 
 export interface TransportRouteItem {
@@ -1084,3 +1141,29 @@ export interface SystemNotification {
   read: boolean;
   emailPayload?: DispatchedEmailPayload;
 }
+
+// Re-export Master Domain Model & Organization Hierarchy Types
+export * from './domain';
+
+export type PublicRoute =
+  | 'home'
+  | 'product'
+  | 'features'
+  | 'solutions'
+  | 'pricing'
+  | 'about'
+  | 'contact'
+  | 'faq'
+  | 'privacy'
+  | 'terms'
+  | 'security'
+  | 'register'
+  | 'category-detail';
+
+export interface ConsentPreferences {
+  essential: boolean;
+  analytics: boolean;
+  advertising: boolean;
+  timestamp: string;
+}
+

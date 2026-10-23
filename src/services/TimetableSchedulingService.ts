@@ -1,4 +1,5 @@
 import { TenantSecurityService, type UserSession, TenantSecurityException } from './TenantSecurityService';
+import { timetableApi } from './apiClient';
 import type {
   DayOfWeek,
   PeriodSlot,
@@ -232,7 +233,25 @@ export class TimetableSchedulingService {
     }
 
     this.cells.set(cell.id, cell);
+
+    // Background sync to MongoDB API
+    timetableApi.upsertCell(cell).catch(() => {});
+
     return { cell, conflicts };
+  }
+
+  public async syncFromBackend(schoolId: string, className?: string, sectionName?: string): Promise<TimetableCell[]> {
+    try {
+      const res = await timetableApi.list({ schoolId, className, sectionName });
+      if (res.ok && Array.isArray(res.data) && res.data.length > 0) {
+        const fetched = res.data as TimetableCell[];
+        fetched.forEach((c) => this.cells.set(c.id, c));
+        return fetched;
+      }
+    } catch {
+      // Fallback
+    }
+    return Array.from(this.cells.values()).filter((c) => c.schoolId === schoolId);
   }
 
   public deleteTimetableCell(cellId: string, schoolId: string, session: UserSession): boolean {

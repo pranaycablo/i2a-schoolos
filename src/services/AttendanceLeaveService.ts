@@ -14,6 +14,7 @@ import type {
 } from '../types/attendance';
 import type { AuditLog, UserRole } from '../types';
 import { TenantSecurityService, type UserSession, TenantSecurityException } from './TenantSecurityService';
+import { attendanceApi } from './apiClient';
 
 export class AttendanceLeaveService {
   private static instance: AttendanceLeaveService;
@@ -467,7 +468,44 @@ export class AttendanceLeaveService {
       payload: { className, section, date, count: entries.length, markedBy }
     });
 
+    // Background async sync to MongoDB API
+    attendanceApi.mark({
+      date,
+      className,
+      section,
+      entityType: 'STUDENT',
+      attendanceList: entries.map((e) => ({
+        entityId: e.studentId,
+        entityName: e.studentName,
+        className,
+        section,
+        status: e.status,
+        remarks: e.remarks
+      }))
+    }).catch(() => {});
+
     return createdRecords;
+  }
+
+  public async syncFromBackend(schoolId: string, className?: string, section?: string, date?: string): Promise<AttendanceRecord[]> {
+    try {
+      const res = await attendanceApi.list({ schoolId, className, section, date });
+      if (res.ok && Array.isArray(res.data) && res.data.length > 0) {
+        const fetched = res.data as AttendanceRecord[];
+        fetched.forEach((f) => {
+          const idx = this.records.findIndex((r) => r.schoolId === f.schoolId && r.entityId === f.entityId && r.date === f.date);
+          if (idx >= 0) {
+            this.records[idx] = { ...this.records[idx], ...f };
+          } else {
+            this.records.push(f);
+          }
+        });
+        return fetched;
+      }
+    } catch {
+      // Fallback
+    }
+    return this.getAttendanceRecords(schoolId, className, section, date);
   }
 
   // --- STAFF ATTENDANCE ---

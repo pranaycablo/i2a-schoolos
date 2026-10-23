@@ -1,4 +1,5 @@
 import { TenantSecurityService, type UserSession, TenantSecurityException } from './TenantSecurityService';
+import { homeworkApi } from './apiClient';
 import type {
   Homework,
   StudentSubmission,
@@ -113,6 +114,8 @@ export class HomeworkDigitalLearningService {
     };
 
     this.homeworkList.set(newHw.id, newHw);
+    // Background async sync to MongoDB API
+    homeworkApi.create(newHw).catch(() => {});
     return newHw;
   }
 
@@ -139,6 +142,20 @@ export class HomeworkDigitalLearningService {
     return Array.from(this.homeworkList.values()).filter(
       h => h.schoolId === schoolId && h.className === className && (h.sectionName === sectionName || !h.sectionName)
     );
+  }
+
+  public async syncFromBackend(schoolId: string, className?: string, sectionName?: string): Promise<Homework[]> {
+    try {
+      const res = await homeworkApi.list({ schoolId, className, sectionName });
+      if (res.ok && Array.isArray(res.data) && res.data.length > 0) {
+        const hws = res.data as Homework[];
+        hws.forEach((h) => this.homeworkList.set(h.id, h));
+        return hws;
+      }
+    } catch {
+      // Fallback
+    }
+    return Array.from(this.homeworkList.values()).filter((h) => h.schoolId === schoolId);
   }
 
   // --- STUDENT SUBMISSION ENGINE ---
@@ -200,6 +217,13 @@ export class HomeworkDigitalLearningService {
     };
 
     this.submissions.set(newSub.id, newSub);
+
+    // Background async sync to MongoDB API
+    homeworkApi.submit(subData.homeworkId, {
+      textResponse: subData.textResponse,
+      attachments: subData.attachments
+    }).catch(() => {});
+
     return newSub;
   }
 

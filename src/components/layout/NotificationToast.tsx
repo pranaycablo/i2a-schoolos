@@ -121,22 +121,24 @@ export const EmailPreviewModal: React.FC<{
                   { label: language === 'hi' ? 'स्कूल / संस्था' : 'School / Institution', value: payload.schoolName, key: 'school' },
                   { label: language === 'hi' ? 'स्कूल ID' : 'School ID', value: payload.schoolId, key: 'schoolid' },
                   { label: language === 'hi' ? 'लॉगिन ID (Username)' : 'Login ID / Username', value: payload.username, key: 'username', mono: true },
-                  { label: language === 'hi' ? 'पासवर्ड (Password)' : 'Password (Change after first login)', value: payload.password, key: 'password', mono: true, sensitive: true },
+                  { label: language === 'hi' ? 'पासवर्ड (Password)' : 'Password (Initial Setup)', value: '•••••••••••• (Sent securely to registered recipient)', key: 'password', mono: true, sensitive: true },
                   { label: language === 'hi' ? 'भूमिका' : 'Role / Access Level', value: payload.role, key: 'role' },
                 ].map(({ label, value, key, mono, sensitive }) => (
                   <div key={key} className="flex items-center justify-between gap-2">
                     <span className="text-slate-500 dark:text-slate-400 font-medium min-w-28">{label}</span>
                     <div className="flex items-center gap-1.5 flex-1 justify-end">
-                      <span className={`${mono ? 'font-mono' : 'font-bold'} text-slate-900 dark:text-white text-[11px] ${sensitive ? 'bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-700/40 px-2 py-0.5 rounded-lg' : ''}`}>
-                        {value}
+                      <span className={`${mono ? 'font-mono' : 'font-bold'} text-slate-900 dark:text-white text-[11px] ${sensitive ? 'bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-700/40 px-2 py-0.5 rounded-lg text-amber-700 dark:text-amber-300' : ''}`}>
+                        {sensitive ? '•••••••••••• (Sent securely to recipient)' : value}
                       </span>
-                      <button
-                        onClick={() => copy(value || '', key)}
-                        className="p-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 text-slate-500 hover:text-indigo-600 transition-all"
-                        title="Copy"
-                      >
-                        <CheckCheck className={`w-3 h-3 ${copied === key ? 'text-emerald-500' : ''}`} />
-                      </button>
+                      {!sensitive && (
+                        <button
+                          onClick={() => copy(value || '', key)}
+                          className="p-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 text-slate-500 hover:text-indigo-600 transition-all"
+                          title="Copy"
+                        >
+                          <CheckCheck className={`w-3 h-3 ${copied === key ? 'text-emerald-500' : ''}`} />
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}

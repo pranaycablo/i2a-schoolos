@@ -34,7 +34,7 @@ import {
 const examService = new ExaminationResultService();
 
 export const ExaminationResultModule: React.FC = () => {
-  const { branding, currentRole, students, logAction } = useSchool();
+  const { branding, currentRole, students, logAction, currentUser, selectedChildId } = useSchool();
   const [activeTab, setActiveTab] = useState<
     'exam_planning' | 'question_bank' | 'marks_entry' | 'result_calculation' | 'report_card' | 'parent_portal' | 'analytics'
   >('exam_planning');
@@ -45,13 +45,16 @@ export const ExaminationResultModule: React.FC = () => {
   const [selectedClass, setSelectedClass] = useState<string>('Class VIII');
   const [selectedExamId, setSelectedExamId] = useState<string>('ex-2026-term1');
 
+  const activeStudentId = currentUser?.studentId || (currentUser?.role === 'PARENT' ? selectedChildId : currentUser?.id) || students[0]?.id || 'std-101';
+  const parentChildren = currentUser?.childrenIds || (selectedChildId ? [selectedChildId] : []);
+
   const session: UserSession = {
-    id: currentRole === 'STUDENT' ? 'std-101' : 'usr-principal',
-    email: 'admin@school.com',
+    id: currentRole === 'STUDENT' ? activeStudentId : (currentUser?.id || 'usr-principal'),
+    email: currentUser?.email || 'admin@school.com',
     tenantId: schoolId,
     role: currentRole,
     status: 'ACTIVE',
-    childrenIds: ['std-101']
+    childrenIds: parentChildren
   };
 
   // State Collections
@@ -157,7 +160,7 @@ export const ExaminationResultModule: React.FC = () => {
   // Handle Calculate Result
   const handleCalculateResult = () => {
     try {
-      const summary = examService.calculateStudentResult(selectedExamId, 'std-101', schoolId, session);
+      const summary = examService.calculateStudentResult(selectedExamId, activeStudentId, schoolId, session);
       setResultsList(examService.getAllSchoolResults(schoolId, session));
       logAction('CALCULATE_STUDENT_RESULT', 'EXAM_RESULT', `Calculated result for ${summary.studentName}: ${summary.percentage}% (Grade ${summary.grade})`);
       alert(`परीक्षा परिणाम सफलता पूर्वक तैयार! विद्यार्थी: ${summary.studentName} | प्रतिशत: ${summary.percentage}% | ग्रेड: ${summary.grade} | परिणाम: ${summary.overallResultStatus}`);

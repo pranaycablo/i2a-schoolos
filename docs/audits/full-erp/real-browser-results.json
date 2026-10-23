@@ -1,0 +1,515 @@
+{
+  "timestamp": "2026-10-22T13:06:34.864Z",
+  "environment": {
+    "node": "v24.15.0",
+    "database": "i2a_schoolos_synthetic_test",
+    "browser": "Google Chrome (Headless)",
+    "executable": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+  },
+  "viewportsTested": [
+    {
+      "name": "Ultra-Compact Mobile",
+      "width": 320,
+      "height": 568,
+      "horizontalOverflow": "0px (NONE)",
+      "screenshot": "01_landing_320x568.png",
+      "status": "PASS"
+    },
+    {
+      "name": "Standard Compact Mobile",
+      "width": 375,
+      "height": 667,
+      "horizontalOverflow": "0px (NONE)",
+      "screenshot": "01_landing_375x667.png",
+      "status": "PASS"
+    },
+    {
+      "name": "Modern Large Mobile",
+      "width": 430,
+      "height": 932,
+      "horizontalOverflow": "0px (NONE)",
+      "screenshot": "01_landing_430x932.png",
+      "status": "PASS"
+    },
+    {
+      "name": "Tablet Portrait",
+      "width": 768,
+      "height": 1024,
+      "horizontalOverflow": "0px (NONE)",
+      "screenshot": "01_landing_768x1024.png",
+      "status": "PASS"
+    },
+    {
+      "name": "Tablet Landscape",
+      "width": 1024,
+      "height": 768,
+      "horizontalOverflow": "0px (NONE)",
+      "screenshot": "01_landing_1024x768.png",
+      "status": "PASS"
+    },
+    {
+      "name": "Laptop HD",
+      "width": 1366,
+      "height": 768,
+      "horizontalOverflow": "0px (NONE)",
+      "screenshot": "01_landing_1366x768.png",
+      "status": "PASS"
+    },
+    {
+      "name": "Desktop WXGA+",
+      "width": 1440,
+      "height": 900,
+      "horizontalOverflow": "0px (NONE)",
+      "screenshot": "01_landing_1440x900.png",
+      "status": "PASS"
+    },
+    {
+      "name": "Full HD Wide Monitor",
+      "width": 1920,
+      "height": 1080,
+      "horizontalOverflow": "0px (NONE)",
+      "screenshot": "01_landing_1920x1080.png",
+      "status": "PASS"
+    }
+  ],
+  "journeys": [
+    {
+      "name": "Invalid Credentials Fails Closed",
+      "errorDisplayed": true,
+      "noSessionCreated": true,
+      "screenshot": "02_login_invalid_credentials.png",
+      "status": "PASS"
+    }
+  ],
+  "consoleErrors": [
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/auth/login"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "location": {
+        "url": "http://localhost:5000/api/admissions?schoolId=I2A-SCH-000001"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "location": {
+        "url": "http://localhost:5000/api/operations/payroll?schoolId=I2A-SCH-000001"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "location": {
+        "url": "http://localhost:5000/api/operations/expenses?schoolId=I2A-SCH-000001"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "location": {
+        "url": "http://localhost:5000/api/audit-logs?schoolId=I2A-SCH-000001"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://localhost:5000/api/tenants"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "location": {
+        "url": "http://localhost:5000/api/admissions?schoolId=I2A-SCH-000001"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "location": {
+        "url": "http://localhost:5000/api/operations/payroll?schoolId=I2A-SCH-000001"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "location": {
+        "url": "http://localhost:5000/api/operations/expenses?schoolId=I2A-SCH-000001"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "location": {
+        "url": "http://localhost:5000/api/audit-logs?schoolId=I2A-SCH-000001"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "location": {
+        "url": "http://localhost:5000/api/admissions?schoolId=I2A-SCH-000001"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "location": {
+        "url": "http://localhost:5000/api/admissions?schoolId=I2A-SCH-000001"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "location": {
+        "url": "http://localhost:5000/api/operations/payroll?schoolId=I2A-SCH-000001"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "location": {
+        "url": "http://localhost:5000/api/operations/payroll?schoolId=I2A-SCH-000001"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "location": {
+        "url": "http://localhost:5000/api/operations/expenses?schoolId=I2A-SCH-000001"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "location": {
+        "url": "http://localhost:5000/api/operations/expenses?schoolId=I2A-SCH-000001"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "location": {
+        "url": "http://localhost:5000/api/audit-logs?schoolId=I2A-SCH-000001"
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "location": {
+        "url": "http://localhost:5000/api/audit-logs?schoolId=I2A-SCH-000001"
+      }
+    }
+  ],
+  "networkErrors": [
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/admissions?schoolId=I2A-SCH-000001",
+      "status": 403
+    },
+    {
+      "url": "http://localhost:5000/api/operations/payroll?schoolId=I2A-SCH-000001",
+      "status": 403
+    },
+    {
+      "url": "http://localhost:5000/api/operations/expenses?schoolId=I2A-SCH-000001",
+      "status": 403
+    },
+    {
+      "url": "http://localhost:5000/api/audit-logs?schoolId=I2A-SCH-000001",
+      "status": 403
+    },
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/tenants",
+      "status": 401
+    },
+    {
+      "url": "http://localhost:5000/api/admissions?schoolId=I2A-SCH-000001",
+      "status": 403
+    },
+    {
+      "url": "http://localhost:5000/api/operations/payroll?schoolId=I2A-SCH-000001",
+      "status": 403
+    },
+    {
+      "url": "http://localhost:5000/api/operations/expenses?schoolId=I2A-SCH-000001",
+      "status": 403
+    },
+    {
+      "url": "http://localhost:5000/api/audit-logs?schoolId=I2A-SCH-000001",
+      "status": 403
+    },
+    {
+      "url": "http://localhost:5000/api/admissions?schoolId=I2A-SCH-000001",
+      "status": 403
+    },
+    {
+      "url": "http://localhost:5000/api/admissions?schoolId=I2A-SCH-000001",
+      "status": 403
+    },
+    {
+      "url": "http://localhost:5000/api/operations/payroll?schoolId=I2A-SCH-000001",
+      "status": 403
+    },
+    {
+      "url": "http://localhost:5000/api/operations/payroll?schoolId=I2A-SCH-000001",
+      "status": 403
+    },
+    {
+      "url": "http://localhost:5000/api/operations/expenses?schoolId=I2A-SCH-000001",
+      "status": 403
+    },
+    {
+      "url": "http://localhost:5000/api/operations/expenses?schoolId=I2A-SCH-000001",
+      "status": 403
+    },
+    {
+      "url": "http://localhost:5000/api/audit-logs?schoolId=I2A-SCH-000001",
+      "status": 403
+    },
+    {
+      "url": "http://localhost:5000/api/audit-logs?schoolId=I2A-SCH-000001",
+      "status": 403
+    }
+  ],
+  "status": "SUCCESS"
+}

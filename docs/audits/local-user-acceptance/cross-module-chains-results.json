@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-10-23T06:30:34.074Z",
+  "database": "i2a_schoolos_synthetic_test",
+  "chains": [
+    {
+      "chainId": "CHAIN-01",
+      "name": "Admission -> Student Record -> Class Assignment -> Parent Linkage",
+      "status": "PASS",
+      "details": {
+        "applicationId": "adm-1792737034109-656",
+        "studentId": "STU-CHAIN-1792737034122",
+        "parentLinked": true
+      }
+    },
+    {
+      "chainId": "CHAIN-02",
+      "name": "Fee Assignment -> Payment Recording -> Receipt Generation",
+      "status": "PASS",
+      "details": {
+        "receiptNo": "INV-2026-432063",
+        "amount": 15000
+      }
+    },
+    {
+      "chainId": "CHAIN-03",
+      "name": "Class/Subject -> Timetable -> Attendance Marking",
+      "status": "PASS",
+      "details": {
+        "timetableAssigned": true,
+        "attendanceMarked": true
+      }
+    },
+    {
+      "chainId": "CHAIN-04",
+      "name": "Homework Creation -> Student Submission -> Teacher Review",
+      "status": "PASS",
+      "details": {
+        "homeworkId": "hw-1792737034218-982",
+        "submissionSuccessful": true
+      }
+    },
+    {
+      "chainId": "CHAIN-05",
+      "name": "Exam Setup -> Student Submission -> Auto-Grading & Scorecard",
+      "status": "PASS",
+      "details": {
+        "examPaperId": "ex-1792737034236-747",
+        "examSubmitted": true
+      }
+    },
+    {
+      "chainId": "CHAIN-06",
+      "name": "Staff Creation -> Leave Request -> Anti-Self-Approval Guard",
+      "status": "PASS",
+      "details": {
+        "staffMemberId": "stf-1792737034257-7843",
+        "antiSelfApprovalVerified": true
+      }
+    },
+    {
+      "chainId": "CHAIN-07",
+      "name": "Branch Creation -> Hierarchy Node -> Scoping Guard",
+      "status": "PASS",
+      "details": {
+        "branchCreated": true
+      }
+    }
+  ],
+  "summary": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  }
+}

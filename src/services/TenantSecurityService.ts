@@ -4,6 +4,7 @@ export interface UserSession {
   id: string;
   email: string;
   tenantId: string;
+  orgId?: string;
   role: UserRole;
   status: 'ACTIVE' | 'INVITED' | 'PENDING' | 'SUSPENDED' | 'LOCKED';
   assignedClass?: string;
@@ -44,6 +45,68 @@ export class TenantSecurityService {
     }
 
     return true;
+  }
+
+  /**
+   * Enforces Parent Organization Access:
+   * Parent organization directors can only view their own organization and authorized branches.
+   */
+  public static validateOrganizationAccess(
+    user: UserSession,
+    targetOrgId: string,
+    authorizedBranchIds?: string[]
+  ): boolean {
+    if (!user || user.status !== 'ACTIVE') {
+      throw new TenantSecurityException('DENIED: User session is invalid or account is suspended.', 401);
+    }
+
+    if (user.role === 'SUPER_ADMIN') {
+      return true;
+    }
+
+    if (user.orgId && user.orgId === targetOrgId) {
+      return true;
+    }
+
+    if (authorizedBranchIds && authorizedBranchIds.includes(user.tenantId)) {
+      return true;
+    }
+
+    throw new TenantSecurityException(
+      `DENIED: Organization access violation. User org (${user.orgId || 'NONE'}) cannot access organization (${targetOrgId}).`,
+      403
+    );
+  }
+
+  /**
+   * Enforces Branch Administrator Access:
+   * Branch admins cannot inspect data outside their authorized branch unless authorized by parent org.
+   */
+  public static validateBranchAccess(
+    user: UserSession,
+    targetBranchId: string,
+    authorizedBranchIds?: string[]
+  ): boolean {
+    if (!user || user.status !== 'ACTIVE') {
+      throw new TenantSecurityException('DENIED: User session is invalid or account is suspended.', 401);
+    }
+
+    if (user.role === 'SUPER_ADMIN') {
+      return true;
+    }
+
+    if (user.tenantId === targetBranchId) {
+      return true;
+    }
+
+    if (authorizedBranchIds && authorizedBranchIds.includes(targetBranchId)) {
+      return true;
+    }
+
+    throw new TenantSecurityException(
+      `DENIED: Branch administrator isolation violation. User branch (${user.tenantId}) cannot access branch (${targetBranchId}).`,
+      403
+    );
   }
 
   /**
